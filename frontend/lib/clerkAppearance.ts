@@ -42,6 +42,7 @@ export const clerkAppearance = {
     card: {
       boxShadow: '0 28px 64px -24px rgba(0, 0, 0, 0.9)',
       border: '1px solid rgba(242, 241, 237, 0.08)',
+      width: '100%',
     },
     cardBox: { borderRadius: '20px', width: '100%', maxWidth: '100%' },
     rootBox: { width: '100%', maxWidth: '100%' },

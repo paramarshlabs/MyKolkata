@@ -8,15 +8,18 @@
 .mk-auth--loading { display: flex; align-items: center; padding: 0 var(--mk-edge); }
 
 .mk-auth-main {
-  display: flex; align-items: center;
+  display: flex; align-items: center; justify-content: center;
   padding: clamp(40px, 7vw, 96px) var(--mk-edge);
   background:
     radial-gradient(700px 460px at 0% 100%, rgba(19, 42, 46, 0.5), transparent 62%),
     var(--mk-obsidian);
 }
-.mk-auth-column { width: 100%; max-width: 440px; }
+.mk-auth-column {
+  display: flex; flex-direction: column; align-items: center;
+  width: 100%; max-width: 440px; text-align: center;
+}
 
-.mk-auth-lockup { display: flex; align-items: center; gap: var(--mk-4); }
+.mk-auth-lockup { display: flex; align-items: center; gap: var(--mk-4); text-align: left; }
 .mk-auth-latin {
   margin: 0; font-family: var(--mk-display); font-weight: 400; color: var(--mk-white);
   font-size: 26px; letter-spacing: 0.14em; line-height: 1.1;
@@ -28,11 +31,16 @@
 }
 .mk-auth-lede { margin: var(--mk-6) 0 var(--mk-6); max-width: 36ch; }
 
-.mk-auth-switch { margin-bottom: var(--mk-5); }
+.mk-seg.mk-auth-switch {
+  display: flex;
+  width: fit-content;
+  margin-bottom: var(--mk-5);
+  margin-inline: auto;
+}
 /* Clerk's own boxes are sized through appearance.elements in lib/clerkAppearance.ts —
    never .cl-* selectors here, which Clerk flags as structural CSS */
 .mk-auth-form { width: 100%; }
-.mk-auth-foot { margin-top: var(--mk-5); display: flex; align-items: center; gap: var(--mk-3); flex-wrap: wrap; }
+.mk-auth-foot { margin-top: var(--mk-5); display: flex; align-items: center; justify-content: center; gap: var(--mk-3); flex-wrap: wrap; }
 
 .mk-auth-photo { position: relative; margin: 0; overflow: hidden; background: var(--mk-ink); }
 .mk-auth-photo img {
