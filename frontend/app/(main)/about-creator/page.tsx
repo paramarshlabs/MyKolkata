@@ -21,7 +21,7 @@ async function getContributors(): Promise<Contributor[]> {
     )
     if (!res.ok) return []
     const people = (await res.json()) as Contributor[]
-    return people.filter((person) => person.type === 'User')
+    return people.filter((person) => person.type === 'User' && person.login.toLowerCase() !== 'paramarshlabs')
   } catch {
     return []
   }
@@ -50,14 +50,7 @@ export default async function AboutCreator() {
             </p>
           </section>
           <section>
-            <h2 className="mk-h3">How it&apos;s built</h2>
-            <p className="mk-body" style={{ marginTop: 12 }}>
-              React, Next.js and Tailwind CSS, with a design system of its own: Clear Sans and Noto
-              Sans Bengali, a cool rich black, one crimson mark, and the alpona line.
-            </p>
-          </section>
-          <section>
-            <h2 className="mk-h3">Built by who?</h2>
+            <h2 className="mk-h3">Built with ❤️ by Paramarsh Labs</h2>
             {contributors.length > 0 ? (
               <ul style={{ listStyle: 'none', margin: '20px 0 0', padding: 0, display: 'grid', gap: 12 }}>
                 {contributors.map((person) => (
