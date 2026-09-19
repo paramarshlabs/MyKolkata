@@ -71,6 +71,19 @@ test('Clerk components are sized through appearance, never structural .cl-* CSS'
   }
 })
 
+test('home plays the entry film as a 4:5 post on the door screen', async () => {
+  const page = await readSource('app/(main)/home/page.tsx')
+  const entry = await readSource('components/brand/HomeEntry.tsx')
+  const css = await readSource('styles/brand.css')
+
+  assert.match(page, /<HomeEntry/)
+  assert.match(entry, /\/entry1\.mp4/)
+  assert.match(entry, /sessionStorage/)
+  assert.match(entry, /video\.muted = false/)
+  assert.match(entry, /entry-splash\.png/)
+  assert.match(css, /entry-splash-mask\.png/)
+})
+
 test('the image optimizer is not an open proxy', async () => {
   const config = await readSource('next.config.ts')
 

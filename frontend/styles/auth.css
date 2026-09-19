@@ -5,7 +5,7 @@
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
   min-height: 100svh;
 }
-.mk-auth--loading { display: flex; align-items: center; padding: 0 var(--mk-edge); }
+.mk-auth--loading { display: flex; align-items: center; justify-content: center; padding: 0 var(--mk-edge); }
 
 .mk-auth-main {
   display: flex; align-items: center; justify-content: center;

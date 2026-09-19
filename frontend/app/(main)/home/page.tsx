@@ -7,6 +7,7 @@ import { Card } from '@/components/brand/Card'
 import { SectionHead } from '@/components/brand/SectionHead'
 import { Medallion, Sprig } from '@/components/brand/kolka'
 import { LaalPaar } from '@/components/brand/Alpona'
+import { HomeEntry } from '@/components/brand/HomeEntry'
 
 export const dynamic = 'force-dynamic'
 
@@ -49,7 +50,9 @@ export default async function HomePage() {
   }
 
   return (
-    <main className="mk-page" style={{ paddingBottom: 0 }}>
+    <>
+      <HomeEntry />
+      <main className="mk-page" style={{ paddingBottom: 0 }}>
       <section className="mk-banner" aria-labelledby="home-title">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -156,5 +159,6 @@ export default async function HomePage() {
         </div>
       </section>
     </main>
+    </>
   )
 }
