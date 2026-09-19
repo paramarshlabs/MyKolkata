@@ -369,3 +369,72 @@ test('official and local sources outrank unknown ones', () => {
   assert.equal(sourceTier('timesofindia.indiatimes.com'), 'NATIONAL')
   assert.equal(sourceTier('some-blog.example'), 'OTHER')
 })
+
+/* ---------- lessons from the first live run ------------------------------ */
+
+test('real junk from the first live run is rejected', () => {
+  const junk = [
+    ['Eden Gardens State Park', 'https://www.floridastateparks.org/parks-and-trails/eden-gardens-state-park', 'Florida state park on Choctawhatchee Bay.'],
+    ['Eden Gardens Residential Parking Permit Zone', 'http://www.hayward-ca.gov/documents/eden-gardens-residential-parking-permit-zone', 'City of Hayward, California.'],
+    ['INS Kolkata collision: India rejects Pakistan allegations', 'https://www.indiatoday.in/india/story/ins-kolkata-collision-india-rejects-pakistan-allegations-2997722', 'The Navy said…'],
+    ['Latest T20 World Cup 2021 News, Photos, Latest News Headlines about T20 World Cup 2021-Sportstar', 'https://sportstar.thehindu.com/newstag/t20-world-cup-2021', 'Eden Gardens Kolkata cricket'],
+    ['Aizawl FC - latest team news & transfer rumours', 'https://www.goal.com/en-in/team/aizawl-fc/news/52oiz34tuvh22386o5gcgafiz', 'East Bengal'],
+    ['East Bengal 3-2 Mohun Bagan (16 Dec, 2018) Final Score - ESPN (IN)', 'https://www.espn.in/football/match/_/gameId/527726/mohun-bagan-sc-east-bengal', ''],
+    ['Mohun Bagan Super Giant clinches Indian Super League 2024', 'https://newsonair.gov.in/mohun-bagan-super-giant-clinches-indian-super-league-2024-25-title/', 'ISL football'],
+    ['This day, that year: South Africa returns to international cricket after a 21', 'https://ddnews.gov.in/en/this-day-that-year-south-africa-returns-to-international-cricket-after-a-21-year-hiatus/', 'at Eden Gardens in Kolkata'],
+    ['Who won toss today? – Sport-net', 'https://sport-net.org/who-won-toss-today-16/', 'KKR cricket match'],
+  ]
+  for (const [title, url, description] of junk) {
+    assert.equal(assessStory({ title, url, description }, NOW).accepted, false, title)
+  }
+  /* while the real thing still passes */
+  const eden = assessStory({ title: 'India vs England Test at Eden Gardens sold out', url: 'https://example.com/cricket/india-vs-england-test-at-eden-gardens-sold-out' }, NOW)
+  assert.equal(eden.accepted && eden.type, 'SPORTS')
+  const season = assessStory({ title: 'Mohun Bagan eye ISL 2026-27 title after derby win', url: 'https://example.com/football/mohun-bagan-eye-isl-title-after-derby-win' }, NOW)
+  assert.equal(season.accepted, true)
+})
+
+test('publish dates are read from <time> tags and dates printed on the page', async () => {
+  const { extractPublishedAt } = await import('../lib/news/ingest.ts')
+  assert.equal(extractPublishedAt('<time datetime="2026-03-14T09:10:00+05:30">').toISOString(), '2026-03-14T03:40:00.000Z')
+  const printed = extractPublishedAt('<div class="date">March 14, 2026 9:10 AM</div>')
+  assert.equal(printed.getFullYear(), 2026)
+  assert.equal(printed.getMonth(), 2)
+  assert.equal(extractPublishedAt('<p>14 March 2026</p>').getDate(), 14)
+  assert.equal(extractPublishedAt('<p>no date here</p>'), null)
+})
+
+test('an undated story cannot beat a dated fresh one on freshness alone', () => {
+  const undated = story({ publishedAt: null, discoveredAt: NOW })
+  const dated = story({ publishedAt: hoursAgo(6) })
+  assert.ok(rankStory(dated, { now: NOW }).total > rankStory(undated, { now: NOW }).total)
+})
+
+test('pages without og:image use the photo captioned with the headline', async () => {
+  const title = 'PM Modi to visit Kolkata today to inaugurate projects'
+  const html = `
+    <img src="/logo.png" alt="Newsonair">
+    <img src="https://newsonair.gov.in/wp-content/uploads/2026/09/other.png" alt="DUSU elections: Polling concludes">
+    <img src="https://newsonair.gov.in/wp-content/uploads/2026/03/modiji.png" alt="${title}">`
+  const image = await resolveStoryImage({ title, link: 'https://newsonair.gov.in/pm-modi-to-visit-kolkata-today/', type: 'CITY' }, { fetchHtml: async () => html })
+  assert.equal(image.image, 'https://newsonair.gov.in/wp-content/uploads/2026/03/modiji.png')
+  assert.equal(image.imageSource, 'article')
+})
+
+test('ingestion re-checks stored stories: junk and old undated ones are retired, images retried', async () => {
+  const junk = story({ title: 'Eden Gardens State Park', link: 'https://www.floridastateparks.org/parks-and-trails/eden-gardens-state-park', sourceDomain: 'floridastateparks.org', discoveredAt: hoursAgo(5), publishedAt: null })
+  const old = story({ title: 'PM Modi to visit Kolkata today to inaugurate projects', link: 'https://newsonair.gov.in/pm-modi-to-visit-kolkata-today-to-inaugurate-projects/', sourceDomain: 'newsonair.gov.in', discoveredAt: hoursAgo(5), publishedAt: null })
+  const noImage = story({ title: 'Kolkata Metro extends Purple Line hours', link: 'https://www.telegraphindia.com/west-bengal/calcutta/kolkata-metro-extends-purple-line-hours/cid/2101999', image: '/hwh.jpg', imageSource: 'fallback' })
+  const repository = memoryRepository([junk, old, noImage])
+  const pages = {
+    [old.link]: '<div>March 14, 2026 9:10 AM</div>',
+    [noImage.link]: ogPage('https://img.telegraphindia.com/purple.jpg'),
+  }
+  const summary = await ingestKolkataNews({ repository, anakin: null, fetchHtml: async (url) => pages[url] ?? null, now: NOW, log: silent })
+  const byId = (id) => repository.rows.find((row) => row.id === id)
+  assert.equal(summary.retired, 2)
+  assert.equal(byId(junk.id).isActive, false)
+  assert.equal(byId(old.id).isActive, false)
+  assert.equal(byId(noImage.id).image, 'https://img.telegraphindia.com/purple.jpg')
+  assert.equal((await selectHomeNews(repository, NOW)).city.id, noImage.id)
+})

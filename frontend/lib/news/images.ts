@@ -5,7 +5,8 @@ import { isBlockedSource, sourceDomain, titleSimilarity } from './sources'
 /* ==========================================================================
    An image for a story, in order of trust:
      1. the article's own og:/twitter:image
-     2. the article's structured-data image (or the image the search returned)
+     2. the article's structured-data image, its headline photo (an <img>
+        whose alt text is the headline), or the image the search returned
      3. the event's own artwork
      4. the same story's image on another outlet, found through Anakin
      5. a local Kolkata photograph for the card type
@@ -42,11 +43,36 @@ export function usableImage(url: string | null | undefined) {
   return parsed.toString()
 }
 
-async function imageFromPage(url: string, deps: ImageDeps) {
+/* Pages without og:image (newsonair.gov.in, many WordPress sites) still show
+   the story's photo; it is the <img> captioned with the headline itself. */
+export function extractHeadlineImage(html: string, pageUrl: string, title: string) {
+  for (const tag of html.match(/<img\b[^>]*>/gi) || []) {
+    const attr = (name: string) => tag.match(new RegExp(`\\s${name}\\s*=\\s*["']([^"']+)["']`, 'i'))?.[1]
+    const alt = attr('alt') || attr('title') || ''
+    if (titleSimilarity(alt, title) < HEADLINE_MATCH) continue
+    const src = attr('data-src') || attr('src')
+    if (!src) continue
+    try {
+      const image = usableImage(new URL(src.replace(/&amp;/g, '&'), pageUrl).toString())
+      if (image) return image
+    } catch {
+      /* malformed src */
+    }
+  }
+  return null
+}
+
+/* how closely an image caption must match the headline to count as its photo */
+const HEADLINE_MATCH = 0.8
+
+async function imageFromPage(url: string, title: string, deps: ImageDeps) {
   const html = await deps.fetchHtml(url)
-  const extracted = html ? extractPageImage(html, url) : null
+  if (!html) return null
+  const extracted = extractPageImage(html, url)
   const image = usableImage(extracted?.imageUrl)
-  return image ? { image, kind: extracted!.kind as 'meta' | 'json-ld' } : null
+  if (image) return { image, kind: extracted!.kind as 'meta' | 'json-ld' }
+  const headline = extractHeadlineImage(html, url, title)
+  return headline ? { image: headline, kind: 'headline' as const } : null
 }
 
 export async function resolveStoryImage(
@@ -55,7 +81,7 @@ export async function resolveStoryImage(
 ): Promise<StoryImage> {
   const log = deps.log ?? (() => {})
 
-  const own = await imageFromPage(story.link, deps).catch(() => null)
+  const own = await imageFromPage(story.link, story.title, deps).catch(() => null)
   if (own) {
     return { image: own.image, imageSource: own.kind === 'meta' ? 'article-og' : 'article', imageSourceUrl: story.link }
   }
@@ -78,7 +104,7 @@ export async function resolveStoryImage(
         })
         .slice(0, RELATED_PAGES_TO_TRY)
       for (const result of related) {
-        const found = await imageFromPage(result.url!, deps).catch(() => null)
+        const found = await imageFromPage(result.url!, story.title, deps).catch(() => null)
         if (found) return { image: found.image, imageSource: 'anakin-related-coverage', imageSourceUrl: result.url! }
       }
     } catch (err) {

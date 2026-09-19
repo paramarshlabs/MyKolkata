@@ -50,8 +50,8 @@ const PUBLICATIONS: Record<string, { name: string; tier: SourceTier }> = {
   'goal.com': { name: 'Goal', tier: 'OTHER' },
 }
 
-/* never a news source: social, video, reference, aggregators, directories */
-const BLOCKED = /(^|\.)(facebook|instagram|x|twitter|threads|youtube|youtu|linkedin|reddit|quora|pinterest|wikipedia|wikimedia|google|bing|msn|yahoo|dailyhunt|zomato|swiggy|tripadvisor|justdial|yelp)\.[a-z.]+$/i
+/* never a news source: social, video, reference, aggregators, directories, weather */
+const BLOCKED = /(^|\.)(facebook|instagram|x|twitter|threads|youtube|youtu|linkedin|reddit|quora|pinterest|wikipedia|wikimedia|google|bing|msn|yahoo|dailyhunt|zomato|swiggy|tripadvisor|justdial|yelp|weather|timeanddate|accuweather|wunderground)\.[a-z.]+$/i
 
 export function sourceDomain(url: string | URL) {
   const parsed = typeof url === 'string' ? safePublicUrl(url) : url

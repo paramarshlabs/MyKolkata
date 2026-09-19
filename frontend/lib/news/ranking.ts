@@ -53,6 +53,10 @@ export function baseScore(input: { relevance: number; sourceQuality: number; imp
    (40 → 20 → 10 → 5 at 0 / 24 / 48 / 72 hours). */
 export const FRESHNESS_POINTS = 40
 export const FRESHNESS_HALF_LIFE_HOURS = 24
+/* With no publish date we only know when we found the story, not when it
+   happened — a months-old page can surface in today's search. Such stories
+   get half the freshness, so any dated fresh story beats them. */
+export const UNDATED_FRESHNESS_FACTOR = 0.5
 
 /* Past three days a story is old news: an extra 10 off on top of decay.
    Past seven it is not a candidate at all (the fallbacks in home.ts may still
@@ -145,7 +149,7 @@ export function rankStory(story: RankableStory, { now, events = [], peers = [] }
 
   const parts = {
     base: Number(story.score) || 0,
-    freshness: FRESHNESS_POINTS * 0.5 ** (age / FRESHNESS_HALF_LIFE_HOURS),
+    freshness: FRESHNESS_POINTS * 0.5 ** (age / FRESHNESS_HALF_LIFE_HOURS) * (time(story.publishedAt) === null ? UNDATED_FRESHNESS_FACTOR : 1),
     event: event ? EVENT_ACTIVE_POINTS + (event.phase && story.eventPhase === event.phase ? EVENT_PHASE_POINTS : 0) : 0,
     stale: age > STALE_AFTER_HOURS ? -STALE_PENALTY : 0,
     featured: isCooling(story, now) ? -RECENTLY_FEATURED_PENALTY : 0,

@@ -22,3 +22,29 @@
 .storiesHead { display: flex; align-items: center; justify-content: space-between; gap: var(--mk-4); flex-wrap: wrap; }
 .form { margin-top: var(--mk-6); max-width: 720px; display: grid; gap: var(--mk-5); }
 .empty { margin-top: var(--mk-6); max-width: 720px; }
+.formError { margin: 0; color: var(--mk-taxi); }
+
+/* The story wall — a day of stories, newest first. */
+.stories { list-style: none; margin: var(--mk-6) 0 0; padding: 0; display: grid; gap: var(--mk-4); max-width: 720px; }
+.story { display: grid; gap: var(--mk-3); }
+.storyText { white-space: pre-line; overflow-wrap: anywhere; }
+.media { display: grid; gap: var(--mk-2); justify-items: start; }
+.mediaImg {
+  display: block; width: 100%; max-height: 520px; object-fit: contain;
+  border-radius: var(--mk-r-md); background: var(--mk-slate);
+}
+/* Embeds start at a typical post height and then fit the post exactly, once
+   the provider reports its size (StoryMedia.tsx). */
+.embed {
+  display: block; width: 100%; max-width: 540px; border: 0; border-radius: var(--mk-r-md);
+  background: transparent;
+  transition: height var(--mk-t-hover) var(--mk-ease-in-out);
+}
+.embedInstagram { height: 640px; }
+.embedX { height: 480px; }
+.embedSized { overflow: hidden; }
+.mediaLink {
+  font-size: 14px; letter-spacing: 0.015em; color: var(--mk-pearl); text-underline-offset: 3px;
+  transition: color var(--mk-t-hover) var(--mk-ease-in-out);
+}
+.mediaLink:hover, .mediaLink:focus-visible { color: var(--mk-taxi); }

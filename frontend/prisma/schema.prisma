@@ -341,3 +341,18 @@ model TinderProfile {
   @@index([createdAt(sort: Desc)])
   @@map("tinder_profiles")
 }
+
+// Public stories on /contribute. Ephemeral: each expires 24 hours after it is
+// posted. Only text and the original external URL are kept — never media.
+model Story {
+  id          String   @id @default(cuid())
+  title       String
+  story       String
+  externalUrl String?
+  authorId    String?
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+
+  @@index([expiresAt, createdAt(sort: Desc)])
+  @@map("stories")
+}

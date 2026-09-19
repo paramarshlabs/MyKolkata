@@ -5,16 +5,36 @@ import type { NewsFeed } from './events'
    All scores are 0–1; ranking.ts decides what they are worth.
    ========================================================================== */
 
-/* the city, its neighbourhoods, landmarks and institutions */
+/* the city, its neighbourhoods, landmarks and institutions — names found
+   nowhere else */
 const LOCAL_TERMS = [
-  'kolkata', 'calcutta', 'howrah', 'salt lake', 'bidhannagar', 'new town', 'rajarhat', 'park street',
-  'esplanade', 'dharmatala', 'sealdah', 'gariahat', 'ballygunge', 'behala', 'jadavpur', 'dum dum',
-  'kalighat', 'shyambazar', 'college street', 'maidan', 'victoria memorial', 'tollygunge', 'sector v',
-  'bowbazar', 'burrabazar', 'bagbazar', 'kumartuli', 'new market', 'dakshineswar', 'belur', 'hooghly',
-  'kmc', 'nabanna', 'lalbazar', 'eden gardens', 'garia', 'barasat', 'baranagar', 'bhowanipore',
+  'kolkata', 'calcutta', 'howrah', 'bidhannagar', 'rajarhat', 'esplanade', 'dharmatala', 'sealdah',
+  'gariahat', 'ballygunge', 'behala', 'jadavpur', 'dum dum', 'kalighat', 'shyambazar', 'college street',
+  'victoria memorial', 'tollygunge', 'bowbazar', 'burrabazar', 'bagbazar', 'kumartuli', 'dakshineswar',
+  'kmc', 'nabanna', 'lalbazar', 'barasat', 'baranagar', 'bhowanipore',
 ]
-const LOCAL = new RegExp(`\\b(${LOCAL_TERMS.map((term) => term.replace(/ /g, '\\s+')).join('|')})\\b`, 'gi')
+/* Kolkata places whose names also exist elsewhere — Eden Gardens is a state
+   park in Florida, Salt Lake a city in Utah. They count only when the story
+   also places itself in Bengal or India. */
+const AMBIGUOUS_TERMS = [
+  'eden gardens', 'salt lake', 'new town', 'park street', 'new market', 'maidan', 'belur', 'hooghly',
+  'garia', 'sector v',
+]
+const termPattern = (terms: string[]) => new RegExp(`\\b(${terms.map((term) => term.replace(/ /g, '\\s+')).join('|')})\\b`, 'gi')
+const LOCAL_ONLY = termPattern(LOCAL_TERMS)
+const AMBIGUOUS = termPattern(AMBIGUOUS_TERMS)
+const INDIA_CONTEXT = /\b(kolkata|calcutta|bengal|bangla|india|indian|cricket|isl|bcci)\b/i
 const BENGAL = /\b(west bengal|bengal|bangla)\b/i
+
+/* "Kolkata" that is not the city: the Indian Navy destroyer */
+const NOT_THE_CITY = /\bins\s+kolkata\b/gi
+
+function localMatches(text: string, context: string) {
+  const clean = text.replace(NOT_THE_CITY, ' ')
+  const matches: string[] = [...(clean.match(LOCAL_ONLY) || [])]
+  if (INDIA_CONTEXT.test(context.replace(NOT_THE_CITY, ' '))) matches.push(...(clean.match(AMBIGUOUS) || []))
+  return matches.map((match) => match.toLowerCase().replace(/\s+/g, ' '))
+}
 
 /* headlines framed around the country rather than the city */
 const NATIONAL_FRAMING = /\b(india|india's|indian economy|nationwide|national|centre|union budget|sensex|nifty|rbi|gdp|lok sabha|parliament|pm modi)\b/i
@@ -39,33 +59,50 @@ const SPORTS_CATEGORIES: Array<[string, RegExp]> = [
 
 const IMPORTANCE = /\b(announce[sd]?|launch(es|ed)?|opens?|opened|inaugurat\w*|first|record|final|wins?|won|champions?|title|derby|major|biggest|historic|approve[sd]?|unveil\w*|begins?|breaking|signs?|appoint\w*|new)\b/gi
 
-/* service pages and listicles that are not stories */
-const LOW_VALUE = /\b(horoscope|rashifal|lottery|gold (rate|price)|silver (rate|price)|petrol (rate|price)|diesel (rate|price)|obituary|quiz|crossword|wordle|live score|scorecard|photo gallery|web stor(y|ies))\b/i
+/* service pages, listings and retrospectives that are not today's stories */
+const LOW_VALUE = /\b(horoscope|rashifal|lottery|gold (rate|price)|silver (rate|price)|petrol (rate|price)|diesel (rate|price)|obituary|quiz|crossword|wordle|live score|scorecard|photo gallery|web stor(y|ies)|weather for|forecast for|hourly forecast|final score|team news|transfer rumours|full squad|players list|who won (the )?toss|this day,? that year|on this day|throwback|news, photos|latest news headlines)\b/i
+/* tag pages, team pages, match centres, weather */
+const NON_ARTICLE_PATH = /\/(tags?|newstag|topics?|team|teams|players?|match|matches|scores?|live-?score|weather|forecast|category|author|search)\//i
+
+/* A headline about a past year ("ISL 2024", "(16 Dec, 2018)") is not today's
+   news — unless it names a season running into this year ("2025-26"). */
+export function isAboutPastYear(title: string, now: Date = new Date()) {
+  const current = now.getUTCFullYear()
+  if (new RegExp(`\\b${current - 1}\\s*[-–/]\\s*(${current}|${String(current).slice(2)})\\b`).test(title)) return false
+  const years = (title.match(/\b20\d{2}\b/g) || []).map(Number)
+  return years.length > 0 && years.every((year) => year < current)
+}
 
 function distinct(text: string, pattern: RegExp) {
   return new Set((text.match(pattern) || []).map((match) => match.toLowerCase().replace(/\s+/g, ' '))).size
-}
-
-function count(text: string, pattern: RegExp) {
-  return (text.match(pattern) || []).length
 }
 
 /* 0–1: how much this story is about Kolkata.
    A headline mention is the strongest signal (0.55); each body mention adds
    0.1, up to four; a Bengal mention adds a little. A nationally framed headline
    without the city in it loses 0.25 — "India's economy grows", with Kolkata
-   named once in passing, lands near zero. */
-export function kolkataRelevance(title: string, body = '') {
-  const inTitle = distinct(title, LOCAL)
-  const inBody = count(body, LOCAL)
-  let score = (inTitle ? 0.55 : 0) + Math.min(inBody, 4) * 0.1 + (BENGAL.test(`${title} ${body}`) ? 0.05 : 0)
+   named once in passing, lands near zero.
+   `where` is extra location context (the article URL's path, which often
+   reads /west-bengal/calcutta/) that settles ambiguous place names. */
+export function kolkataRelevance(title: string, body = '', where = '') {
+  const context = `${title} ${body} ${where}`
+  const inTitle = new Set(localMatches(title, context)).size
+  const inBody = localMatches(body, context).length
+  let score = (inTitle ? 0.55 : 0) + Math.min(inBody, 4) * 0.1 + (BENGAL.test(context) ? 0.05 : 0)
   if (!inTitle && NATIONAL_FRAMING.test(title)) score -= 0.25
   return clamp(score)
 }
 
-export function isSportsStory(title: string, body = '') {
+/* Kolkata club/venue mentions — Eden Gardens and Salt Lake Stadium only when
+   the story is set in India, not Florida's Eden Gardens State Park */
+function kolkataSportMatches(text: string, context: string) {
+  const matches = (text.match(KOLKATA_SPORT) || []).map((match) => match.toLowerCase().replace(/\s+/g, ' '))
+  return INDIA_CONTEXT.test(context) ? matches : matches.filter((match) => !/^(eden gardens|salt lake stadium)$/.test(match))
+}
+
+export function isSportsStory(title: string, body = '', where = '') {
   const text = `${title} ${body}`
-  const clubs = distinct(text, KOLKATA_SPORT)
+  const clubs = new Set(kolkataSportMatches(text, `${text} ${where}`)).size
   const sportWords = distinct(text, SPORT_WORDS)
   return (clubs > 0 && (sportWords > 0 || SPORT_CONTEXT.test(text))) || sportWords >= 2
 }
@@ -74,13 +111,14 @@ export function isSportsStory(title: string, body = '') {
    A Kolkata club, venue or Bengal side is the connection (0.6, +0.1 for each
    further one); a Kolkata place name in a sports story is a weaker one (0.3);
    either appearing in the headline adds 0.15. */
-export function sportsRelevance(title: string, body = '') {
+export function sportsRelevance(title: string, body = '', where = '') {
   const text = `${title} ${body}`
-  const clubs = distinct(text, KOLKATA_SPORT)
-  const local = count(text, LOCAL) > 0
+  const context = `${text} ${where}`
+  const clubs = new Set(kolkataSportMatches(text, context)).size
+  const local = localMatches(text, context).length > 0
   let score = clubs ? 0.6 + Math.min(clubs - 1, 3) * 0.1 : 0
   if (local) score += 0.3
-  if (distinct(title, KOLKATA_SPORT) || distinct(title, LOCAL)) score += 0.15
+  if (kolkataSportMatches(title, context).length || localMatches(title, context).length) score += 0.15
   return clamp(score)
 }
 
@@ -91,7 +129,13 @@ export function importance(title: string) {
 }
 
 export function isLowValue(title: string, url = '') {
-  return LOW_VALUE.test(title) || /\/(live-score|scorecard|horoscope|photos?|gallery|web-?stories)\//i.test(url)
+  let path = ''
+  try {
+    path = new URL(url).pathname
+  } catch {
+    /* no URL to judge */
+  }
+  return LOW_VALUE.test(title) || NON_ARTICLE_PATH.test(path) || /\/(live-score|scorecard|horoscope|photos?|gallery|web-?stories)\//i.test(path)
 }
 
 /* News URLs carry an id or a long slug; section fronts ("/city/kolkata") do not. */
@@ -124,19 +168,30 @@ export type Assessment =
 
 /* Classify by content, not by which search found it: a derby report surfacing
    in a city search is SPORTS; a Metro story from a sports search is CITY. */
-export function assessStory({ title, description = '', url = '' }: { title: string; description?: string | null; url?: string }): Assessment {
+export function assessStory(
+  { title, description = '', url = '' }: { title: string; description?: string | null; url?: string },
+  now: Date = new Date(),
+): Assessment {
   const body = description || ''
   if (!title?.trim()) return { accepted: false, reason: 'no title' }
   if (isLowValue(title, url)) return { accepted: false, reason: 'low-value page' }
+  if (isAboutPastYear(title, now)) return { accepted: false, reason: 'about a past year' }
   if (url && !looksLikeArticle(url)) return { accepted: false, reason: 'not an article' }
 
-  if (isSportsStory(title, body)) {
-    const relevance = sportsRelevance(title, body)
+  let where = ''
+  try {
+    where = decodeURIComponent(new URL(url).pathname).replace(/[/_-]+/g, ' ')
+  } catch {
+    /* no URL context */
+  }
+
+  if (isSportsStory(title, body, where)) {
+    const relevance = sportsRelevance(title, body, where)
     if (relevance < MIN_SPORTS_RELEVANCE) return { accepted: false, reason: `weak Kolkata sports link (${relevance.toFixed(2)})` }
     return { accepted: true, type: 'SPORTS', category: categorize('SPORTS', title, body), relevance, importance: importance(title) }
   }
 
-  const relevance = kolkataRelevance(title, body)
+  const relevance = kolkataRelevance(title, body, where)
   if (relevance < MIN_KOLKATA_RELEVANCE) return { accepted: false, reason: `not about Kolkata (${relevance.toFixed(2)})` }
   return { accepted: true, type: 'CITY', category: categorize('CITY', title, body), relevance, importance: importance(title) }
 }

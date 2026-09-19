@@ -28,6 +28,8 @@ const CONCURRENCY = 4
 const MAX_NEW_STORIES_PER_FEED = 12
 /* the paid related-coverage image search is spent on the top few only */
 const RELATED_IMAGE_SEARCHES_PER_FEED = 3
+/* stored stories re-checked per run (dates, images, current rules) */
+const MAX_STORED_TO_RECHECK = 40
 /* card description length, in characters */
 const DESCRIPTION_LENGTH = 180
 
@@ -70,6 +72,7 @@ export type IngestSummary = {
   created: number
   updated: number
   deactivated: number
+  retired: number
   searchFailures: number
   selected: Record<NewsFeed, { id: string; title: string } | null>
 }
@@ -119,10 +122,21 @@ export function extractPublishedAt(html: string) {
       if (Number.isFinite(date.getTime())) return date
     }
   }
-  const ld = html.match(/"datePublished"\s*:\s*"([^"]+)"/)?.[1]
-  const date = ld ? new Date(ld) : null
-  return date && Number.isFinite(date.getTime()) ? date : null
+  const candidates = [
+    html.match(/"datePublished"\s*:\s*"([^"]+)"/)?.[1],
+    html.match(/<time\b[^>]*\bdatetime\s*=\s*["']([^"']+)["']/i)?.[1],
+    /* last resort, a date printed on the page: "March 14, 2026 9:10 AM", "14 March 2026" */
+    html.match(new RegExp(`\\b(${MONTHS})\\s+\\d{1,2},?\\s+20\\d{2}(\\s+\\d{1,2}:\\d{2}\\s*[AP]M)?`, 'i'))?.[0],
+    html.match(new RegExp(`\\b\\d{1,2}\\s+(${MONTHS}),?\\s+20\\d{2}`, 'i'))?.[0],
+  ]
+  for (const value of candidates) {
+    const date = value ? new Date(value.replace(/,/g, '')) : null
+    if (date && Number.isFinite(date.getTime())) return date
+  }
+  return null
 }
+
+const MONTHS = 'January|February|March|April|May|June|July|August|September|October|November|December'
 
 /* "Headline | The Telegraph" → "Headline" */
 function cleanTitle(title: string, publication: string) {
@@ -188,7 +202,7 @@ function toCandidate(result: SearchResult, events: ActiveEvent[], now: Date):
   const publication = sourceName(domain)
   const title = cleanTitle(result.title || '', publication)
   const snippet = result.snippet || result.description || ''
-  const assessment = assessStory({ title, description: snippet, url: link })
+  const assessment = assessStory({ title, description: snippet, url: link }, now)
   if (!assessment.accepted) return { rejected: assessment.reason }
 
   const publishedAt = parseDate(result.date || result.published_date || result.publishedAt || result.age, now)
@@ -253,7 +267,7 @@ export async function ingestKolkataNews({ repository, anakin, fetchHtml, now = n
     date: day.iso,
     events: events.map(({ slug, phase }) => ({ slug, phase })),
     queries: 0, results: 0, accepted: 0, rejected: 0, duplicates: 0,
-    created: 0, updated: 0, deactivated: 0, searchFailures: 0,
+    created: 0, updated: 0, deactivated: 0, retired: 0, searchFailures: 0,
     selected: { CITY: null, SPORTS: null },
   }
   log(`[news] ingest ${day.iso} — active events: ${events.map((event) => `${event.slug}${event.phase ? `/${event.phase}` : ''}`).join(', ') || 'none'}`)
@@ -368,7 +382,54 @@ export async function ingestKolkataNews({ repository, anakin, fetchHtml, now = n
     })
   }
 
-  /* 13: retire expired stories */
+  /* 13a: re-check what is already stored. Rules improve and pages change: a
+     story that no longer passes is retired, a missing publish date is looked
+     up (and a months-old story retired), a missing image is retried. */
+  try {
+    const stored = (await repository.listRecent(FEEDS, new Date(now.getTime() - MAX_AGE_HOURS * HOUR_MS)))
+      .filter((row) => row.sourceDomain && row.link && row.discoveredAt.getTime() !== now.getTime())
+      .slice(0, MAX_STORED_TO_RECHECK)
+    await mapLimit(stored, CONCURRENCY, async (row) => {
+      const verdict = assessStory({ title: row.title, description: row.description, url: row.link! }, now)
+      if (!verdict.accepted || verdict.type !== row.type) {
+        await repository.update(row.id, { isActive: false })
+        summary.retired++
+        log(`[news] retired "${row.title}": ${verdict.accepted ? `now ${verdict.type}` : verdict.reason}`)
+        return
+      }
+      const data: NewsWrite = {}
+      if (!row.publishedAt) {
+        const html = await getHtml(row.link!)
+        const publishedAt = html ? extractPublishedAt(html) : null
+        if (publishedAt && now.getTime() - publishedAt.getTime() > MAX_AGE_HOURS * HOUR_MS) {
+          await repository.update(row.id, { isActive: false, publishedAt })
+          summary.retired++
+          log(`[news] retired "${row.title}": published ${publishedAt.toISOString()}`)
+          return
+        }
+        if (publishedAt) {
+          data.publishedAt = publishedAt
+          data.expiresAt = new Date(publishedAt.getTime() + MAX_AGE_HOURS * HOUR_MS)
+        }
+      }
+      if (row.imageSource === 'fallback' || !row.image) {
+        const image = await resolveStoryImage(
+          { title: row.title, link: row.link!, type: row.type as NewsFeed, eventSlug: row.eventSlug },
+          { fetchHtml: getHtml },
+        )
+        if (image.imageSource !== 'fallback') {
+          Object.assign(data, image)
+          log(`[news] image found (${image.imageSource}) for stored "${row.title}"`)
+        }
+      }
+      if (Object.keys(data).length) await repository.update(row.id, data)
+    })
+    if (summary.retired) log(`[news] retired ${summary.retired} stored stories`)
+  } catch (err) {
+    log(`[news] could not re-check stored stories: ${(err as Error).message}`)
+  }
+
+  /* 13b: retire expired stories */
   try {
     summary.deactivated = await repository.deactivateExpired(now)
     if (summary.deactivated) log(`[news] deactivated ${summary.deactivated} expired stories`)

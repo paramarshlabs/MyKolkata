@@ -84,7 +84,7 @@ export default async function HomePage() {
                 external
                 image={item.image}
                 title={item.title}
-                desc={item.description}
+                desc={item.type === 'NEWSPAPER' ? item.description : undefined}
                 icon="book"
                 ariaLabel={item.link ? `${item.title}, opens in a new tab` : undefined}
               />
