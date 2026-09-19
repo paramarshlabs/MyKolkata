@@ -42,17 +42,28 @@ test('route handlers that write require a signed-in user', async () => {
   assert.ok(writers.length > 0)
 })
 
-test('the proxy runs Clerk on pages and API routes but makes no path-based auth decisions', async () => {
+test('the proxy refreshes the Supabase session but makes no path-based auth decisions', async () => {
   const proxy = await read('proxy.ts')
+  const update = await read('lib/supabase/proxy.ts')
 
-  assert.match(proxy, /export default clerkMiddleware\(\)/)
-  assert.doesNotMatch(proxy, /createRouteMatcher|auth\.protect/)
+  assert.match(proxy, /export async function proxy\(request: NextRequest\)/)
+  assert.match(proxy, /return updateSession\(request\)/)
   assert.match(proxy, /'\/\(api\|trpc\)\(\.\*\)'/)
+  assert.match(update, /await supabase\.auth\.getClaims\(\)/)
+  assert.doesNotMatch(proxy + update, /redirect|NextResponse\.rewrite/)
 })
 
-test('the session helpers stay server-only', async () => {
+test('the session helpers stay server-only and verify the JWT', async () => {
   const helpers = await read('lib/auth.ts')
 
   assert.match(helpers, /^import 'server-only'/)
-  assert.match(helpers, /auth\.protect\(\{ unauthenticatedUrl: '\/login' \}\)/)
+  assert.match(helpers, /auth\.getClaims\(\)/)
+  assert.match(helpers, /redirect\('\/login'\)/)
+})
+
+test('the OAuth callback exchanges the PKCE code and only redirects same-origin', async () => {
+  const callback = await read('app/auth/callback/route.ts')
+
+  assert.match(callback, /exchangeCodeForSession\(code\)/)
+  assert.match(callback, /!requested\.startsWith\('\/\/'\)/)
 })

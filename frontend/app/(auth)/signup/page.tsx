@@ -3,24 +3,24 @@
 import Link from 'next/link'
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { SignUp, useAuth } from '@clerk/nextjs'
-import { virtualRouting } from '@/lib/clerkAppearance'
+import { useAuth } from '@/components/providers/AuthProvider'
 import { AuthLoading, AuthStage } from '@/components/auth/AuthStage'
+import { GoogleSignIn } from '@/components/auth/GoogleSignIn'
 
 export default function SignUpPage() {
-  const { isSignedIn, isLoaded } = useAuth()
+  const { isAuthenticated, isLoaded } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
-    if (isLoaded && isSignedIn) router.replace('/home')
-  }, [isLoaded, isSignedIn, router])
+    if (isLoaded && isAuthenticated) router.replace('/home')
+  }, [isLoaded, isAuthenticated, router])
 
-  if (!isLoaded || isSignedIn) return <AuthLoading label="Opening the door" />
+  if (!isLoaded || isAuthenticated) return <AuthLoading label="Opening the door" />
 
   return (
-    <AuthStage lede="Make an account with your email, your phone, or Google. It takes a minute.">
+    <AuthStage lede="Make an account with Google. It takes a minute.">
       <div className="mk-auth-form">
-        <SignUp {...virtualRouting} signInUrl="/login" fallbackRedirectUrl="/home" />
+        <GoogleSignIn label="Create account with Google" />
       </div>
       <p className="mk-caption mk-auth-foot">
         <span>Already have an account?</span>

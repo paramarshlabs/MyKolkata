@@ -6,7 +6,7 @@ import { AlponaLoader } from '@/components/brand/Alpona'
     its own half of the frame and the mark sits on Obsidian beside it. Below
     900px the photograph becomes a short band above the form.                 */
 
-export function AuthStage({ children, lede }: { children: ReactNode; lede: string }) {
+export function AuthStage({ children, lede, footer }: { children: ReactNode; lede: string; footer?: ReactNode }) {
   return (
     <main className="mk-auth">
       <section className="mk-auth-main">
@@ -21,6 +21,7 @@ export function AuthStage({ children, lede }: { children: ReactNode; lede: strin
           <p className="mk-body-lg mk-auth-lede">{lede}</p>
           {children}
         </div>
+        {footer && <footer className="mk-meta mk-auth-credit">{footer}</footer>}
       </section>
 
       <figure className="mk-auth-photo">

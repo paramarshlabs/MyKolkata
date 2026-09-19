@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { access, readdir, readFile } from 'node:fs/promises'
+import { access, readFile } from 'node:fs/promises'
 import test from 'node:test'
 
 const readSource = (relativePath) =>
@@ -46,29 +46,24 @@ test('dark is the only experience — the theme toggle and provider are gone', a
 
   const providers = await readSource('components/providers/AppProviders.tsx')
   assert.doesNotMatch(providers, /ThemeProvider/)
-  assert.match(providers, /appearance=\{clerkAppearance\}/)
+  assert.match(providers, /<AuthProvider>/)
 })
 
-test('Clerk is dressed in the brand once, for every auth component', async () => {
-  const appearance = await readSource('lib/clerkAppearance.ts')
+test('Google is the only way in, through Supabase OAuth', async () => {
+  const provider = await readSource('components/providers/AuthProvider.tsx')
+  const button = await readSource('components/auth/GoogleSignIn.tsx')
 
-  assert.match(appearance, /colorPrimary: '#d72638'/)
-  assert.match(appearance, /colorBackground: '#141819'/)
-  assert.match(appearance, /fontWeight: \{ normal: 400, medium: 400, semibold: 400, bold: 400 \}/)
-  assert.doesNotMatch(appearance, /!'/)
+  assert.match(provider, /signInWithOAuth\(\{\s*provider: 'google'/)
+  assert.match(provider, /\/auth\/callback/)
+  assert.doesNotMatch(provider, /signInWithPassword|signInWithOtp|signUp\(/)
+  assert.match(button, /signInWithGoogle/)
 })
 
-test('Clerk components are sized through appearance, never structural .cl-* CSS', async () => {
-  const stylesheets = (await Promise.all(['app/', 'styles/'].map(async (dir) =>
-    (await readdir(new URL(`../${dir}`, import.meta.url), { recursive: true }))
-      .filter((entry) => entry.endsWith('.css'))
-      .map((entry) => `${dir}${entry}`)))).flat()
-  assert.ok(stylesheets.includes('styles/auth.css'))
+test('auth screens are styled by the brand sheet, with no third-party widget', async () => {
+  const css = await readSource('styles/auth.css')
 
-  for (const sheet of stylesheets) {
-    const css = (await readSource(sheet)).replace(/\/\*[\s\S]*?\*\//g, '')
-    assert.doesNotMatch(css, /\.cl-[\w-]+/, `${sheet} targets Clerk's internal DOM`)
-  }
+  assert.match(css, /\.mk-auth-card/)
+  assert.match(css, /\.mk-auth-error \{[^}]*var\(--mk-taxi\)/)
 })
 
 test('home plays the entry film as a 4:5 post on the door screen', async () => {
@@ -80,8 +75,13 @@ test('home plays the entry film as a 4:5 post on the door screen', async () => {
   assert.match(entry, /\/entry1\.mp4/)
   assert.match(entry, /sessionStorage/)
   assert.match(entry, /video\.muted = false/)
-  assert.match(entry, /entry-splash\.png/)
-  assert.match(css, /entry-splash-mask\.png/)
+  assert.doesNotMatch(entry, /Skip|entry-splash/)
+  assert.doesNotMatch(css, /entry-splash/)
+  assert.doesNotMatch(css, /\.mk-entry-video[^{]*\{[^}]*border-radius/)
+  assert.match(css, /object-fit: contain/)
+  assert.match(css, /mask-composite: intersect/)
+  assert.match(css, /linear-gradient\(to right/)
+  assert.match(css, /linear-gradient\(to bottom/)
 })
 
 test('the image optimizer is not an open proxy', async () => {

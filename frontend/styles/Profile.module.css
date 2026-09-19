@@ -19,8 +19,9 @@
 }
 
 .manage { padding-top: clamp(64px, 9vw, 112px); }
-/* UserProfile's own boxes fill this through appearance.elements in lib/clerkAppearance.ts */
-.clerk { margin-top: var(--mk-6); max-width: 100%; overflow-x: auto; }
+.account { margin-top: var(--mk-6); display: flex; flex-direction: column; gap: var(--mk-4); align-items: flex-start; }
+.accountRows { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: var(--mk-3) var(--mk-6); }
+.accountRows dd { margin: 0; color: var(--mk-pearl); overflow-wrap: anywhere; }
 
 @media (max-width: 640px) {
   .stats { grid-template-columns: 1fr; }

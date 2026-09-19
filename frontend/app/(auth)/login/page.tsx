@@ -1,36 +1,48 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { SignIn, SignUp, useAuth } from '@clerk/nextjs'
-import { virtualRouting } from '@/lib/clerkAppearance'
+import { Suspense, useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useAuth } from '@/components/providers/AuthProvider'
 import { AuthLoading, AuthStage } from '@/components/auth/AuthStage'
+import { GoogleSignIn } from '@/components/auth/GoogleSignIn'
 
-export default function LoginPage() {
-  const { isSignedIn, isLoaded } = useAuth()
+function Login() {
+  const { isAuthenticated, isLoaded } = useAuth()
   const [isSignUpMode, setIsSignUpMode] = useState(false)
   const router = useRouter()
+  /* /auth/callback sends a failed code exchange back here */
+  const failed = useSearchParams().get('error') === 'oauth'
 
   useEffect(() => {
-    if (isLoaded && isSignedIn) router.replace('/home')
-  }, [isLoaded, isSignedIn, router])
+    if (isLoaded && isAuthenticated) router.replace('/home')
+  }, [isLoaded, isAuthenticated, router])
 
-  if (!isLoaded || isSignedIn) return <AuthLoading label="Opening the door" />
+  if (!isLoaded || isAuthenticated) return <AuthLoading label="Opening the door" />
 
   return (
-    <AuthStage lede={isSignUpMode ? 'Make an account and keep the city close.' : 'Sign in and pick up where you left the city.'}>
+    <AuthStage
+      lede={isSignUpMode ? 'Make an account and keep the city close.' : 'Sign in and pick up where you left the city.'}
+      footer={<>Created with &lt;3 by Paramarsh Labs</>}
+    >
       <div className="mk-seg mk-auth-switch" role="group" aria-label="Sign in or create an account">
         <button type="button" aria-pressed={!isSignUpMode} onClick={() => setIsSignUpMode(false)}>Sign in</button>
         <button type="button" aria-pressed={isSignUpMode} onClick={() => setIsSignUpMode(true)}>Create account</button>
       </div>
 
       <div className="mk-auth-form">
-        {isSignUpMode ? (
-          <SignUp {...virtualRouting} signInUrl="/login" fallbackRedirectUrl="/home" />
-        ) : (
-          <SignIn {...virtualRouting} signUpUrl="/signup" fallbackRedirectUrl="/home" />
-        )}
+        <GoogleSignIn
+          label={isSignUpMode ? 'Create account with Google' : 'Sign in with Google'}
+          initialError={failed ? 'That sign-in did not go through. Try again.' : null}
+        />
       </div>
     </AuthStage>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<AuthLoading label="Opening the door" />}>
+      <Login />
+    </Suspense>
   )
 }

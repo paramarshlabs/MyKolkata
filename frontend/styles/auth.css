@@ -8,6 +8,7 @@
 .mk-auth--loading { display: flex; align-items: center; justify-content: center; padding: 0 var(--mk-edge); }
 
 .mk-auth-main {
+  position: relative;
   display: flex; align-items: center; justify-content: center;
   padding: clamp(40px, 7vw, 96px) var(--mk-edge);
   background:
@@ -37,9 +38,19 @@
   margin-bottom: var(--mk-5);
   margin-inline: auto;
 }
-/* Clerk's own boxes are sized through appearance.elements in lib/clerkAppearance.ts —
-   never .cl-* selectors here, which Clerk flags as structural CSS */
 .mk-auth-form { width: 100%; }
+/* the card the sign-in widget used to draw: Ink on Obsidian, one Google button */
+.mk-auth-card {
+  display: flex; flex-direction: column; gap: var(--mk-4);
+  padding: var(--mk-6);
+  background: var(--mk-ink); border: 1px solid rgba(242, 241, 237, 0.08); border-radius: 20px;
+  box-shadow: 0 28px 64px -24px rgba(0, 0, 0, 0.9);
+}
+.mk-auth-google { display: inline-flex; align-items: center; justify-content: center; gap: var(--mk-3); }
+/* Taxi Yellow, not Crimson — error text is small (design.md §3.6) */
+.mk-auth-error { margin: 0; color: var(--mk-taxi); }
+/* the credit line, pinned to the foot of the form half */
+.mk-auth-credit { position: absolute; left: 0; right: 0; bottom: var(--mk-5); text-align: center; }
 .mk-auth-foot { margin-top: var(--mk-5); display: flex; align-items: center; justify-content: center; gap: var(--mk-3); flex-wrap: wrap; }
 
 .mk-auth-photo { position: relative; margin: 0; overflow: hidden; background: var(--mk-ink); }

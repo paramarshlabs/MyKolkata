@@ -25,8 +25,8 @@ export default function UserMenu() {
     }
   }, [open])
 
-  const name = user?.fullName || user?.firstName || user?.primaryEmailAddress?.emailAddress || ''
-  const contact = user?.primaryEmailAddress?.emailAddress || user?.primaryPhoneNumber?.phoneNumber || ''
+  const name = user?.fullName || user?.email || ''
+  const contact = user?.email || ''
   const initial = (name.trim()[0] || '·').toUpperCase()
 
   return (
@@ -39,9 +39,9 @@ export default function UserMenu() {
         aria-controls={sheetId}
         onClick={() => setOpen((value) => !value)}
       >
-        {user?.hasImage
+        {user?.imageUrl
           /* eslint-disable-next-line @next/next/no-img-element */
-          ? <img src={user.imageUrl} alt="" />
+          ? <img src={user.imageUrl} alt="" referrerPolicy="no-referrer" />
           : <span className="nn-avatar-initial" aria-hidden="true">{initial}</span>}
       </button>
 

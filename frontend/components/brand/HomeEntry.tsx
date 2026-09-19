@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-const KEY = 'mk-entry-film-4'
+const KEY = 'mk-entry-film-9'
 
 export function HomeEntry() {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -59,13 +59,8 @@ export function HomeEntry() {
           preload="auto"
           onEnded={dismiss}
         />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="mk-entry-splash" src="/entry-splash.png" alt="" />
         {needsTap ? <span className="mk-entry-play">Play</span> : null}
       </div>
-      <button type="button" className="mk-btn mk-btn--sm mk-btn--secondary" onClick={dismiss}>
-        Skip
-      </button>
     </div>
   )
 }

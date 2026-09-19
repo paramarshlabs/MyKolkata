@@ -15,8 +15,8 @@
     "data:enrich:images": "node scripts/enrich-place-images.mjs"
   },
   "dependencies": {
-    "@clerk/nextjs": "^7.9.4",
     "@prisma/client": "^6.19.3",
+    "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "2.116.0",
     "next": "16.3.5",
     "olamaps-web-sdk": "1.3.0",
