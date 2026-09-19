@@ -4,6 +4,21 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 const KEY = 'mk-entry-film-9'
 
+/* storage can be blocked (private mode, site data off) — the film never takes /home down with it */
+function hasSeen() {
+  try {
+    return sessionStorage.getItem(KEY) !== null
+  } catch {
+    return false
+  }
+}
+
+function markSeen() {
+  try {
+    sessionStorage.setItem(KEY, '1')
+  } catch {}
+}
+
 export function HomeEntry() {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [show, setShow] = useState(false)
@@ -11,7 +26,7 @@ export function HomeEntry() {
   const [needsTap, setNeedsTap] = useState(false)
 
   const dismiss = useCallback(() => {
-    sessionStorage.setItem(KEY, '1')
+    markSeen()
     setOut(true)
   }, [])
 
@@ -24,7 +39,11 @@ export function HomeEntry() {
   }, [])
 
   useEffect(() => {
-    if (sessionStorage.getItem(KEY)) return
+    if (hasSeen()) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      markSeen()
+      return
+    }
     setShow(true)
   }, [])
 
@@ -61,6 +80,9 @@ export function HomeEntry() {
         />
         {needsTap ? <span className="mk-entry-play">Play</span> : null}
       </div>
+      <button type="button" className="mk-entry-skip" onClick={dismiss}>
+        Skip
+      </button>
     </div>
   )
 }

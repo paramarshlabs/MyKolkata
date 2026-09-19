@@ -459,6 +459,18 @@
     background: var(--mk-crimson); color: var(--mk-pearl);
     font-family: var(--mk-text); font-size: 16px; letter-spacing: 0.01em;
   }
+  /* quiet way out of the film — Ash on Obsidian, off the video, above the home indicator */
+  .mk-entry-skip {
+    position: absolute; z-index: 4;
+    right: max(var(--mk-edge), env(safe-area-inset-right));
+    bottom: max(var(--mk-6), env(safe-area-inset-bottom));
+    min-height: 44px; padding: 10px 18px; border-radius: var(--mk-r-sm);
+    border: 1px solid rgba(242, 241, 237, 0.16); background: rgba(13, 16, 18, 0.5);
+    color: var(--mk-ash); font-family: var(--mk-text); font-size: 14px; letter-spacing: 0.02em;
+    cursor: pointer; transition: color var(--mk-t-hover) var(--mk-ease-out), border-color var(--mk-t-hover) var(--mk-ease-out);
+  }
+  .mk-entry-skip:hover, .mk-entry-skip:focus-visible { color: var(--mk-pearl); border-color: rgba(242, 241, 237, 0.4); }
+  .mk-entry-skip:focus-visible { outline: 2px solid var(--mk-crimson); outline-offset: 2px; }
   body:has(.mk-entry:not(.is-out)) { overflow: hidden; }
   .mk-modal {
     width: min(480px, 100%); max-height: calc(100svh - 32px); overflow-y: auto;
