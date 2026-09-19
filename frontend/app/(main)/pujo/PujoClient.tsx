@@ -81,7 +81,7 @@ function Pujo() {
                   key={region._id}
                   href={`/near-you?${new URLSearchParams({ view: 'grid', q: region.name })}`}
                   ariaLabel={`Explore ${region.name}`}
-                  image={region.image}
+                  image={region.name === 'South Kolkata' ? '/southkol.png' : region.image}
                   icon="balcony"
                   title={region.name}
                   sub="Explore the para"

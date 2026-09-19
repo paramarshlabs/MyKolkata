@@ -1,7 +1,12 @@
+'use client'
+
+import { CloudShader } from '@/components/ui/cloud-shader'
+
 /*
  * The kaash-phool still — drawn, not photographed.
  * Composition from the monsoon-field frame. Colour, caption, and band
  * from DESIGN.md §§3, 8, 9.6, 9.7, 10. Fixed seed so SSR matches the client.
+ * Sky and clouds: CloudShader.
  */
 
 function seeded(seed: number) {
@@ -129,63 +134,50 @@ function Plume({ k }: { k: PlumeT }) {
 export function KaashPhoolScene() {
   return (
     <>
-    <svg className="mk-sky" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <defs>
-        <linearGradient id="kp-sky" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#1E6FB8" />
-          <stop offset="32%" stopColor="#3B94D0" />
-          <stop offset="58%" stopColor="#7AB8E0" />
-          <stop offset="82%" stopColor="#D7C4A4" />
-          <stop offset="100%" stopColor="#B38F6F" />
-        </linearGradient>
-        <radialGradient id="kp-warm" cx="82%" cy="52%" r="42%">
-          <stop offset="0%" stopColor="#FBE4E3" stopOpacity="0.55" />
-          <stop offset="38%" stopColor="#B38F6F" stopOpacity="0.28" />
-          <stop offset="100%" stopColor="#B38F6F" stopOpacity="0" />
-        </radialGradient>
-        <linearGradient id="kp-field" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#5A7A42" />
-          <stop offset="42%" stopColor="#3D5C32" />
-          <stop offset="100%" stopColor="#1A2E1C" />
-        </linearGradient>
-        <radialGradient id="kp-sunlit" cx="76%" cy="64%" r="28%">
-          <stop offset="0%" stopColor="#7A9A52" stopOpacity="0.55" />
-          <stop offset="100%" stopColor="#7A9A52" stopOpacity="0" />
-        </radialGradient>
-        <filter id="kp-soft" x="-20%" y="-80%" width="140%" height="260%">
-          <feGaussianBlur stdDeviation="14" />
-        </filter>
-        <filter id="kp-plume" x="-30%" y="-40%" width="160%" height="180%">
-          <feGaussianBlur stdDeviation="2.2" />
-        </filter>
-        <filter id="kp-grain">
-          <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="3" seed="19" result="n" />
-          <feColorMatrix in="n" type="saturate" values="0" />
-          <feComponentTransfer>
-            <feFuncA type="table" tableValues="0 0.08" />
-          </feComponentTransfer>
-        </filter>
-        <radialGradient id="kp-vignette" cx="50%" cy="42%" r="72%">
-          <stop offset="55%" stopColor="#132A2E" stopOpacity="0" />
-          <stop offset="100%" stopColor="#132A2E" stopOpacity="0.32" />
-        </radialGradient>
-      </defs>
+      <div className="mk-sky-frame">
+        <div className="mk-sky-fit">
+      <div className="mk-sky-shader">
+      <CloudShader
+        skyTopColor="#1E6FB8"
+        skyBottomColor="#7AB8E0"
+        cloudColor="#F2F1ED"
+        count={6}
+        speed={0.7}
+      />
+      </div>
+      <svg className="mk-sky" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="kp-field" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#5A7A42" />
+            <stop offset="42%" stopColor="#3D5C32" />
+            <stop offset="100%" stopColor="#1A2E1C" />
+          </linearGradient>
+          <radialGradient id="kp-sunlit" cx="76%" cy="64%" r="28%">
+            <stop offset="0%" stopColor="#7A9A52" stopOpacity="0.55" />
+            <stop offset="100%" stopColor="#7A9A52" stopOpacity="0" />
+          </radialGradient>
+          <filter id="kp-soft" x="-20%" y="-80%" width="140%" height="260%">
+            <feGaussianBlur stdDeviation="14" />
+          </filter>
+          <filter id="kp-plume" x="-30%" y="-40%" width="160%" height="180%">
+            <feGaussianBlur stdDeviation="2.2" />
+          </filter>
+          <filter id="kp-grain">
+            <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="3" seed="19" result="n" />
+            <feColorMatrix in="n" type="saturate" values="0" />
+            <feComponentTransfer>
+              <feFuncA type="table" tableValues="0 0.08" />
+            </feComponentTransfer>
+          </filter>
+          <radialGradient id="kp-vignette" cx="50%" cy="42%" r="72%">
+            <stop offset="55%" stopColor="#132A2E" stopOpacity="0" />
+            <stop offset="100%" stopColor="#132A2E" stopOpacity="0.32" />
+          </radialGradient>
+        </defs>
 
-      <rect width="1600" height="900" fill="url(#kp-sky)" />
-      <rect width="1600" height="900" fill="url(#kp-warm)" />
-
-      <g className="mk-sky-clouds" filter="url(#kp-soft)" fill="#F2F1ED">
-        <path d="M-20 210 C80 90, 260 70, 430 150 C560 60, 740 90, 860 170 C760 250, 520 280, 300 250 C120 240, -40 250, -20 210 Z" opacity="0.5" />
-        <path d="M380 140 C520 40, 760 30, 980 120 C1120 50, 1320 90, 1480 170 C1320 230, 1080 240, 860 210 C660 220, 480 190, 380 140 Z" opacity="0.38" />
-        <path d="M980 200 C1140 110, 1380 120, 1620 200 C1680 170, 1680 230, 1580 270 C1380 300, 1140 290, 1000 250 C940 240, 920 220, 980 200 Z" opacity="0.42" />
-        <path d="M40 280 C200 220, 420 230, 600 290 C480 340, 220 350, 60 320 C10 310, -10 295, 40 280 Z" opacity="0.22" />
-      </g>
-      <g className="mk-sky-clouds" filter="url(#kp-soft)" fill="#FBE4E3">
-        <path d="M1080 250 C1220 190, 1420 200, 1620 270 C1500 310, 1280 310, 1120 280 C1060 270, 1040 260, 1080 250 Z" opacity="0.4" />
-      </g>
-
-      <rect x="0" y="500" width="1600" height="400" fill="url(#kp-field)" />
-      <rect x="0" y="500" width="1600" height="400" fill="url(#kp-sunlit)" />
+        <g transform="translate(0 80)">
+        <rect x="0" y="500" width="1600" height="400" fill="url(#kp-field)" />
+        <rect x="0" y="500" width="1600" height="400" fill="url(#kp-sunlit)" />
       <path
         d="M0 524 C90 506, 170 518, 260 502 C350 484, 450 516, 560 498 C670 476, 790 518, 920 500 C1060 480, 1200 516, 1360 502 C1480 492, 1560 514, 1600 508 L1600 536 L0 536 Z"
         fill="#132A2E"
@@ -214,9 +206,12 @@ export function KaashPhoolScene() {
         {PLUMES.filter((k) => k.front).map((k, i) => <Plume key={`f${i}`} k={k} />)}
       </g>
 
-      <rect width="1600" height="900" filter="url(#kp-grain)" opacity="0.55" />
+      <rect x="0" y="500" width="1600" height="400" filter="url(#kp-grain)" opacity="0.55" />
+        </g>
       <rect width="1600" height="900" fill="url(#kp-vignette)" />
     </svg>
+        </div>
+      </div>
     <img className="mk-sky-eyes" src="/durgaeyes.png" alt="" aria-hidden="true" />
     </>
   )
