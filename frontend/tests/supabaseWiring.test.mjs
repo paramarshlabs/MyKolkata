@@ -39,3 +39,10 @@ test('db:push loads .env.local instead of relying on Prisma finding .env', async
   assert.match(script, /loadEnvFile/)
   assert.match(script, /DIRECT_URL/)
 })
+
+test('prisma seed lives in prisma.config.ts, not package.json', async () => {
+  const pkg = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'))
+  const config = await readFile(new URL('../prisma.config.ts', import.meta.url), 'utf8')
+  assert.equal(pkg.prisma, undefined)
+  assert.match(config, /seed:\s*'node prisma\/seed\.js'/)
+})
