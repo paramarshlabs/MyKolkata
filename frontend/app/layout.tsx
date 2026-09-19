@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { preload } from 'react-dom'
+import { GoogleAnalytics } from '@next/third-parties/google'
 import { AppProviders } from '@/components/providers/AppProviders'
 import './globals.css'
 
@@ -31,6 +32,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <AppProviders>{children}</AppProviders>
       </body>
+      {/* loads after hydration and records client-side navigations too */}
+      {process.env.NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />}
     </html>
   )
 }

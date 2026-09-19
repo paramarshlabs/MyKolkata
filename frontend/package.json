@@ -15,6 +15,7 @@
     "data:enrich:images": "node scripts/enrich-place-images.mjs"
   },
   "dependencies": {
+    "@next/third-parties": "^16.3.5",
     "@prisma/client": "^6.19.3",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "2.116.0",
