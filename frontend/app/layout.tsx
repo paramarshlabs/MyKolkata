@@ -9,6 +9,11 @@ export const metadata: Metadata = {
     template: '%s — My Kolkata',
   },
   description: 'A city, shot like a film. Paras, pandals, food and the long way home.',
+  icons: {
+    icon: [{ url: '/micon.png', type: 'image/png' }],
+    apple: '/micon.png',
+  },
+  manifest: '/manifest.json',
 }
 
 export const viewport: Viewport = {
