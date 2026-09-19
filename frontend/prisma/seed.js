@@ -202,7 +202,7 @@ async function seed() {
   await prisma.transport.createMany({ data: transport })
   await prisma.tinderProfile.createMany({ data: tinderProfiles })
 
-  console.log('Neon seed complete')
+  console.log('Supabase seed complete')
 }
 
 seed()

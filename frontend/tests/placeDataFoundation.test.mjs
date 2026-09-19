@@ -550,7 +550,13 @@ test('environment template separates the public map key from private Places cred
   assert.match(template, /\nOLA_MAPS_API_KEY=/)
   assert.match(template, /EXPLORE_DATABASE_ENABLED="false"/)
   assert.match(template, /ANAKIN_API_KEY=/)
+  assert.match(template, /NEXT_PUBLIC_SUPABASE_URL=/)
+  assert.match(template, /NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=/)
+  assert.match(template, /DATABASE_URL=/)
+  assert.match(template, /DIRECT_URL=/)
+  assert.match(template, /pgbouncer=true/)
   assert.doesNotMatch(template, /NEXT_PUBLIC_OLA_MAPS_PLACES/)
+  assert.doesNotMatch(template, /neon/i)
 })
 
 test('licensed high-confidence Wikimedia images can be verified automatically', () => {

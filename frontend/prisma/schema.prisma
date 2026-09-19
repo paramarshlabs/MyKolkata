@@ -2,6 +2,9 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// Supabase Postgres:
+// DATABASE_URL  = transaction pooler (port 6543, ?pgbouncer=true)
+// DIRECT_URL    = session pooler or direct (port 5432, migrate / db push)
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
