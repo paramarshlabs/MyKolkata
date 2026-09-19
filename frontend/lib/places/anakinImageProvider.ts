@@ -53,6 +53,7 @@ export function extractPageImage(html, sourceUrl) {
   if (!source || !html) return null
   let image = null
   let title = ''
+  let kind = 'meta'
   for (const tag of String(html).match(/<meta\b[^>]*>/gi) || []) {
     const attrs = attributes(tag)
     const key = String(attrs.property || attrs.name || '').toLowerCase()
@@ -61,6 +62,7 @@ export function extractPageImage(html, sourceUrl) {
   }
   if (!title) title = String(html).match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1] || ''
   if (!image) {
+    kind = 'json-ld'
     for (const script of String(html).match(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/gi) || []) {
       const raw = script.replace(/^<script\b[^>]*>/i, '').replace(/<\/script>$/i, '')
       try {
@@ -76,6 +78,8 @@ export function extractPageImage(html, sourceUrl) {
   return imageUrl ? {
     imageUrl: imageUrl.toString(),
     title: decodeHtml(title).replace(/<[^>]*>/g, ' ').trim(),
+    /* 'meta' = og:/twitter:image, 'json-ld' = the structured-data image */
+    kind,
   } : null
 }
 
@@ -88,6 +92,10 @@ export class AnakinImageProvider {
 
   get configured() {
     return Boolean(this.fetchImpl)
+  }
+
+  get hasApiKey() {
+    return Boolean(this.apiKey)
   }
 
   headers() {
@@ -115,12 +123,30 @@ export class AnakinImageProvider {
     }
   }
 
+  /* web search: [{ url, title, snippet, ... }] */
+  async search(prompt, { limit = 8, timeoutMs = 30000 } = {}) {
+    const payload = await this.post(SEARCH_URL, { prompt, limit }, timeoutMs)
+    return Array.isArray(payload?.results) ? payload.results : []
+  }
+
+  /* a page's HTML, or null when the scrape did not complete */
+  async scrapeHtml(url, { timeoutMs = 95000 } = {}) {
+    const payload = await this.post(SCRAPE_URL, {
+      url,
+      country: 'in',
+      useBrowser: false,
+      generateJson: false,
+    }, timeoutMs)
+    if (payload.status && payload.status !== 'completed') return null
+    return payload.cleanedHtml || payload.html || null
+  }
+
   async findOfficialWebsite(place) {
-    const payload = await this.post(SEARCH_URL, {
-      prompt: `Official website for ${place.name}, ${place.address || place.area || 'Kolkata, India'}`,
-      limit: 8,
-    }, 30000)
-    const candidates = (payload.results || []).map((result) => {
+    const results = await this.search(
+      `Official website for ${place.name}, ${place.address || place.area || 'Kolkata, India'}`,
+      { limit: 8 },
+    )
+    const candidates = results.map((result) => {
       const url = safePublicUrl(result.url)
       const similarity = nameSimilarity(place.name, `${result.title || ''} ${result.snippet || ''} ${url?.hostname || ''}`)
       return { url, similarity }
@@ -134,14 +160,9 @@ export class AnakinImageProvider {
     const knownWebsite = safePublicUrl(place.website)?.toString() || null
     const website = knownWebsite || await this.findOfficialWebsite(place)
     if (!website) return null
-    const payload = await this.post(SCRAPE_URL, {
-      url: website,
-      country: 'in',
-      useBrowser: false,
-      generateJson: false,
-    }, 95000)
-    if (payload.status && payload.status !== 'completed') return null
-    const extracted = extractPageImage(payload.cleanedHtml || payload.html || '', website)
+    const html = await this.scrapeHtml(website)
+    if (!html) return null
+    const extracted = extractPageImage(html, website)
     if (!extracted) return null
     const similarity = nameSimilarity(place.name, `${extracted.title} ${website}`)
     if (similarity < 0.5) return null

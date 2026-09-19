@@ -11,16 +11,41 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+// Editorial news for the Home "In the news" cards. `link` is the story URL and
+// `image` its image URL (the names the UI already reads). Dynamic CITY / SPORTS
+// rows are written by lib/news/ingest.ts; see docs/news.md.
 model News {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  image       String?
-  link        String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             String    @id @default(cuid())
+  title          String
+  description    String?
+  image          String?
+  imageSource    String?
+  imageSourceUrl String?
+  link           String?
+  canonicalUrl   String?   @unique
+  titleKey       String?   @unique
+  contentHash    String?   @unique
+  sourceName     String?
+  sourceDomain   String?
+  publishedAt    DateTime?
+  discoveredAt   DateTime  @default(now())
+  lastSeenAt     DateTime?
+  type           String    @default("CITY") // NEWSPAPER | CITY | SPORTS
+  category       String?
+  eventSlug      String?
+  eventPhase     String?
+  score          Float     @default(0)
+  isActive       Boolean   @default(true)
+  featuredAt     DateTime?
+  cooldownUntil  DateTime?
+  expiresAt      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   @@index([createdAt(sort: Desc)])
+  @@index([type, isActive, publishedAt(sort: Desc)])
+  @@index([type, featuredAt(sort: Desc)])
+  @@index([eventSlug])
   @@map("news")
 }
 

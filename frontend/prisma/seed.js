@@ -18,24 +18,38 @@ if (envPath) {
 
 const prisma = new PrismaClient()
 
+/* The paper card, plus last-resort CITY / SPORTS fallbacks. The dynamic stories
+   come from ingestion (lib/news/ingest.ts); these are inactive so they only
+   show when nothing has been ingested. Mirrored in lib/news/home.ts. */
 const news = [
   {
     title: 'Anandabazar Patrika today',
     description: 'এগিয়ে থাকে,এগিয়ে রাখে।',
     image: '/ana.jpg',
-    link: 'https://epaper.anandabazar.com/'
+    link: 'https://epaper.anandabazar.com/',
+    type: 'NEWSPAPER',
+    category: 'newspaper',
+    sourceName: 'Anandabazar Patrika',
+    sourceDomain: 'anandabazar.com'
   },
   {
     title: "International Book Fair '25",
     description: 'The biggest literary event of the year! This year was great!',
     image: '/bkf.avif',
-    link: 'https://kolkatabookfair.net/download-ikbf-app'
+    link: 'https://kolkatabookfair.net/download-ikbf-app',
+    type: 'CITY',
+    category: 'culture',
+    eventSlug: 'kolkata-book-fair',
+    isActive: false
   },
   {
     title: 'Kolkata Derby: EB vs MB',
-    description: 'The age-old rivalry continues! Don\'t miss the epic clash this weekend.',
+    description: "The age-old rivalry continues! Don't miss the epic clash this weekend.",
     image: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800',
-    link: 'https://www.google.com/search?q=east+bengal+vs+mohun+bagan'
+    link: 'https://www.google.com/search?q=east+bengal+vs+mohun+bagan',
+    type: 'SPORTS',
+    category: 'football',
+    isActive: false
   }
 ]
 

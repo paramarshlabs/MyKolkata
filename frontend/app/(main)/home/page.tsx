@@ -3,6 +3,8 @@ import type { Metadata } from 'next'
 import { requireUser } from '@/lib/auth'
 import { prisma } from '@/lib/db/prisma'
 import { listCatalogue } from '@/lib/catalogue/list'
+import { getHomeNews, homeNewsCards } from '@/lib/news/home'
+import { newsRepository } from '@/lib/news/server'
 import { Card } from '@/components/brand/Card'
 import { SectionHead } from '@/components/brand/SectionHead'
 import { Medallion, Sprig } from '@/components/brand/kolka'
@@ -12,15 +14,6 @@ import { HomeEntry } from '@/components/brand/HomeEntry'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = { title: 'Home' }
-
-type NewsItem = {
-  id: string
-  _id?: string
-  title: string
-  description?: string | null
-  image?: string | null
-  link?: string | null
-}
 
 type MarketItem = {
   id: string
@@ -35,19 +28,18 @@ type MarketItem = {
 export default async function HomePage() {
   await requireUser()
 
-  let news: NewsItem[] = []
+  /* the paper, the city story, the sports story — persisted, never blank */
+  const newsPromise = getHomeNews(newsRepository)
   let marketplace: MarketItem[] = []
   let failed = false
 
   try {
-    ;[news, marketplace] = (await Promise.all([
-      listCatalogue(prisma.news, 'news', 20),
-      listCatalogue(prisma.marketplaceItem, 'marketplace', 20),
-    ])) as [NewsItem[], MarketItem[]]
+    marketplace = (await listCatalogue(prisma.marketplaceItem, 'marketplace', 20)) as MarketItem[]
   } catch (err) {
     console.error(err)
     failed = true
   }
+  const news = homeNewsCards(await newsPromise)
 
   return (
     <>
@@ -81,39 +73,39 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <section className="mk-band" aria-labelledby="news-title">
+        <div className="mk-wrap">
+          <SectionHead id="news-title" title="In the news" lede="Papers, fairs and fixtures the city is following." />
+          <div className="mk-row" style={{ marginTop: 48 }}>
+            {news.length ? news.map((item) => (
+              <Card
+                key={item.id}
+                href={item.link || undefined}
+                external
+                image={item.image}
+                title={item.title}
+                desc={item.description}
+                icon="book"
+                ariaLabel={item.link ? `${item.title}, opens in a new tab` : undefined}
+              />
+            )) : (
+              <p className="mk-caption">Nothing in the news yet. Check back this evening.</p>
+            )}
+          </div>
+        </div>
+      </section>
+
       {failed ? (
-        <section className="mk-band">
+        <section className="mk-band" style={{ paddingTop: 0 }}>
           <div className="mk-wrap">
             <div className="mk-panel mk-empty" role="status">
-              <h2 className="mk-h3">The news and the market didn&apos;t load.</h2>
+              <h2 className="mk-h3">The market didn&apos;t load.</h2>
               <p className="mk-body">The connection to our listings dropped. Refresh the page to try again.</p>
             </div>
           </div>
         </section>
       ) : (
         <>
-          <section className="mk-band" aria-labelledby="news-title">
-            <div className="mk-wrap">
-              <SectionHead id="news-title" title="In the news" lede="Papers, fairs and fixtures the city is following." />
-              <div className="mk-row" style={{ marginTop: 48 }}>
-                {news.length ? news.map((item) => (
-                  <Card
-                    key={item._id || item.id}
-                    href={item.link || undefined}
-                    external
-                    image={item.image}
-                    title={item.title}
-                    desc={item.description}
-                    icon="book"
-                    ariaLabel={item.link ? `${item.title}, opens in a new tab` : undefined}
-                  />
-                )) : (
-                  <p className="mk-caption">Nothing in the news yet. Check back this evening.</p>
-                )}
-              </div>
-            </div>
-          </section>
-
           <section className="mk-band" aria-labelledby="market-title" style={{ paddingTop: 0 }}>
             <div className="mk-wrap">
               <SectionHead id="market-title" title="Marketplace" lede="Sarees, sweets and small-batch things, and where to find them." />

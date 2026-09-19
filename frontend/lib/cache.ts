@@ -25,3 +25,9 @@ export function cached<T>(key: string, ttlMs: number, loader: () => T | Promise<
   inflight.set(key, promise)
   return promise
 }
+
+/* Drop a key so the next read reloads it — after a write this instance made.
+   Other server instances still expire on their own TTL. */
+export function invalidate(key: string) {
+  store.delete(key)
+}
