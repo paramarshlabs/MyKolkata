@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
-import { NotchWing, Sprig } from '@/components/brand/kolka'
+import { NotchWing } from '@/components/brand/kolka'
 import UserMenu from '@/components/layout/UserMenu'
 
 /*  The notch bar — see /brand-kit and styles/notchbar.css. Three notches cut
@@ -26,7 +26,10 @@ function isCurrent(pathname: string, section: (typeof SECTIONS)[number]) {
 function Lockup() {
   return (
     <Link className="nn-brand" href="/home" aria-label="My Kolkata — home">
-      <span className="nn-brand-box"><Sprig size={18} /></span>
+      <span className="nn-brand-box">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/micon.png" alt="" width={28} height={28} />
+      </span>
       <span className="nn-brand-text">
         <span className="nn-brand-latin">MY KOLKATA</span>
         <span className="nn-brand-bn" lang="bn">আমার কলকাতা</span>

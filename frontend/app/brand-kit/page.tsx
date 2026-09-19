@@ -179,7 +179,10 @@ export default function BrandKit() {
         {/* desktop — left: lockup */}
         <aside className="nn nn-logo" aria-label="Brand">
           <a className="nn-brand" href="#top" aria-label="My Kolkata — back to top">
-            <span className="nn-brand-box"><Sprig size={18} /></span>
+            <span className="nn-brand-box">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/micon.png" alt="" width={28} height={28} />
+            </span>
             <span className="nn-brand-text">
               <span className="nn-brand-latin">MY KOLKATA</span>
               <span className="nn-brand-bn" lang="bn">আমার কলকাতা</span>
@@ -231,7 +234,10 @@ export default function BrandKit() {
           <NotchWing side="right" />
           <div className="nn-island-row">
             <a className="nn-brand" href="#top" aria-label="My Kolkata — back to top">
-              <span className="nn-brand-box"><Sprig size={18} /></span>
+              <span className="nn-brand-box">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/micon.png" alt="" width={28} height={28} />
+            </span>
               <span className="nn-brand-text">
                 <span className="nn-brand-latin">MY KOLKATA</span>
                 <span className="nn-brand-bn" lang="bn">আমার কলকাতা</span>

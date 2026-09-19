@@ -14,6 +14,14 @@ const NEARBY_PANDALS = [
   { name: 'College Square', distance: '2.5 km' },
 ]
 
+const REGION_ORDER = ['North Kolkata', 'South Kolkata', 'Central Kolkata', 'New Kolkata']
+
+function orderRegions(regions) {
+  return REGION_ORDER
+    .map((name) => regions.find((region) => region.name === name))
+    .filter(Boolean)
+}
+
 function Pujo() {
   const [regions, setRegions] = useState([])
   const [loading, setLoading] = useState(true)
@@ -67,8 +75,8 @@ function Pujo() {
               <p className="mk-body">Check your connection, then refresh the page.</p>
             </div>
           ) : regions.length ? (
-            <div className={`mk-row ${styles.regions}`}>
-              {regions.map((region) => (
+            <div className={styles.regions}>
+              {orderRegions(regions).map((region) => (
                 <Card
                   key={region._id}
                   href={`/near-you?${new URLSearchParams({ view: 'grid', q: region.name })}`}

@@ -6,7 +6,7 @@
  * island sits flush with the top edge. Pearl on the dark page with a tonal
  * active pill — brand type stays Regular, so the pill and colour carry the
  * state rather than a synthesised bold. Never crimson on the notches (the
- * sprig is the only red), and never a shadow under them.
+ * mark is the round city icon), and never a shadow under them.
  */
 
 .mk-notchbar {
@@ -43,7 +43,8 @@
 
 /* lockup */
 .mk-notchbar .nn-brand { display: flex; align-items: center; gap: 8px; height: 40px; text-decoration: none; color: var(--nn-fg); }
-.mk-notchbar .nn-brand-box { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px; background: var(--nn-bg-2); }
+.mk-notchbar .nn-brand-box { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; overflow: hidden; }
+.mk-notchbar .nn-brand-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .mk-notchbar .nn-brand-text { display: flex; flex-direction: column; line-height: 1; }
 .mk-notchbar .nn-brand-latin { font-family: var(--mk-display); font-size: 12.5px; letter-spacing: 0.18em; }
 .mk-notchbar .nn-brand-bn {

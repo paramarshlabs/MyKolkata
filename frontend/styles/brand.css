@@ -73,11 +73,30 @@
     border-top: 1px solid rgba(242, 241, 237, 0.07);
   }
   .mk-sky { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .mk-sky-eyes {
+    position: absolute; top: 10%; right: 8%;
+    width: clamp(160px, 18vw, 280px); height: auto;
+    opacity: 0.86; pointer-events: none; z-index: 1;
+  }
+  .mk-sky-clouds, .mk-sky-kaash-back, .mk-sky-kaash-front {
+    transform-box: fill-box; transform-origin: 50% 100%;
+  }
+  .mk-sky-clouds { animation: mk-dawn-drift 56s ease-in-out infinite alternate; }
+  .mk-sky-kaash-back { animation: mk-dawn-sway 14s ease-in-out infinite alternate; }
+  .mk-sky-kaash-front { animation: mk-dawn-sway 9s ease-in-out infinite alternate-reverse; }
+  @keyframes mk-dawn-drift {
+    from { transform: translateX(0); }
+    to { transform: translateX(16px); }
+  }
+  @keyframes mk-dawn-sway {
+    from { transform: translateX(0); }
+    to { transform: translateX(5px); }
+  }
   .mk-count-scrim {
-    position: absolute; inset: 0;
+    position: absolute; inset: 0; pointer-events: none;
     background:
-      linear-gradient(90deg, rgba(10,13,14,0.88) 0%, rgba(10,13,14,0.44) 48%, rgba(10,13,14,0) 78%),
-      linear-gradient(0deg, rgba(10,13,14,0.86) 0%, rgba(38,10,14,0.3) 34%, rgba(38,10,14,0) 58%);
+      linear-gradient(105deg, rgba(10,13,14,0.78) 0%, rgba(10,13,14,0.4) 26%, rgba(10,13,14,0.12) 46%, rgba(10,13,14,0) 62%),
+      linear-gradient(0deg, rgba(10,13,14,0.42) 0%, rgba(10,13,14,0.12) 22%, rgba(10,13,14,0) 40%);
   }
   .mk-count-copy { position: absolute; left: 0; bottom: 0; padding: clamp(24px, 5vw, 64px); max-width: min(800px, 94%); }
   .mk-count-bn {
@@ -401,10 +420,15 @@
     .mk-rule .mk-rule-line { stroke-dashoffset: 0 !important; transition: none !important; }
     .mk-loader-line { animation: none !important; stroke-dashoffset: 0 !important; opacity: 0.7 !important; }
     .mk-banner-img { animation: none !important; transform: none !important; }
+    .mk-sky-clouds, .mk-sky-kaash-back, .mk-sky-kaash-front { animation: none !important; }
   }
 
   @media (max-width: 900px) {
     .mk-count-scene { aspect-ratio: 4 / 5; min-height: 0; }
+    .mk-sky-eyes {
+      top: 11%; right: auto; left: 50%; transform: translateX(-50%);
+      width: min(58vw, 220px);
+    }
     .mk-banner { min-height: min(760px, 125vw); }
     .mk-row { grid-auto-columns: 78%; }
   }

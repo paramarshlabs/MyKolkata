@@ -5,7 +5,15 @@
 .days { padding: clamp(40px, 6vw, 72px) 0 var(--mk-7); }
 
 .state { margin-top: var(--mk-6); max-width: 640px; }
-.regions { margin-top: var(--mk-6); }
+.regions {
+  margin-top: var(--mk-6);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--mk-5) var(--mk-6);
+}
+@media (max-width: 640px) {
+  .regions { grid-template-columns: 1fr; }
+}
 
 .nearGrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(32px, 5vw, 64px); align-items: start; }
 .nearList { list-style: none; margin: var(--mk-6) 0 0; padding: 0; display: grid; gap: 0; }
