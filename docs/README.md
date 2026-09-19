@@ -1,6 +1,6 @@
 # MyKolkata 
 
-MyKolkata is a production-ready application for exploring Kolkata, sponsored by <img src="../frontend/public/anakin.png" alt="" height="16" style="vertical-align: middle;" /> Anakin.
+MyKolkata is a production-ready application for exploring Kolkata, sponsored by <img src="../frontend/public/anakin.png" alt="Anakin" height="20" align="absmiddle" />.
 
 
 ## Technical docs:
