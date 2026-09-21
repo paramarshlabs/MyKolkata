@@ -31,7 +31,7 @@ function orderRegions(regions: Region[]) {
 }
 
 function MahalayaPlayer() {
-  const [playing, setPlaying] = useState(true)
+  const [playing, setPlaying] = useState(false)
 
   return (
     <div className={styles.soundtrack}>
@@ -52,8 +52,8 @@ function MahalayaPlayer() {
         aria-pressed={playing}
         onClick={() => setPlaying((current) => !current)}
       >
-        <UiIcon name={playing ? 'volumeOff' : 'volume'} size={19} />
-        <span>{playing ? 'Mahalaya playing' : 'Play Mahalaya'}</span>
+        {playing ? <UiIcon name="volume" size={19} /> : null}
+        <span>{playing ? 'Mahalaya Playing' : 'Play Mahalaya'}</span>
       </button>
     </div>
   )
