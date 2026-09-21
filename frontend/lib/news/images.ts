@@ -6,7 +6,9 @@ import { isBlockedSource, sourceDomain, titleSimilarity } from './sources'
    An image for a story, in order of trust:
      1. the article's own og:/twitter:image
      2. the article's structured-data image, its headline photo (an <img>
-        whose alt text is the headline), or the image the search returned
+        whose alt text is the headline), a CMS featured image, or — if the
+        search provider supplies one — the result's image/thumbnail
+        (Anakin Search does not; see SearchResultItem)
      3. the event's own artwork
      4. the same story's image on another outlet, found through Anakin
      5. a local Kolkata photograph for the card type
@@ -43,21 +45,52 @@ export function usableImage(url: string | null | undefined) {
   return parsed.toString()
 }
 
+/* decode &#8217; / &apos; etc. so alt text can match the plain headline */
+function decodeEntities(value: string) {
+  return value
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&#x27;/gi, "'")
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+}
+
+function imgAttr(tag: string, name: string) {
+  return tag.match(new RegExp(`\\s${name}\\s*=\\s*["']([^"']+)["']`, 'i'))?.[1]
+}
+
+function absImage(src: string | undefined, pageUrl: string) {
+  if (!src) return null
+  try {
+    return usableImage(new URL(src.replace(/&amp;/g, '&'), pageUrl).toString())
+  } catch {
+    return null
+  }
+}
+
 /* Pages without og:image (newsonair.gov.in, many WordPress sites) still show
    the story's photo; it is the <img> captioned with the headline itself. */
 export function extractHeadlineImage(html: string, pageUrl: string, title: string) {
   for (const tag of html.match(/<img\b[^>]*>/gi) || []) {
-    const attr = (name: string) => tag.match(new RegExp(`\\s${name}\\s*=\\s*["']([^"']+)["']`, 'i'))?.[1]
-    const alt = attr('alt') || attr('title') || ''
+    const alt = decodeEntities(imgAttr(tag, 'alt') || imgAttr(tag, 'title') || '')
     if (titleSimilarity(alt, title) < HEADLINE_MATCH) continue
-    const src = attr('data-src') || attr('src')
-    if (!src) continue
-    try {
-      const image = usableImage(new URL(src.replace(/&amp;/g, '&'), pageUrl).toString())
-      if (image) return image
-    } catch {
-      /* malformed src */
-    }
+    const image = absImage(imgAttr(tag, 'data-src') || imgAttr(tag, 'src'), pageUrl)
+    if (image) return image
+  }
+  return null
+}
+
+/* WordPress (and similar CMSes) mark the featured photo even when alt is empty
+   or generic — prefer that over falling through to a city landmark. */
+const FEATURED_IMG = /\b(wp-post-image|attachment-full|size-full|featured[-_]?image)\b/i
+
+export function extractFeaturedImage(html: string, pageUrl: string) {
+  for (const tag of html.match(/<img\b[^>]*>/gi) || []) {
+    const cls = imgAttr(tag, 'class') || ''
+    if (!FEATURED_IMG.test(cls)) continue
+    const image = absImage(imgAttr(tag, 'data-src') || imgAttr(tag, 'src'), pageUrl)
+    if (image) return image
   }
   return null
 }
@@ -72,7 +105,9 @@ async function imageFromPage(url: string, title: string, deps: ImageDeps) {
   const image = usableImage(extracted?.imageUrl)
   if (image) return { image, kind: extracted!.kind as 'meta' | 'json-ld' }
   const headline = extractHeadlineImage(html, url, title)
-  return headline ? { image: headline, kind: 'headline' as const } : null
+  if (headline) return { image: headline, kind: 'headline' as const }
+  const featured = extractFeaturedImage(html, url)
+  return featured ? { image: featured, kind: 'headline' as const } : null
 }
 
 export async function resolveStoryImage(
@@ -112,5 +147,6 @@ export async function resolveStoryImage(
     }
   }
 
+  log(`no usable article image for "${story.title}" (${story.link}); using trusted ${story.type} fallback`)
   return { image: TRUSTED_FALLBACK_IMAGE[story.type], imageSource: 'fallback', imageSourceUrl: null }
 }

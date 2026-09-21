@@ -421,6 +421,83 @@ test('pages without og:image use the photo captioned with the headline', async (
   assert.equal(image.imageSource, 'article')
 })
 
+/* ---------- lessons from production: fallback cards on Vercel --------------- */
+
+test('HTML entity apostrophes in img alt still match the headline photo', async () => {
+  const title = "IPL 2026: Chakravarthy overcomes surface tension to end KKR's losing streak"
+  const html = `
+    <img src="https://ddnews.gov.in/wp-content/themes/ddnews/assets/theme-assets/images/twitter-icon.svg" alt="Twitter">
+    <img width="1600" height="900" src="https://ddnews.gov.in/wp-content/uploads/2026/04/Varun-Chakravarthy.jpg"
+      class="attachment-full size-full" alt="IPL 2026: Chakravarthy overcomes surface tension to end KKR&#8217;s losing streak">`
+  const image = await resolveStoryImage(
+    { title, link: 'https://ddnews.gov.in/en/ipl-2026-chakravarthy-overcomes-surface-tension-to-end-kkrs-losing-streak', type: 'SPORTS' },
+    { fetchHtml: async () => html },
+  )
+  assert.equal(image.image, 'https://ddnews.gov.in/wp-content/uploads/2026/04/Varun-Chakravarthy.jpg')
+  assert.equal(image.imageSource, 'article')
+})
+
+test('WordPress featured images are used when the page has no og:image and no matching alt', async () => {
+  const html = `
+    <img src="https://ddnews.gov.in/wp-content/uploads/2024/04/dd-news-logo.png" class="custom-logo" alt="DD News">
+    <img width="1600" height="900" src="https://ddnews.gov.in/wp-content/uploads/2026/04/Varun-Chakravarthy.jpg" class="attachment-full size-full wp-post-image" alt="">`
+  const image = await resolveStoryImage(
+    { title: 'IPL 2026: Chakravarthy ends KKR losing streak', link: 'https://ddnews.gov.in/en/ipl-2026-chakravarthy/', type: 'SPORTS' },
+    { fetchHtml: async () => html },
+  )
+  assert.equal(image.image, 'https://ddnews.gov.in/wp-content/uploads/2026/04/Varun-Chakravarthy.jpg')
+})
+
+test('Anakin search results without image/thumbnail still resolve from article HTML', async () => {
+  /* Anakin Search API returns url/title/snippet/date only — never image fields.
+     searchImage must not be required for a correct photo. */
+  const link = 'https://ddnews.gov.in/en/ipl-2026-chakravarthy-overcomes-surface-tension-to-end-kkrs-losing-streak'
+  const title = "IPL 2026: Chakravarthy overcomes surface tension to end KKR's losing streak"
+  const html = `<img class="wp-post-image" src="https://ddnews.gov.in/wp-content/uploads/2026/04/Varun-Chakravarthy.jpg" alt="${title}">`
+  const image = await resolveStoryImage(
+    { title, link, type: 'SPORTS', searchImage: null },
+    { fetchHtml: async () => html },
+  )
+  assert.equal(image.imageSource, 'article')
+  assert.ok(image.image.includes('Varun-Chakravarthy'))
+})
+
+test('recheck upgrades a fallback image via related coverage when the own page is unreachable', async () => {
+  const broken = story({
+    title: 'Chakravarthy spins KKR to IPL victory at Eden Gardens',
+    link: 'https://ddnews.gov.in/en/chakravarthy-spins-kkr-to-ipl-victory-at-eden-gardens/',
+    sourceDomain: 'ddnews.gov.in',
+    type: 'SPORTS',
+    category: 'cricket',
+    image: '/maidan.jpg',
+    imageSource: 'fallback',
+    discoveredAt: hoursAgo(5),
+  })
+  const repository = memoryRepository([broken])
+  const related = {
+    url: 'https://www.telegraphindia.com/sports/cricket/chakravarthy-spins-kkr-to-ipl-victory-at-eden-gardens/cid/2101999',
+    title: 'Chakravarthy spins KKR to IPL victory at Eden Gardens',
+  }
+  const anakin = {
+    hasApiKey: true,
+    async search() { return [related] },
+    async scrapeHtml() { return null },
+  }
+  const pages = {
+    [broken.link]: null,
+    [related.url]: ogPage('https://img.telegraphindia.com/chakravarthy.jpg'),
+  }
+  await ingestKolkataNews({
+    repository,
+    anakin,
+    fetchHtml: async (url) => pages[url] ?? null,
+    now: NOW,
+    log: silent,
+  })
+  assert.equal(repository.rows.find((row) => row.id === broken.id).image, 'https://img.telegraphindia.com/chakravarthy.jpg')
+  assert.equal(repository.rows.find((row) => row.id === broken.id).imageSource, 'anakin-related-coverage')
+})
+
 test('ingestion re-checks stored stories: junk and old undated ones are retired, images retried', async () => {
   const junk = story({ title: 'Eden Gardens State Park', link: 'https://www.floridastateparks.org/parks-and-trails/eden-gardens-state-park', sourceDomain: 'floridastateparks.org', discoveredAt: hoursAgo(5), publishedAt: null })
   const old = story({ title: 'PM Modi to visit Kolkata today to inaugurate projects', link: 'https://newsonair.gov.in/pm-modi-to-visit-kolkata-today-to-inaugurate-projects/', sourceDomain: 'newsonair.gov.in', discoveredAt: hoursAgo(5), publishedAt: null })

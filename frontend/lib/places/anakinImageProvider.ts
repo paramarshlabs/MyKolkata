@@ -129,16 +129,18 @@ export class AnakinImageProvider {
     return Array.isArray(payload?.results) ? payload.results : []
   }
 
-  /* a page's HTML, or null when the scrape did not complete */
-  async scrapeHtml(url, { timeoutMs = 95000 } = {}) {
+  /* a page's HTML, or null when the scrape did not complete.
+     Prefer raw `html` over `cleanedHtml`: cleaning often strips <img> tags,
+     which are what news image discovery needs (og:image / headline photos). */
+  async scrapeHtml(url, { timeoutMs = 95000, useBrowser = false } = {}) {
     const payload = await this.post(SCRAPE_URL, {
       url,
       country: 'in',
-      useBrowser: false,
+      useBrowser,
       generateJson: false,
     }, timeoutMs)
     if (payload.status && payload.status !== 'completed') return null
-    return payload.cleanedHtml || payload.html || null
+    return payload.html || payload.cleanedHtml || null
   }
 
   async findOfficialWebsite(place) {

@@ -158,18 +158,34 @@ function isOldArticleUrl(url: string, now: Date) {
   return Boolean(year && Number(year) < kolkataDay(now).year)
 }
 
+/* Real browser UA: several Indian news/gov hosts (and ticket sites) soft-block
+   unidentified bots. 20s: ddnews.gov.in and similar often exceed 8s from cloud IPs. */
+const ARTICLE_FETCH_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+const ARTICLE_FETCH_MS = 20_000
+
+function looksLikeHtml(contentType: string | null, body: string) {
+  if ((contentType || '').includes('html')) return true
+  if (contentType && !/^(text\/plain|application\/octet-stream)\b/i.test(contentType)) return false
+  return /<html[\s>]|<head[\s>]|<meta\s|<img\s/i.test(body.slice(0, 4000))
+}
+
 export async function fetchArticleHtml(url: string, anakin?: NewsSearchClient | null) {
   if (!safePublicUrl(url)) return null
   const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), 8000)
+  const timeout = setTimeout(() => controller.abort(), ARTICLE_FETCH_MS)
   try {
     const response = await fetch(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; MyKolkataNews/1.0)', Accept: 'text/html' },
+      headers: {
+        'User-Agent': ARTICLE_FETCH_UA,
+        Accept: 'text/html,application/xhtml+xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-IN,en;q=0.9',
+      },
       redirect: 'follow',
       signal: controller.signal,
     })
-    if (response.ok && (response.headers.get('content-type') || '').includes('html')) {
-      return (await response.text()).slice(0, 1_500_000)
+    if (response.ok) {
+      const body = (await response.text()).slice(0, 1_500_000)
+      if (looksLikeHtml(response.headers.get('content-type'), body)) return body
     }
   } catch {
     /* fall through to Anakin */
@@ -177,7 +193,7 @@ export async function fetchArticleHtml(url: string, anakin?: NewsSearchClient | 
     clearTimeout(timeout)
   }
   if (!anakin?.scrapeHtml) return null
-  return anakin.scrapeHtml(url, { timeoutMs: 30000 }).catch(() => null)
+  return anakin.scrapeHtml(url, { timeoutMs: 60000 }).catch(() => null)
 }
 
 /* How often ingestion should run: daily, or every six hours while an event is
@@ -413,9 +429,18 @@ export async function ingestKolkataNews({ repository, anakin, fetchHtml, now = n
         }
       }
       if (row.imageSource === 'fallback' || !row.image) {
+        /* Recheck with related-coverage search: Anakin Search never returns
+           image/thumbnail fields, so when the own page is unreachable the only
+           recovery is another outlet's HTML (or a successful direct fetch). */
         const image = await resolveStoryImage(
           { title: row.title, link: row.link!, type: row.type as NewsFeed, eventSlug: row.eventSlug },
-          { fetchHtml: getHtml },
+          {
+            fetchHtml: getHtml,
+            search: anakin?.hasApiKey
+              ? (prompt) => anakin.search(prompt, { limit: 5, timeoutMs: 20000 })
+              : undefined,
+            log: (message) => log(`[news] ${message}`),
+          },
         )
         if (image.imageSource !== 'fallback') {
           Object.assign(data, image)
