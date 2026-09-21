@@ -100,19 +100,38 @@
       drop-shadow(0 0 28px rgba(242, 241, 237, 0.7))
       drop-shadow(0 0 56px rgba(242, 241, 237, 0.35));
   }
-  .mk-sky-clouds, .mk-sky-kaash-back, .mk-sky-kaash-front {
-    transform-box: fill-box; transform-origin: 50% 100%;
+  .mk-sky-kaash-back, .mk-sky-kaash-front, .mk-sky-grass {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: mk-field-layer 12s ease-in-out infinite alternate;
+    will-change: transform;
   }
-  .mk-sky-clouds { animation: mk-dawn-drift 56s ease-in-out infinite alternate; }
-  .mk-sky-kaash-back { animation: mk-dawn-sway 14s ease-in-out infinite alternate; }
-  .mk-sky-kaash-front { animation: mk-dawn-sway 9s ease-in-out infinite alternate-reverse; }
-  @keyframes mk-dawn-drift {
-    from { transform: translateX(0); }
-    to { transform: translateX(16px); }
+  .mk-sky-kaash-back { animation-duration: 16s; }
+  .mk-sky-grass { animation-duration: 10s; animation-direction: alternate-reverse; }
+  .mk-kaash-plume.is-wind {
+    transform-box: view-box;
+    animation: mk-field-wind var(--mk-wind-duration) ease-in-out var(--mk-wind-delay) infinite alternate;
+    will-change: transform;
   }
-  @keyframes mk-dawn-sway {
-    from { transform: translateX(0); }
-    to { transform: translateX(5px); }
+  @keyframes mk-field-layer {
+    from { transform: translateX(-1px) rotate(-0.08deg); }
+    to { transform: translateX(3px) rotate(0.12deg); }
+  }
+  @keyframes mk-field-wind {
+    0%, 18% { transform: rotate(var(--mk-wind-from)); }
+    70%, 100% { transform: rotate(var(--mk-wind-to)); }
+  }
+  .mk-sky-atmosphere {
+    position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse at 76% 18%, rgba(252, 251, 248, 0.12), transparent 30%),
+      linear-gradient(180deg, transparent 48%, rgba(19, 42, 46, 0.08) 68%, rgba(13, 16, 18, 0.16));
+    mix-blend-mode: soft-light;
+    animation: mk-sky-breathe 16s ease-in-out infinite alternate;
+  }
+  @keyframes mk-sky-breathe {
+    from { opacity: 0.55; transform: translateX(-0.4%); }
+    to { opacity: 0.9; transform: translateX(0.4%); }
   }
   .mk-count-scrim {
     position: absolute; inset: 0; pointer-events: none;
@@ -323,7 +342,7 @@
   }
   .mk-field::placeholder { color: var(--mk-ash); opacity: 1; }
   .mk-field:focus, .mk-field:focus-visible { outline: none; border-color: var(--mk-crimson); box-shadow: 0 0 0 2px rgba(215, 38, 56, 0.2); }
-  textarea.mk-field { min-height: 140px; resize: vertical; line-height: 1.6; }
+  textarea.mk-field { min-height: 140px; resize: none; line-height: 1.6; }
 
   /* ============================================================== chips == */
   .mk-chips { display: flex; flex-wrap: wrap; gap: var(--mk-2); }
@@ -445,12 +464,12 @@
     background: transparent;
     /* soft edge dissolve into Obsidian — no hard crop, no box */
     -webkit-mask-image:
-      linear-gradient(to right, transparent 0%, #000 11%, #000 89%, transparent 100%),
-      linear-gradient(to bottom, transparent 0%, #000 14%, #000 86%, transparent 100%);
+      linear-gradient(to right, transparent 0%, var(--mk-obsidian) 11%, var(--mk-obsidian) 89%, transparent 100%),
+      linear-gradient(to bottom, transparent 0%, var(--mk-obsidian) 14%, var(--mk-obsidian) 86%, transparent 100%);
     -webkit-mask-composite: source-in;
     mask-image:
-      linear-gradient(to right, transparent 0%, #000 11%, #000 89%, transparent 100%),
-      linear-gradient(to bottom, transparent 0%, #000 14%, #000 86%, transparent 100%);
+      linear-gradient(to right, transparent 0%, var(--mk-obsidian) 11%, var(--mk-obsidian) 89%, transparent 100%),
+      linear-gradient(to bottom, transparent 0%, var(--mk-obsidian) 14%, var(--mk-obsidian) 86%, transparent 100%);
     mask-composite: intersect;
   }
   .mk-entry-play {
@@ -487,7 +506,8 @@
     .mk-rule .mk-rule-line { stroke-dashoffset: 0 !important; transition: none !important; }
     .mk-loader-line { animation: none !important; stroke-dashoffset: 0 !important; opacity: 0.7 !important; }
     .mk-banner-img { animation: none !important; transform: none !important; }
-    .mk-sky-clouds, .mk-sky-kaash-back, .mk-sky-kaash-front { animation: none !important; }
+    .mk-sky-kaash-back, .mk-sky-kaash-front, .mk-sky-grass,
+    .mk-kaash-plume, .mk-sky-atmosphere { animation: none !important; }
   }
 
   @media (max-width: 900px) {

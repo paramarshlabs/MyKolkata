@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { MAHALAYA, PUJO_DAYS, formatPujoDate } from '@/lib/pujo'
 import { KaashPhoolScene } from '@/components/brand/KaashPhool'
 
@@ -28,7 +28,7 @@ export function useCountdown(iso: string) {
   return left
 }
 
-export function CountdownScene() {
+export function CountdownScene({ children }: { children?: ReactNode }) {
   const left = useCountdown(MAHALAYA)
   const pad = (n: number) => String(n).padStart(2, '0')
   const units = left
@@ -56,6 +56,7 @@ export function CountdownScene() {
             : 'till Mahalaya, 11 October. The city has already started getting ready.'}
         </p>
       </div>
+      {children}
     </div>
   )
 }

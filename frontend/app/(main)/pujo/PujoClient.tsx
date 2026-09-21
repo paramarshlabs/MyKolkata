@@ -1,12 +1,11 @@
-// @ts-nocheck
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Card } from '@/components/brand/Card'
 import { SectionHead } from '@/components/brand/SectionHead'
 import { CountdownScene, PujoDays } from '@/components/brand/Countdown'
 import { AlponaLoader, AlponaRule } from '@/components/brand/Alpona'
-import { CityIcon } from '@/components/brand/icons'
+import { CityIcon, UiIcon } from '@/components/brand/icons'
 import styles from '@/styles/Pujo.module.css'
 
 const NEARBY_PANDALS = [
@@ -15,30 +14,67 @@ const NEARBY_PANDALS = [
 ]
 
 const REGION_ORDER = ['North Kolkata', 'South Kolkata', 'Central Kolkata', 'New Kolkata']
+const MAHALAYA_VIDEO_ID = 'YQFNRoi7rEc'
+const MAHALAYA_EMBED_URL = `https://www.youtube-nocookie.com/embed/${MAHALAYA_VIDEO_ID}?autoplay=1&controls=0&disablekb=1&playsinline=1&rel=0&loop=1&playlist=${MAHALAYA_VIDEO_ID}`
 
-function orderRegions(regions) {
+type Region = {
+  _id: string
+  name: string
+  description: string | null
+  image: string | null
+}
+
+function orderRegions(regions: Region[]) {
   return REGION_ORDER
     .map((name) => regions.find((region) => region.name === name))
-    .filter(Boolean)
+    .filter((region): region is Region => Boolean(region))
+}
+
+function MahalayaPlayer() {
+  const [playing, setPlaying] = useState(true)
+
+  return (
+    <div className={styles.soundtrack}>
+      {playing && (
+        <div className={styles.hiddenPlayer} aria-hidden="true">
+          <iframe
+            src={MAHALAYA_EMBED_URL}
+            title="Mahalaya background music"
+            allow="autoplay; encrypted-media"
+            referrerPolicy="strict-origin-when-cross-origin"
+          />
+        </div>
+      )}
+      <button
+        type="button"
+        className={`${styles.soundTrigger} ${playing ? styles.soundPlaying : ''}`}
+        aria-label={playing ? 'Stop Mahalaya' : 'Play Mahalaya'}
+        aria-pressed={playing}
+        onClick={() => setPlaying((current) => !current)}
+      >
+        <UiIcon name={playing ? 'volumeOff' : 'volume'} size={19} />
+        <span>{playing ? 'Mahalaya playing' : 'Play Mahalaya'}</span>
+      </button>
+    </div>
+  )
 }
 
 function Pujo() {
-  const [regions, setRegions] = useState([])
+  const [regions, setRegions] = useState<Region[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [failed, setFailed] = useState(false)
 
   useEffect(() => {
     /* aborted on unmount — and on React's dev-only second mount, so one request lands */
     const controller = new AbortController()
     async function fetchRegions() {
       try {
-        setLoading(true)
         const res = await fetch('/api/regions', { signal: controller.signal })
         if (!res.ok) throw new Error('Failed to fetch regions')
-        const data = await res.json()
+        const data = await res.json() as Region[]
         setRegions(data)
-      } catch (err) {
-        if (!controller.signal.aborted) setError(err.message)
+      } catch {
+        if (!controller.signal.aborted) setFailed(true)
       } finally {
         if (!controller.signal.aborted) setLoading(false)
       }
@@ -52,7 +88,9 @@ function Pujo() {
       {/* the homecoming — no crimson anywhere in this band. design.md §9.7 */}
       <section className={styles.scene} aria-labelledby="pujo-title">
         <h1 id="pujo-title" className="sr-only">Durga Pujo</h1>
-        <CountdownScene />
+        <CountdownScene>
+          <MahalayaPlayer />
+        </CountdownScene>
         <div className="mk-wrap">
           <PujoDays className={styles.days} />
         </div>
@@ -69,7 +107,7 @@ function Pujo() {
           />
           {loading ? (
             <AlponaLoader label="Finding the paras" className={styles.state} />
-          ) : error ? (
+          ) : failed ? (
             <div className={`mk-panel mk-empty ${styles.state}`} role="status">
               <h3 className="mk-h3">The paras didn&apos;t load.</h3>
               <p className="mk-body">Check your connection, then refresh the page.</p>
@@ -95,7 +133,7 @@ function Pujo() {
         </div>
       </section>
 
-      <section className="mk-band" aria-labelledby="near-title" style={{ paddingTop: 0 }}>
+      <section className={`mk-band ${styles.nearSection}`} aria-labelledby="near-title">
         <div className="mk-wrap">
           <div className={styles.nearGrid}>
             <div>
