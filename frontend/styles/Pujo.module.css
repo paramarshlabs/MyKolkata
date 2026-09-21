@@ -1,7 +1,10 @@
 /* Pujo — the countdown, the five days, and where to go. */
 
-.scene { padding-top: var(--mk-nav); }
-.scene :global(.mk-count-scene) { border-top: 0; }
+.scene { padding-top: 0; }
+.scene :global(.mk-count-scene) {
+  min-height: 100svh;
+  border-top: 0;
+}
 .days { padding: clamp(40px, 6vw, 72px) 0 var(--mk-7); }
 
 .state { margin-top: var(--mk-6); max-width: 640px; }
@@ -16,10 +19,77 @@
 }
 
 .nearGrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(32px, 5vw, 64px); align-items: start; }
+.nearSection { padding-top: 0; }
 .nearList { list-style: none; margin: var(--mk-6) 0 0; padding: 0; display: grid; gap: 0; }
 .nearItem {
   display: flex; align-items: center; justify-content: space-between; gap: var(--mk-4);
   padding: var(--mk-4) 0; border-top: 1px solid rgba(242, 241, 237, 0.08);
+}
+
+.soundtrack {
+  position: absolute;
+  right: max(20px, env(safe-area-inset-right));
+  bottom: max(20px, env(safe-area-inset-bottom));
+  z-index: 4;
+}
+
+.soundTrigger {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 15px;
+  border: 1px solid rgba(242, 241, 237, 0.24);
+  border-radius: 999px;
+  background: rgba(13, 16, 18, 0.72);
+  color: var(--mk-pearl);
+  box-shadow: 0 12px 30px rgba(13, 16, 18, 0.34);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  font-family: var(--mk-text);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition:
+    color var(--mk-t-hover) var(--mk-ease-out),
+    border-color var(--mk-t-hover) var(--mk-ease-out),
+    background var(--mk-t-hover) var(--mk-ease-out),
+    transform var(--mk-t-hover) var(--mk-ease-out);
+}
+
+.soundTrigger:hover {
+  color: var(--mk-white);
+  border-color: rgba(242, 241, 237, 0.5);
+  background: rgba(13, 16, 18, 0.86);
+  transform: translateY(-2px);
+}
+
+.soundTrigger:active { transform: translateY(0); }
+.soundPlaying { border-color: rgba(242, 179, 61, 0.58); color: var(--mk-white); }
+
+.hiddenPlayer {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hiddenPlayer iframe { display: block; width: 640px; height: 360px; border: 0; }
+
+@media (max-width: 640px) {
+  .soundtrack {
+    right: max(16px, env(safe-area-inset-right));
+    bottom: max(16px, env(safe-area-inset-bottom));
+  }
+  .soundTrigger { width: 44px; justify-content: center; padding: 0; }
+  .soundTrigger span { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .soundTrigger { transition: none; }
+  .soundTrigger:hover { transform: none; }
 }
 .nearItem:last-child { border-bottom: 1px solid rgba(242, 241, 237, 0.08); }
 .nearName { font-family: var(--mk-display); font-size: 22px; line-height: 1.2; letter-spacing: -0.01em; color: var(--mk-white); }

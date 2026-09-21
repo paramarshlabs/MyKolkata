@@ -1,5 +1,7 @@
 'use client'
 
+import type { CSSProperties } from 'react'
+import Image from 'next/image'
 import { CloudShader } from '@/components/ui/cloud-shader'
 
 /*
@@ -99,8 +101,23 @@ function Plume({ k }: { k: PlumeT }) {
   const cx = tipX
   const cy = tipY + hh * 0.46
   const rot = k.lean * 0.18
+  const animated = k.front && k.h >= 210
+  const phase = ((k.x * 0.037 + k.h * 0.019) % 7.4) - 7.4
+  const duration = 7.2 + ((k.x + k.h) % 31) / 10
+  const strength = 1.15 + (k.h % 70) / 100
+  const windStyle = {
+    '--mk-wind-delay': `${phase.toFixed(2)}s`,
+    '--mk-wind-duration': `${duration.toFixed(2)}s`,
+    '--mk-wind-from': `${(-strength * 0.55).toFixed(2)}deg`,
+    '--mk-wind-to': `${strength.toFixed(2)}deg`,
+    transformOrigin: `${k.x}px ${k.ground}px`,
+  } as CSSProperties
   return (
-    <g opacity={k.front ? Math.min(1, k.o + 0.08) : k.o * 0.75}>
+    <g
+      className={`mk-kaash-plume ${animated ? 'is-wind' : ''}`}
+      style={animated ? windStyle : undefined}
+      opacity={k.front ? Math.min(1, k.o + 0.08) : k.o * 0.75}
+    >
       <ellipse
         cx={cx}
         cy={cy}
@@ -142,7 +159,7 @@ export function KaashPhoolScene() {
         skyBottomColor="#7AB8E0"
         cloudColor="#F2F1ED"
         count={6}
-        speed={0.7}
+        speed={0.48}
       />
       </div>
       <svg className="mk-sky" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true">
@@ -192,7 +209,7 @@ export function KaashPhoolScene() {
       <g className="mk-sky-kaash-back" filter="url(#kp-plume)">
         {PLUMES.filter((k) => !k.front).map((k, i) => <Plume key={`b${i}`} k={k} />)}
       </g>
-      <g fill="none" stroke="#3A5234" strokeLinecap="round">
+      <g className="mk-sky-grass" fill="none" stroke="#3A5234" strokeLinecap="round">
         {GRASS.map((g, i) => (
           <path
             key={i}
@@ -210,9 +227,19 @@ export function KaashPhoolScene() {
         </g>
       <rect width="1600" height="900" fill="url(#kp-vignette)" />
     </svg>
+          <div className="mk-sky-atmosphere" aria-hidden="true" />
         </div>
       </div>
-    <img className="mk-sky-eyes" src="/durgaeyes.png" alt="" aria-hidden="true" />
+    <Image
+      className="mk-sky-eyes"
+      src="/durgaeyes.png"
+      width={596}
+      height={419}
+      sizes="(max-width: 900px) min(66vw, 270px), clamp(200px, 22vw, 340px)"
+      alt=""
+      aria-hidden="true"
+      priority
+    />
     </>
   )
 }
@@ -241,12 +268,6 @@ export default function KaashPhool() {
             linear-gradient(90deg, rgba(13,16,18,0.78) 0%, rgba(13,16,18,0.32) 36%, rgba(13,16,18,0) 62%),
             linear-gradient(0deg, rgba(13,16,18,0.62) 0%, rgba(38,10,14,0.18) 28%, rgba(38,10,14,0) 48%);
         }
-        .kp .mk-capdev {
-          position: absolute;
-          left: 0; bottom: 0;
-          padding: clamp(24px, 5vw, 64px);
-          max-width: min(760px, 94%);
-        }
         @media (max-width: 720px) {
           .kp { aspect-ratio: 4 / 5; min-height: 100svh; }
         }
@@ -254,11 +275,6 @@ export default function KaashPhool() {
       <figure className="kp">
         <KaashPhoolScene />
         <div className="kp-scrim" aria-hidden="true" />
-        <figcaption className="mk-capdev">
-          <span className="mk-capdev-tick" aria-hidden="true" />
-          <div>
-          </div>
-        </figcaption>
       </figure>
     </main>
   )

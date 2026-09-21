@@ -134,6 +134,8 @@ const UI = {
   grid: <><rect x="4" y="4" width="6.5" height="6.5" rx="1.5" /><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5" /><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5" /><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5" /></>,
   list: <path d="M4 6.5h16M4 12h16M4 17.5h16" />,
   plus: <path d="M12 5v14M5 12h14" />,
+  volume: <><path d="M5 10v4h3l4 3V7l-4 3Z" /><path d="M15 9q3 3 0 6M18 6q6 6 0 12" /></>,
+  volumeOff: <><path d="M5 10v4h3l4 3V7l-4 3Z" /><path d="M16 9l5 6M21 9l-5 6" /></>,
 } satisfies Record<string, ReactNode>
 
 export type UiIconName = keyof typeof UI
