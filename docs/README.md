@@ -49,3 +49,17 @@ Run these commands from `frontend/`:
 | `npm run db:push` | Push the Prisma schema to the database               |
 | `npm run db:seed` | Seed the catalogue tables                            |
 
+
+## License
+
+**Proprietary — All Rights Reserved**
+
+The source code in this repository is publicly viewable but is **not open source**.
+
+You may inspect the code for personal/reference purposes, but you may not copy,
+modify, redistribute, sublicense, publish, or create derivative works from it
+without explicit written permission from the copyright holder.
+
+See [LICENSE](../LICENSE) for the full terms.
+
+© 2026 Rajarshi Datta. All rights reserved.
