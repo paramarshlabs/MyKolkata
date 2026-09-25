@@ -1,0 +1,181 @@
+{
+  "version": "2026.1",
+  "scale": "0 to 1. 0.5 is the population prior, not 'average person'. Values describe Pujo behaviour, never psychology.",
+  "families": [
+    { "id": "time", "name": "Clock", "dims": ["night", "dawn"] },
+    { "id": "motion", "name": "Movement", "dims": ["roam", "plan", "crowd"] },
+    { "id": "people", "name": "People", "dims": ["squad", "roots", "romance"] },
+    { "id": "senses", "name": "Senses", "dims": ["feast", "rhythm", "art", "heritage"] },
+    { "id": "self", "name": "Self", "dims": ["shaaj", "spotlight"] }
+  ],
+  "dimensions": [
+    {
+      "id": "night",
+      "name": "Night drive",
+      "bn": "রাত",
+      "measures": "How much of your Pujo happens after 11 pm.",
+      "low": "Home by ten. The night is for sleeping.",
+      "mid": "Out till one, then a cab home.",
+      "high": "Sees sunrise from the wrong side. Knows which stalls stay open at 3 am.",
+      "notInverseOf": "dawn — some people do both; they are scored separately on purpose.",
+      "usedFor": ["archetype", "time-of-day ranking", "late-night food", "safety prompts"],
+      "partnerTargetable": true
+    },
+    {
+      "id": "dawn",
+      "name": "Dawn pull",
+      "bn": "ভোর",
+      "measures": "Pull towards Pujo's mornings: Mahalaya at 4 am, anjali, empty pandals at 6 am.",
+      "low": "Has never seen a pandal before noon.",
+      "mid": "Makes it to Ashtami anjali, mostly.",
+      "high": "Alarm set for Mahalaya. Sees the pandal before the crowd does.",
+      "usedFor": ["archetype", "morning routes", "bonedi bari timings"],
+      "partnerTargetable": true
+    },
+    {
+      "id": "roam",
+      "name": "Roaming radius",
+      "bn": "ঘোরা",
+      "measures": "How far across the city one Pujo day travels.",
+      "low": "One para. Maybe the next one.",
+      "mid": "One side of the city per night.",
+      "high": "North, South, Salt Lake and Behala in one night.",
+      "usedFor": ["archetype", "route length", "transport suggestions"],
+      "partnerTargetable": true
+    },
+    {
+      "id": "plan",
+      "name": "Planning",
+      "bn": "প্ল্যান",
+      "measures": "Planned route and optimisation versus drifting. Low is spontaneity, not disorganisation.",
+      "low": "Goes where the night goes.",
+      "mid": "Has a rough list, abandons it happily.",
+      "high": "Spreadsheet, Metro timings, pre-Pujo visits to beat the queue.",
+      "usedFor": ["archetype", "itinerary depth", "notification style"],
+      "partnerTargetable": true
+    },
+    {
+      "id": "crowd",
+      "name": "Crowd appetite",
+      "bn": "ভিড়",
+      "measures": "Whether the crush is the point or the problem.",
+      "low": "Avoids famous pandals at peak hours. Prefers bonedi baris and quiet lanes.",
+      "mid": "Tolerates queues for things worth it.",
+      "high": "The crowd is the Pujo. Sreebhumi on Saptami night is a feature.",
+      "usedFor": ["archetype", "crowd-aware timing", "safety"],
+      "partnerTargetable": true
+    },
+    {
+      "id": "squad",
+      "name": "Squad size",
+      "bn": "দল",
+      "measures": "The size of the group Pujo happens with.",
+      "low": "Solo or one person.",
+      "mid": "Two to four.",
+      "high": "Fifteen people and a WhatsApp group with 400 unread messages.",
+      "usedFor": ["archetype", "group routes", "table sizes", "Squad mode"],
+      "partnerTargetable": true
+    },
+    {
+      "id": "roots",
+      "name": "Roots",
+      "bn": "শিকড়",
+      "measures": "Belonging to a home pandal and taking part in its traditions: anjali, bhog, arati, volunteering, Bijoya.",
+      "low": "No home pandal. A visitor everywhere.",
+      "mid": "Goes back to the para on Ashtami.",
+      "high": "On the committee, or might as well be. Knows the dhaaki by name.",
+      "note": "Measures cultural participation, not faith. Never used for advertising or partner targeting.",
+      "usedFor": ["archetype", "para recommendations", "bhog listings"],
+      "partnerTargetable": false
+    },
+    {
+      "id": "heritage",
+      "name": "Heritage pull",
+      "bn": "সাবেকি",
+      "measures": "Love for the old: sabeki idols, bonedi baris, Mahalaya radio, old Pujo songs, Pujabarshiki.",
+      "low": "Theme pandals only. 'Old' means last year.",
+      "mid": "Likes one bonedi bari per Pujo.",
+      "high": "Will cross the city for an ek-chala protima and a thakur dalan.",
+      "usedFor": ["archetype", "heritage routes", "music and reading recommendations"],
+      "partnerTargetable": true
+    },
+    {
+      "id": "art",
+      "name": "Art eye",
+      "bn": "শিল্প",
+      "measures": "Reading a pandal as art: materials, artists, concept, light, craft.",
+      "low": "It's pretty. Next.",
+      "mid": "Reads the placard at the big ones.",
+      "high": "Knows the artist's name before the placard does. Visits Kumartuli in September.",
+      "usedFor": ["archetype", "theme-pandal ranking", "galleries and photowalks"],
+      "partnerTargetable": true
+    },
+    {
+      "id": "feast",
+      "name": "Food drive",
+      "bn": "খাওয়া",
+      "measures": "How much food shapes the route.",
+      "low": "Food is fuel. Eats whatever is closest.",
+      "mid": "Plans one good meal a day.",
+      "high": "The pandals are chosen by what's next to them.",
+      "usedFor": ["archetype", "food recommendations", "route stops"],
+      "partnerTargetable": true
+    },
+    {
+      "id": "shaaj",
+      "name": "Shaaj",
+      "bn": "সাজ",
+      "measures": "Investment in how you look at Pujo: outfits planned, looks per day, styling.",
+      "low": "Comfort first. Sneakers and a t-shirt.",
+      "mid": "One good outfit for Ashtami.",
+      "high": "Five days, five looks, planned since July.",
+      "usedFor": ["archetype", "fashion recommendations", "photo spots"],
+      "partnerTargetable": true
+    },
+    {
+      "id": "spotlight",
+      "name": "Spotlight",
+      "bn": "আলো",
+      "measures": "Being seen: performing, dancing in front of people, posting, being the one in the photo.",
+      "low": "Behind the camera, or no camera at all.",
+      "mid": "Posts a dump at the end.",
+      "high": "In the centre of the dhunuchi circle, on everyone's story.",
+      "usedFor": ["archetype", "event recommendations", "share-card style"],
+      "partnerTargetable": true
+    },
+    {
+      "id": "romance",
+      "name": "Romance lens",
+      "bn": "প্রেম",
+      "measures": "Seeing Pujo as a love story: a date, a crush, or romanticising the city itself. Not relationship status.",
+      "low": "Love is a distraction. There are forty pandals left.",
+      "mid": "Wouldn't mind.",
+      "high": "Pujo is literally why they believe in love.",
+      "note": "Never inferred from anything except the person's own answers. Never shown to others without consent.",
+      "usedFor": ["archetype", "date-night routes", "Pujo Match (opt-in only)"],
+      "partnerTargetable": true
+    },
+    {
+      "id": "rhythm",
+      "name": "Dhaak energy",
+      "bn": "ছন্দ",
+      "measures": "How the body answers the dhaak: dancing, dhunuchi, bhasan, concerts.",
+      "low": "Listens. Doesn't move.",
+      "mid": "Nods, sways, films.",
+      "high": "Dances the moment the dhaak starts. Asks for the dhunuchi.",
+      "usedFor": ["archetype", "dhunuchi and concert listings", "music recommendations"],
+      "partnerTargetable": true
+    }
+  ],
+  "preferenceFacets": {
+    "note": "Asked after the reveal. Used only to filter and rank recommendations. Never used to assign an archetype, so the identity can never become a class, diet or caste marker.",
+    "facets": [
+      { "id": "status", "values": ["local", "homecomer", "first_pujo", "far_away"] },
+      { "id": "diet", "values": ["veg", "egg", "non_veg", "jain", "skip"] },
+      { "id": "move", "values": ["walk", "metro", "cab", "bike", "mix"] },
+      { "id": "budget", "values": ["under_500", "500_1500", "1500_3000", "above_3000", "skip"] },
+      { "id": "turf", "values": ["north", "central", "south", "saltlake_newtown", "behala", "dumdum_north_suburbs", "howrah", "other"] },
+      { "id": "age_band", "values": ["under_18", "18_21", "22_25", "26_30", "30_plus"] }
+    ]
+  }
+}

@@ -1,0 +1,727 @@
+{
+  "generatedFrom": "product-design/pujo-personality",
+  "archetypes": {
+    "night_owl": {
+      "name": "Night Owl",
+      "bn": "রাতজাগা",
+      "bnGloss": "raat-jaga, the one who stays up through the night",
+      "tagline": "Pujo starts after midnight.",
+      "oneLine": "Walks the city when the crowd leaves and the lights take over.",
+      "hour": "1 am",
+      "philosophy": "The best version of anything in this city happens after everyone else has gone home.",
+      "belief": "Pujo is two festivals. The first is for crowds. The second begins at half past twelve, when the queues fold, the loudspeakers drop, and the pandal finally belongs to the light. That second one is the real one.",
+      "difference": "Not the Addabaaz: the Night Owl isn't there for the people, and would rather walk than sit. Not the Pandal Hunter: they never count, never plan, and would happily see four pandals slowly rather than forty fast. Not the Pujo Romantic: the love story is with the city, not with a person, though they will share it with one.",
+      "lore": [
+        "You know the exact minute the city changes.",
+        "It's somewhere after half past twelve on Saptami. The families with sleeping children have gone home. The queue at the big pandal folds into a line you can walk past. The loudspeakers lower themselves. And the lights, which have spent all evening fighting half the city for attention, finally get the street to themselves.",
+        "That's when you arrive.",
+        "The Night Owls have always been here. Long before the Metro started running all night, they walked. They know which roll stall near the Shyambazar crossing is still frying at three, which lane in Ahiritola frames a pandal with nobody in front of it, and where the Chandannagar light artists hid the detail nobody noticed at nine. They know what a dhaak sounds like at 3 am, played slowly, for almost no one.",
+        "You don't plan. Plans are for daytime people. You leave home with two friends who can walk all night without complaining, and the city makes the plan. One more pandal. Then one more. Somewhere near Kumartuli someone says it, half as a joke: ore nabami nishi, na hoiyo re obosan. O Navami night, don't end. Nobody laughs, because everyone means it.",
+        "Around four, on the Bagbazar ghat steps, you pass someone coming the other way: freshly bathed, awake on purpose, on the way to a bonedi bari before the crowds. A Shiuli. You nod. You are the only two people in Kolkata who have seen this pandal empty, and you saw it from opposite ends of the same night.",
+        "Then the first Metro, the first cha, and a sleep that lasts until the lights come back on.",
+        "The man in Jibanananda's Banalata Sen has been walking the roads of this earth for a thousand years. You've only been at it since Saptami. Give it time."
+      ],
+      "light": "the Night Owl sees the version of Pujo most people never do, and comes back with proof.",
+      "shadow": "texts \"you up?\" to the group at 3 am to plan tomorrow's route, then sleeps through tomorrow.",
+      "says": [
+        "One last pandal. For real this time.",
+        "It's a different pandal at 3 am. Trust me.",
+        "The lights look better when nobody's standing in front of them.",
+        "Sleep is for Dashami.",
+        "The Metro's running till four. We have time.",
+        "Where's the roll stall that used to be here?",
+        "Ekhon to shobe shuru.\" (It's only just started.)",
+        "Ore nabami nishi, na hoiyo re obosan."
+      ],
+      "proud": "Seeing the sun come up on Navami from the wrong side. Knowing which stalls stay open. The 3 am photo nobody else has. Never having stood in a two-hour queue. Walking North to South in one night.",
+      "playlist": "Nabami Nishi",
+      "statements": [
+        "Night Owl. Pujo starts after midnight.",
+        "রাতজাগা. Sleeping on Dashami.",
+        "My Pujo begins where yours ends.",
+        "1 am is my hour."
+      ]
+    },
+    "pandal_hunter": {
+      "name": "Pandal Hunter",
+      "bn": "প্যান্ডেল শিকারি",
+      "bnGloss": "pandal shikari",
+      "tagline": "Every pandal. On purpose.",
+      "oneLine": "Plans the route, beats the queue, and sees what everyone else only posts about.",
+      "hour": "11 am",
+      "philosophy": "Pujo seen properly is Pujo planned properly.",
+      "belief": "Kolkata builds an entire city of art in a few weeks and takes it down in one night. Missing any of it is a choice, and they don't choose to.",
+      "difference": "Not the Night Owl: the Hunter has a list and a timetable, and would rather start early than stay late. Not the Art Kid: the Hunter loves breadth and completeness, the Art Kid loves depth and meaning. The Hunter will admire a pandal at walking pace; the Art Kid will stand in it for twenty minutes. Not the Addabaaz: the Hunter's Pujo is motion; the Addabaaz's is a bench.",
+      "lore": [
+        "Your Pujo starts in August.",
+        "That's when the first themes leak: a committee posts a teaser, an artist's name turns up in the paper, a replica rumour goes round the group chat. You start a list. By Mahalaya the list is a spreadsheet, with tabs for North, South, Salt Lake and Behala, a column for the nearest Metro station, and a colour code nobody else understands.",
+        "The city makes this hard on purpose. Kolkata has around three thousand community Pujos, and the good ones are scattered across forty kilometres of traffic, barricades and one-way diversions that change every evening. Ordinary people pick a side of the city and give up on the rest. You don't give up.",
+        "You go early. This year nothing opens before Mahalaya, so the sweep begins the day after: the famous replica at 11 am on Chaturthi, before the barricades, before the queue, before anyone has posted it. You go North by Blue Line and walk between the stations, because once the city fills up, feet are faster than anything with wheels. Three committee secretaries know you by face. They know you by your sneakers.",
+        "Your friends call it an obsession. You call it respect. Somebody spent six months building that pandal out of bamboo and clay cups and light. The least anyone can do is see it.",
+        "By Navami you've seen more pandals than most people see in ten years of Pujos, and you remember them: the ones everyone saw, and the tiny one in a Behala lane with a theme about a disappearing trade that nobody else will ever know existed.",
+        "Feluda had his magajastra, his brain-weapon. You have a Metro card, a charged phone and a spreadsheet. The case is the same every year: find everything. You always solve it."
+      ],
+      "light": "the person everyone asks \"which ones are actually worth it\", and gets a correct answer from.",
+      "shadow": "counts pandals out loud. Has never finished a plate of phuchka in peace.",
+      "says": [
+        "If we leave at ten we beat the queue.",
+        "Done. Next.",
+        "It's faster to walk from Girish Park.",
+        "This one's on the Sharad Shamman shortlist. Trust me.",
+        "Metro, not cab. Never a cab during Pujo.",
+        "I saw it on Chaturthi. It was better without people.",
+        "There's a small one two lanes away. Side quest.",
+        "Forty-one. Don't ask."
+      ],
+      "proud": "Clearing a whole zone. The hidden gem nobody else found. Seeing the viral one before it went viral. Being the person friends call before they leave home. Never, ever getting lost.",
+      "playlist": "Porer Ta",
+      "statements": [
+        "Pandal Hunter. Every pandal, on purpose.",
+        "প্যান্ডেল শিকারি. Chaturthi is the real Saptami.",
+        "If you're in the queue, I've already been.",
+        "11 am is my hour."
+      ]
+    },
+    "para_kid": {
+      "name": "Para Kid",
+      "bn": "পাড়াতুতো",
+      "bnGloss": "paratuto, \"of the para\": the word Kolkata uses for neighbourhood family, as in paratuto dada or paratuto mashi",
+      "tagline": "Every road leads back to the para.",
+      "oneLine": "Doesn't visit Pujo. Belongs to one.",
+      "hour": "8 am",
+      "philosophy": "The best pandal in Kolkata is the one where people know your name.",
+      "belief": "Pujo isn't something you go and see. It's something your street makes together, every year, and you are part of the making.",
+      "difference": "Not the Shiuli: both love tradition, but the Para Kid's Pujo is loud, crowded and communal, and it stays in one place. The Shiuli's is quiet, solitary and travels to find the old. Not the Addabaaz: the Para Kid's people are intergenerational and fixed (aunties, cousins, the dhaaki); the Addabaaz's are friends, and the venue could be anywhere. Not the Dhunuchi: the Para Kid dances at their own para's arati to take part, not to be watched.",
+      "lore": [
+        "You know the dhaaki's name.",
+        "He comes from a village in Nadia, and he has played your para's Pujo for longer than you've been alive. Every year around Panchami somebody from the committee goes down to Sealdah station to find him among the others, and every year he's there, and every year he asks after your mother.",
+        "Your Pujo doesn't start on Shashthi. It starts in August at the first committee meeting, where the same three people argue about the same budget. It continues through the evenings when the decorators put up the bamboo, and the afternoon the protima arrives on a truck and the whole para comes out to watch her carried in, slowly, a dozen hands on the frame.",
+        "Then the five days, which are not five days but one long day with short naps.",
+        "On Ashtami morning you're in the anjali queue in new clothes with a fist of flowers, between an aunty who has known you since you were four and a cousin who flew in from Bengaluru last night. Afterwards you serve bhog: khichuri, labra, beguni and a spoon of chutney on sal-leaf plates, to anyone who walks in. In the evening there's the function: somebody's niece reciting Sukumar Ray, somebody's uncle singing the same Manna Dey song as last year, and it's still good. At night you sit on a red plastic chair with the people you grew up with and watch the whole city pass through.",
+        "Your college friends come to see \"your\" Pujo, and they suddenly understand why you never want to go anywhere else.",
+        "On Dashami you cry a little. Everyone does. Then the Bijoya hugs, the sweets, the walk behind the truck to the ghat, and the para's loudest shout of the year: asche bochor abar hobe.",
+        "It will happen again next year. You'll be there. You always are."
+      ],
+      "light": "the person who makes Pujo happen for everyone else.",
+      "shadow": "believes their para's Pujo is objectively the best in Kolkata. (It is. Don't argue.)",
+      "says": [
+        "Our para's Pujo is the best in Kolkata. Don't argue.",
+        "Come for the bhog. Stay for the function.",
+        "Kakima, pronam.",
+        "The dhaaki's here. Now it's Pujo.",
+        "I'm on chair duty till ten.",
+        "You haven't done Pujo until you've done it from inside a committee.",
+        "Why would I go anywhere else? Everyone comes here.",
+        "Asche bochor abar hobe."
+      ],
+      "proud": "Serving bhog. Knowing everyone. Their para's pandal getting a mention anywhere. The dhaaki asking after them. Bringing friends to their Pujo. Never having missed Ashtami anjali.",
+      "playlist": "Amader Para",
+      "statements": [
+        "Para Kid. Every road leads back to the para.",
+        "পাড়াতুতো. Ask me which para.",
+        "8 am is my hour.",
+        "Our para, since forever."
+      ]
+    },
+    "pujo_romantic": {
+      "name": "Pujo Romantic",
+      "bn": "মনকেমন",
+      "bnGloss": "monkemon: the untranslatable Bengali ache of longing, of missing something while it is still happening",
+      "tagline": "Pujo is a love story. You're in it.",
+      "oneLine": "Sees the festival as a love story, with a person or with the city itself.",
+      "hour": "6 pm",
+      "philosophy": "Everything important happens in a look.",
+      "belief": "Pujo is when the city gives everyone permission: to dress up, to stay out, to look at someone a second longer. The festival is a love story, and every year it lets you write another page.",
+      "difference": "Not the Night Owl: the Romantic's love story is with a person or a feeling, where the Night Owl's is with the empty city. Not the Dhunuchi: both dress up, but the Romantic dresses for one person, not a crowd. Not the Shiuli: both are nostalgic, but the Shiuli's nostalgia is reverence; the Romantic's is longing.",
+      "lore": [
+        "You have a Pujo song.",
+        "Not a playlist. One song, and it changes every few years, and each one is a different autumn. Right now it might be Anupam Roy. It used to be something your mother hummed from Saptapadi: ei path jodi na shesh hoy, if only this road would never end. You understood it at eleven. You understand it better now.",
+        "For you, Pujo has always been a love story. Sometimes with a person. Sometimes with the city itself, the way it looks at dusk on Ashtami, red borders everywhere, the whole of Kolkata dressed as if it's expecting someone.",
+        "You know the rules nobody writes down. That anjali is the best place to stand next to someone without it meaning anything, officially. That a plate of phuchka shared between two people is a complete sentence. That the long way home through the North Kolkata lanes, in a rickshaw, is always worth it. That College Square at night, when the lights lie on the water, is the most romantic place in the city, and you will argue with anyone who says otherwise.",
+        "You've watched love stories begin at a pandal gate. You've watched them end on Dashami, at the ghat, in silence, which is its own kind of beautiful. The phuchka-kaku outside the big pandal has seen a thousand of them. You like to think he remembers yours.",
+        "Even in the years you went alone, it was a love story. The kaash was out along the Rajarhat roadside, the sky was that particular autumn blue, and from somebody's balcony came Tagore's song about tying bundles of kaash for the goddess: amra bedhechhi kasher guchchho. You stood still for a minute. That counts.",
+        "Some people have a Pujo. You have a Pujo and a feeling about it, and the feeling has a name, and the name doesn't translate: মনকেমন."
+      ],
+      "light": "makes ordinary moments feel like cinema, for themselves and for everyone near them.",
+      "shadow": "plans a spontaneous moment for three weeks.",
+      "says": [
+        "Bikele dekha hobe?",
+        "Let's take the long way.",
+        "One plate. Two people.",
+        "College Square at night is the most romantic place in Kolkata. I will not be taking questions.",
+        "It's not a date. It's anjali.",
+        "Ei path jodi na shesh hoy.",
+        "I'm not crying. It's the dhuno.",
+        "Every Pujo has a song. This year's is this one."
+      ],
+      "proud": "The photo of two hands. The song of the season. Remembering every Pujo by who it was with. Making their friends' love stories happen.",
+      "playlist": "Ei Path",
+      "statements": [
+        "Pujo Romantic. Pujo is a love story. I'm in it.",
+        "মনকেমন. Ask me for the song.",
+        "6 pm is my hour.",
+        "Bikele dekha hobe."
+      ]
+    },
+    "pet_pujari": {
+      "name": "Pet Pujari",
+      "bn": "পেটপুজারি",
+      "bnGloss": "pet pujari: from pet pujo, the \"worship of the stomach\", Bengal's own oldest joke about eating",
+      "tagline": "Thakur dekha is the excuse.",
+      "oneLine": "Routes the whole Pujo by what's worth eating next.",
+      "hour": "2 pm",
+      "philosophy": "You understand a city through its food, and Kolkata at Pujo is the best menu on earth.",
+      "belief": "The pandals are real and the bhog is sacred, and food is how the whole city says \"welcome home\" to everyone at once. Five days, three thousand pujos, and every one of them next to something worth eating.",
+      "difference": "Not the Night Owl: the Night Owl eats at night because they're out; the Pet Pujari is out because of what they'll eat. Not the Addabaaz: the Addabaaz wants the table; the Pet Pujari wants what's on it. Not the Para Kid: the Para Kid's bhog is the heart of the day; the Pet Pujari's is the first stop of a much longer route.",
+      "lore": [
+        "You were the child who knew where the phuchka stall was before you knew where the pandal was.",
+        "It's not that you don't love the pandals. You do. It's that every pandal in Kolkata is next to something, and you know what. The sabeki protima at Bagbazar comes with a fair full of telebhaja. Shobhabazar is a short walk from Mitra Café, where the fish kabiraji has been fried the same way since 1920. Ahiritola is on the way to Niranjan Agar's egg devil: a whole egg wrapped in mince and crumbs, invented by a cook who taught himself. Your route is a food map with pandals on it. You have never once been lost.",
+        "Your Pujo has a structure, like any serious devotion. Morning: luchi and alur dom at home, out of respect. One o'clock: bhog, wherever a para will have you: khichuri and labra off a sal leaf, the best meal of the year, and it's free. Four o'clock: a cabin in the North, cutlets and chops at a marble table. Eight: biryani, with the potato, obviously, and anyone who argues about the potato can find another friend. Eleven: Park Circus. Two in the morning: a roll, eaten walking, because the Night Owls have to eat too and someone has to show them where.",
+        "Your friends call you the Snack Minister. The group chat asks you before it asks Google Maps. You hold opinions about which sweet shop makes the real rosogolla, and you have never lost that argument, because you bring samples.",
+        "Then Dashami and the Bijoya rounds, which are the Pet Pujari's Olympics. Every relative, every house: a plate of nimki, narkel naru, a sandesh, a glass of water, and one more rosogolla to be polite. You go to all of them. It would be rude not to.",
+        "Thakur dekha is the excuse. It has always been the excuse. The goddess, you suspect, understands."
+      ],
+      "light": "makes everyone's Pujo taste better, and knows the story behind every plate.",
+      "shadow": "rates pandals by the stalls outside them.",
+      "says": [
+        "Bhog first. Then everything else.",
+        "Biryani without aloo is just rice.",
+        "This pandal is fine. The stall outside is incredible.",
+        "One roll. Each.",
+        "Trust me, Mitra Café is on the way.",
+        "It would be rude not to.",
+        "Khide peyechhe.\" (It has been forty minutes.)",
+        "The best meal of the year is free and served on a leaf."
+      ],
+      "proud": "Never a bad meal. Being the person the group depends on. Finding a cabin nobody else knew. The Bijoya haul. Knowing the story behind every plate.",
+      "playlist": "Pet Pujo",
+      "statements": [
+        "Pet Pujari. Thakur dekha is the excuse.",
+        "পেটপুজারি. Ask me where to eat.",
+        "2 pm is my hour.",
+        "My Pujo map is a menu."
+      ]
+    },
+    "art_kid": {
+      "name": "Art Kid",
+      "bn": "থিম-পাগল",
+      "bnGloss": "theme-pagol: \"theme-crazy\", said the way Kolkata says boi-pagol or khela-pagol, with affection",
+      "tagline": "Every pandal is a gallery if you look long enough.",
+      "oneLine": "Reads every pandal as art: the materials, the maker, the idea.",
+      "hour": "4 pm",
+      "philosophy": "Look longer. Every object was made by someone, for a reason.",
+      "belief": "Durga Puja is arguably the largest public art exhibition on earth: built by thousands of artists and artisans, free to everyone, and gone within a week. Not seeing it properly is the only way to waste it.",
+      "difference": "Not the Pandal Hunter: depth over breadth. Six pandals, slowly, beat forty at walking pace. Not the Shiuli: the Art Kid loves the new and the made, the Shiuli the old and the sacred, though both stop for a shola crown. Not the Dhunuchi: the Art Kid is behind the lens, and would rather photograph the dancer than be one.",
+      "lore": [
+        "You went to Kumartuli in September, before anyone else was paying attention.",
+        "The lanes were narrow and damp and full of half-made goddesses: straw bodies on bamboo frames, clay drying in the sun, a woman smoothing a cheek with her thumb. Nobody noticed you, which is how you like it. You took forty photographs of hands.",
+        "Most people see a pandal. You see a proposal. Someone decided that this year the city would walk through a room made of ten thousand clay cups, or jute woven like a textile, or a wall that breathes with light. Someone argued for it in a committee meeting in March. Someone welded it. An artist like Bhabatosh Sutar spent months turning a story into a building, and the Chandannagar light artists wired a sky onto it. You read the placard every time. You usually knew already.",
+        "Kolkata's open secret is that for a few days every year it becomes perhaps the largest public art exhibition anywhere: made by thousands of hands, free, and gone in a week. UNESCO noticed. The British Council counted what it was worth. You just go and look, properly, for longer than anyone around you.",
+        "Your friends have learnt to leave you at the good ones and collect you forty minutes later. You're usually still in the same spot, watching the light on one corner at four in the afternoon. That's your hour: the sun is low enough to come in through the side of the pandal and turn everything gold.",
+        "You have opinions about the lighting design. You share them. You carry a camera that shoots film, and you use it on the dhaaki's hands and never on yourself.",
+        "And every Dashami, when the protima goes into the river, you feel what artists feel: that the point of a masterpiece might be letting it go."
+      ],
+      "light": "sees what the makers hoped someone would see, and helps everyone else see it too.",
+      "shadow": "has opinions about the lighting design. Shares them.",
+      "says": [
+        "Did you read the placard?",
+        "Who made this? No, really, who?",
+        "Look at the light on that corner. Four o'clock does that.",
+        "It's jute. The whole thing. Jute.",
+        "Give me ten minutes. Okay, twenty.",
+        "The lighting's Chandannagar work. You can tell.",
+        "Sabeki craft is art too.",
+        "Ek minute daara."
+      ],
+      "proud": "Naming the artist before reading the placard. Photographing a detail nobody else noticed. Calling the award winner before it was announced. Going to Kumartuli before the season started. A finished roll of film.",
+      "playlist": "Placard",
+      "statements": [
+        "Art Kid. Every pandal is a gallery if you look long enough.",
+        "থিম-পাগল. Ask me who made it.",
+        "4 pm is my hour."
+      ]
+    },
+    "addabaaz": {
+      "name": "Addabaaz",
+      "bn": "আড্ডাবাজ",
+      "bnGloss": "addabaaz: one who lives for adda, Kolkata's long, looping, argumentative, affectionate conversation",
+      "tagline": "The pandal is just the venue.",
+      "oneLine": "Comes for the people. The conversation is the festival.",
+      "hour": "10 pm",
+      "philosophy": "The best thing in any room is the people in it, and the best thing about Pujo is that everyone is in the same room at once.",
+      "belief": "Pujo is the one time of year everyone comes back: the school gang, the college gang, the cousins, the friends who moved to Bengaluru. The pandal is the reason. The adda is the point.",
+      "difference": "Not the Night Owl: the Addabaaz sits and talks where the Night Owl walks and watches. Not the Para Kid: the Addabaaz's people are friends, and the venue is chosen (Maddox, a rowak, a long table); the Para Kid's people are a whole neighbourhood across three generations. Not the Dhunuchi: the group is the centre, not the self.",
+      "lore": [
+        "There's a patch of grass at Maddox Square that has been yours, in your head, since you were sixteen.",
+        "It isn't yours. Thousands of people sit on it every Ashtami night. But every year, at about ten, your people drift towards it from every direction, and every year it works. The school gang arrives from Gariahat. The college gang arrives from the Metro, late. Somebody's cousin from Pune, somebody's flatmate from Delhi who has never seen Pujo, somebody's new boyfriend who has to be interviewed. Nineteen people, a circle on the grass, a dozen bhaars of cha, and the conversation of the year.",
+        "That's your Pujo. The pandal is lovely. You saw it. You'll see it again on the way out. But the pandal is the venue. The adda is the festival.",
+        "Adda isn't chatting. You know that, even if you'd struggle to explain it to the flatmate from Delhi. It's the long, looping, argumentative, affectionate conversation that goes from this year's themes to which of Mohun Bagan and East Bengal will break everyone's heart this season, to who broke up with whom in 2019, to what is actually wrong with the city, and back again, without anyone steering. Manna Dey sang that the Coffee House adda is gone. You have spent your whole life proving him half wrong.",
+        "You are the glue. You made the group chat. You sent the pin. You counted heads at the Metro exit and noticed who was missing. When someone's phone died at Gariahat, you found them, because you always find them. When the crowd pressed in, you made the circle bigger instead of leaving.",
+        "Some time after midnight the adda starts to break. The Night Owls peel off to walk North. The Romantics vanish in pairs. The Para Kids go home to their paras. You stay till the last three, because someone has to see everyone home, and because the last hour of an adda is always the best one.",
+        "Five more minutes, you say. It has been three hours. Nobody minds."
+      ],
+      "light": "brings everyone together, and never lets anyone get left behind.",
+      "shadow": "says \"five more minutes\" for three hours.",
+      "says": [
+        "Koi tora? Maddox-e boshchhi.",
+        "Five more minutes.",
+        "Everyone's coming. Everyone.",
+        "Headcount before we move.",
+        "The pandal can wait. Sit.",
+        "Who's got a charger?",
+        "Chol, ekta cha hobe.",
+        "Nobody goes home alone."
+      ],
+      "proud": "The reunion. The one group photo with everyone in it. Nobody lost. The funniest story of the Pujo. Knowing half of Maddox.",
+      "playlist": "Maddox O'Clock",
+      "statements": [
+        "Addabaaz. The pandal is just the venue.",
+        "আড্ডাবাজ. Five more minutes.",
+        "10 pm is my hour."
+      ]
+    },
+    "dhunuchi": {
+      "name": "Dhunuchi",
+      "bn": "ধুনুচি",
+      "bnGloss": "the clay incense burner of the evening arati, and the dance performed with it",
+      "tagline": "When the dhaak starts, so do you.",
+      "oneLine": "Turns every pandal into a stage, and makes everyone else want to dance.",
+      "hour": "8 pm",
+      "philosophy": "Joy is meant to be seen. If you feel it, show it.",
+      "belief": "Pujo is the one week the whole city dresses up and turns out, and meeting it fully (dressed, dancing, glowing) is a way of taking part. Not vanity: attendance.",
+      "difference": "Not the Addabaaz: the Dhunuchi is self-expression, the Addabaaz is the group. Not the Pujo Romantic: both dress with care, but the Dhunuchi dresses for the whole pandal, not for one person. Not the Para Kid: they share the dhaak, but the Para Kid dances to belong and the Dhunuchi dances to light the room up.",
+      "lore": [
+        "There's a moment at sandhya arati when the lamp is raised, the dhaak doubles its beat, and the smoke from the dhunuchi rolls across the pandal like weather.",
+        "Most people step back. You step in.",
+        "You've been planning this since July. Not the dance: that arrives on its own, the way it arrived for every uncle and aunty who ever held a clay dhunuchi of smouldering coconut husk above their head and turned slowly, wrists steady, while the dhaaki watched their feet. What you've been planning is everything around it. Five days, five looks. A Dhakai jamdani for Saptami. Garad silk with a red border for Ashtami, because some things are not up for discussion. Something with sneakers for Navami, because Navami is long. Alta drying on your feet as you walk. Jhumkas that make a sound when you turn.",
+        "Pujo is the one week a year the whole city dresses up and turns out, and you think it deserves your full effort. It isn't vanity. It's attendance. If the city is going to be this beautiful, someone should match it.",
+        "You know everyone is filming. You don't mind. You were made for the part where everyone watches, and you make it look like an invitation rather than a show: by the second round there are six more people in the circle, and one of them is a Para Kid's grandfather who hasn't danced since 1998.",
+        "Somewhere, an Art Kid is photographing you and will never tell you. On the front row of plastic chairs, the aunties are judging the dhunuchi competition, informally and correctly, and have already decided you won.",
+        "On Dashami you're at the front of the bhasan procession, dancing like the goddess deserves a proper send-off, because she does. There's red on everyone's cheeks, the dhaak is in your chest, and the whole street is shouting asche bochor abar hobe.",
+        "Main character energy, Kolkata edition. Everyone else just calls it Pujo."
+      ],
+      "light": "makes everyone else braver, and turns a crowd into a celebration.",
+      "shadow": "has never once been in the back row of a group photo.",
+      "says": [
+        "Five days, five looks. Obviously.",
+        "When the dhaak starts, I start.",
+        "Hand me the dhunuchi.",
+        "One more round.",
+        "Is the light good here? Okay, now.",
+        "Everyone in. Nobody watches from the side tonight.",
+        "Garad for Ashtami. That's not a choice, that's the law.",
+        "The smoke is my lighting."
+      ],
+      "proud": "Pulling strangers into the circle. The reel everyone reposts. The aunties' approval. Winning the dhunuchi competition, or being robbed of it. The Ashtami look. Keeping heritage textiles alive by wearing them.",
+      "playlist": "Dhunuchi",
+      "statements": [
+        "Dhunuchi. When the dhaak starts, so do I.",
+        "ধুনুচি. Five days, five looks.",
+        "8 pm is my hour."
+      ]
+    },
+    "shiuli": {
+      "name": "Shiuli",
+      "bn": "শিউলি",
+      "bnGloss": "the night-flowering jasmine, also called shefali, that blooms after dark and falls at dawn through the Pujo season, scattering white petals and orange stems on the grass",
+      "tagline": "Pujo is a morning thing.",
+      "oneLine": "Finds Pujo at its truest: early, quiet and old.",
+      "hour": "4 am",
+      "philosophy": "The oldest things are still happening, if you're early enough to see them.",
+      "belief": "Pujo is a homecoming. In the old Bengali telling, Durga is also Uma, the daughter who comes home to her mother for four days a year. The truest Pujo is the one that remembers this: the Mahalaya voice at 4 am, the ek-chala protima, the thakur dalan, the shiuli on the grass.",
+      "difference": "Not the Para Kid: both love tradition, but the Shiuli's Pujo is quiet and solitary and travels to find the old, where the Para Kid's is loud, communal and at home. Not the Night Owl: the other end of the same night, and the only other person who sees a pandal empty. Not the Art Kid: both love craft, but the Shiuli comes for reverence and the Art Kid for the new idea.",
+      "lore": [
+        "Your Pujo begins in the dark, with a voice.",
+        "At four in the morning on Mahalaya the radio crackles and Birendra Krishna Bhadra begins the Mahishasuramardini, as he has on this morning since the 1930s. Once, in 1976, All India Radio tried to replace it with a new version starring Uttam Kumar, the greatest star Bengali cinema ever had. The city refused. There were protests, the old recording came back, and it has never left. You understand those people completely.",
+        "Some people wake up for Pujo. You wake up early for it.",
+        "While the city sleeps off the night, you're already out. The shiuli has fallen overnight: small white flowers with orange stems, scattered on wet grass as if someone spilt the season. You pick one up. You always do. Tagore wrote of tying bundles of kaash and stringing garlands of shefali for the goddess, and on these mornings you believe every word.",
+        "Your Pujo is North, and old, and quiet. The bonedi baris of Shobhabazar and Jorasanko, where families have held their Pujo in the same thakur dalan for a century or two. The ek-chala protima, the whole divine family in a single frame beneath a chalchitra painted the old way. The shola crown. A priest's voice with nobody else in the courtyard. You'd rather see one of these at six in the morning than forty pandals at night.",
+        "On the way home you pass a Night Owl on the Bagbazar ghat steps, finally going to bed. You nod. You are the only two people in Kolkata who have seen that pandal empty.",
+        "You know what the grandmothers know: that the Agamani songs welcoming Uma home and the Bijoya songs letting her go are the oldest Pujo music there is. So Dashami doesn't feel like an ending to you. It feels like a daughter going back to Kailash.",
+        "And the shiuli will fall again tomorrow, whether anyone is up to see it or not. You'll be up."
+      ],
+      "light": "keeps the old Pujo alive by showing up for it, and remembers what the season is for.",
+      "shadow": "wakes the whole house for Mahalaya. Every year. Unforgiven.",
+      "says": [
+        "Mahalaya at four. I'll wake you.",
+        "Before the crowd, or not at all.",
+        "It isn't Pujo until I hear that voice.",
+        "Sabeki, always.",
+        "The shiuli's fallen. Come and see.",
+        "Uma ghore phirchhe.",
+        "Shobhabazar has done it this way since 1757.",
+        "I'm not old. I'm early."
+      ],
+      "proud": "Never missing Mahalaya. The bonedi bari circuit. An empty pandal at 6 am. Knowing the history. Keeping a grandparent's tradition alive, and passing it to a younger cousin.",
+      "playlist": "Bhor",
+      "statements": [
+        "Shiuli. Pujo is a morning thing.",
+        "শিউলি. Before the crowd, or not at all.",
+        "4 am is my hour.",
+        "Team Sabeki."
+      ]
+    }
+  },
+  "pairs": [
+    {
+      "a": "night_owl",
+      "b": "night_owl",
+      "kind": "same",
+      "headline": "Two Night Owls. Nobody's going home.",
+      "line": "You'll both say \"one last pandal\" and both mean four.",
+      "plan": "North after midnight; sunrise at Bagbazar ghat"
+    },
+    {
+      "a": "pandal_hunter",
+      "b": "pandal_hunter",
+      "kind": "same",
+      "headline": "Two spreadsheets. One route.",
+      "line": "Merge your lists and the city is cleared by Saptami.",
+      "plan": "The Chaturthi sweep, split by zone"
+    },
+    {
+      "a": "para_kid",
+      "b": "para_kid",
+      "kind": "same",
+      "headline": "Two paras. One argument.",
+      "line": "Each of you thinks yours is the best. Visit both. Say nothing.",
+      "plan": "Ashtami at one para, Navami at the other"
+    },
+    {
+      "a": "pujo_romantic",
+      "b": "pujo_romantic",
+      "kind": "same",
+      "headline": "Two Romantics. Someone has to be practical.",
+      "line": "Neither of you will choose the restaurant.",
+      "plan": "The dusk route and College Square's lights"
+    },
+    {
+      "a": "pet_pujari",
+      "b": "pet_pujari",
+      "kind": "same",
+      "headline": "Two Pet Pujaris. Order everything.",
+      "line": "Don't share. Order two of each.",
+      "plan": "Bhog to Biryani"
+    },
+    {
+      "a": "art_kid",
+      "b": "art_kid",
+      "kind": "same",
+      "headline": "Two Art Kids. Forty minutes per pandal.",
+      "line": "You'll read the placards to each other.",
+      "plan": "The theme trail at 4 pm"
+    },
+    {
+      "a": "addabaaz",
+      "b": "addabaaz",
+      "kind": "same",
+      "headline": "Two Addabaaz. The group chat just doubled.",
+      "line": "Between you, you know half of Maddox.",
+      "plan": "Maddox base camp"
+    },
+    {
+      "a": "dhunuchi",
+      "b": "dhunuchi",
+      "kind": "same",
+      "headline": "Two Dhunuchis. One circle isn't enough.",
+      "line": "Coordinate the Ashtami looks, or it's war.",
+      "plan": "The arati circuit"
+    },
+    {
+      "a": "shiuli",
+      "b": "shiuli",
+      "kind": "same",
+      "headline": "Two Shiulis. The alarm is set.",
+      "line": "You'll reach the bonedi bari before the priest.",
+      "plan": "Bhor"
+    },
+    {
+      "a": "night_owl",
+      "b": "addabaaz",
+      "kind": "kin",
+      "headline": "The adda ends. The walk begins.",
+      "line": "You meet at Maddox at one, when the Addabaaz's adda breaks and the Night Owl's night starts.",
+      "plan": "Maddox at midnight, then the South on foot"
+    },
+    {
+      "a": "night_owl",
+      "b": "pet_pujari",
+      "kind": "kin",
+      "headline": "Same clock, better food.",
+      "line": "The Pet Pujari knows which roll stall is still frying at three.",
+      "plan": "North after midnight, with stops"
+    },
+    {
+      "a": "pandal_hunter",
+      "b": "art_kid",
+      "kind": "kin",
+      "headline": "Forty pandals, or six done properly.",
+      "line": "One keeps time, one keeps looking. Split the difference: twelve.",
+      "plan": "The theme shortlist by Metro"
+    },
+    {
+      "a": "para_kid",
+      "b": "shiuli",
+      "kind": "kin",
+      "headline": "Anjali together, then separate ways.",
+      "line": "You both love the old Pujo. One wants the para; one wants the silence.",
+      "plan": "Dawn at a bonedi bari, anjali at the para"
+    },
+    {
+      "a": "para_kid",
+      "b": "dhunuchi",
+      "kind": "kin",
+      "headline": "The para's arati has a star.",
+      "line": "The Para Kid brings the dhaaki; the Dhunuchi brings the circle.",
+      "plan": "Sandhya arati at the para, then the competition"
+    },
+    {
+      "a": "pujo_romantic",
+      "b": "shiuli",
+      "kind": "kin",
+      "headline": "Sunrise at the ghat. Nobody else there.",
+      "line": "The two quietest Pujos in the city, together.",
+      "plan": "Kumartuli at dawn, the ghat, cha"
+    },
+    {
+      "a": "addabaaz",
+      "b": "dhunuchi",
+      "kind": "kin",
+      "headline": "The party has a centre.",
+      "line": "One gathers everyone; the other gets them dancing.",
+      "plan": "Maddox, then the nearest arati"
+    },
+    {
+      "a": "pet_pujari",
+      "b": "addabaaz",
+      "kind": "kin",
+      "headline": "A table for twelve, ordered properly.",
+      "line": "One books the table; the other orders for it.",
+      "plan": "Biryani for the group, then Maddox"
+    },
+    {
+      "a": "pandal_hunter",
+      "b": "pet_pujari",
+      "kind": "complement",
+      "headline": "One plans the pandals. One plans the stops.",
+      "line": "The most efficient Pujo in Kolkata, and nobody goes hungry.",
+      "plan": "North by Metro, with cabins in between"
+    },
+    {
+      "a": "art_kid",
+      "b": "dhunuchi",
+      "kind": "complement",
+      "headline": "The muse and the lens.",
+      "line": "One of you is in every photo. The other took them all.",
+      "plan": "Golden hour in Kumartuli's doorways, then arati"
+    },
+    {
+      "a": "night_owl",
+      "b": "pandal_hunter",
+      "kind": "complement",
+      "headline": "The map, and the night to use it.",
+      "line": "The Hunter plans it; the Night Owl stretches it past three.",
+      "plan": "The Hunter's route, extended to sunrise"
+    },
+    {
+      "a": "para_kid",
+      "b": "pet_pujari",
+      "kind": "complement",
+      "headline": "Bhog, treated with the respect it deserves.",
+      "line": "One serves it; the other understands it.",
+      "plan": "Bhog at the para, then the Bijoya rounds"
+    },
+    {
+      "a": "pujo_romantic",
+      "b": "art_kid",
+      "kind": "complement",
+      "headline": "Beauty, and the name of who made it.",
+      "line": "You'll both stop in front of the same thing.",
+      "plan": "The theme trail at dusk"
+    },
+    {
+      "a": "shiuli",
+      "b": "art_kid",
+      "kind": "complement",
+      "headline": "The shola crown, discussed at length.",
+      "line": "Craft, old and new, before the crowds.",
+      "plan": "Kumartuli at sunrise, then the bonedi baris"
+    },
+    {
+      "a": "pujo_romantic",
+      "b": "night_owl",
+      "kind": "complement",
+      "headline": "The city, romanticised, after dark.",
+      "line": "One loves the lights; the other loves who's under them.",
+      "plan": "College Square at midnight, the long way home"
+    },
+    {
+      "a": "addabaaz",
+      "b": "para_kid",
+      "kind": "complement",
+      "headline": "The para, as a venue.",
+      "line": "The Addabaaz brings the friends; the Para Kid brings the chairs.",
+      "plan": "The para's function, then adda on the plastic chairs"
+    },
+    {
+      "a": "night_owl",
+      "b": "shiuli",
+      "kind": "spark",
+      "headline": "You'll only ever overlap at dawn.",
+      "line": "Twenty minutes on the ghat steps, one ending, one beginning. Make them count.",
+      "plan": "Bagbazar ghat at 5 am"
+    },
+    {
+      "a": "pandal_hunter",
+      "b": "addabaaz",
+      "kind": "spark",
+      "headline": "Forty pandals against one bench.",
+      "line": "The Hunter will finish the route; the Addabaaz will still be on the grass. Meet at the end.",
+      "plan": "The Hunter's route, finishing at Maddox"
+    },
+    {
+      "a": "pet_pujari",
+      "b": "art_kid",
+      "kind": "spark",
+      "headline": "The placard or the phuchka.",
+      "line": "One reads, one eats. Take turns.",
+      "plan": "The theme trail with a cabin between every pandal"
+    },
+    {
+      "a": "dhunuchi",
+      "b": "shiuli",
+      "kind": "spark",
+      "headline": "The centre of the circle, and the quiet before it.",
+      "line": "You'll never be awake at the same time. Ashtami anjali is your one shared hour.",
+      "plan": "Anjali together; after that, separate Pujos and shared photos"
+    },
+    {
+      "a": "pujo_romantic",
+      "b": "addabaaz",
+      "kind": "spark",
+      "headline": "Table for two, or table for twelve.",
+      "line": "One of you wants a moment. The other brought nineteen people.",
+      "plan": "Maddox with the gang, then leave early, together"
+    },
+    {
+      "a": "para_kid",
+      "b": "pandal_hunter",
+      "kind": "spark",
+      "headline": "Stay, or see everything.",
+      "line": "One won't leave the para; the other won't stop. Compromise: the next para over.",
+      "plan": "Anjali at the para, then three pandals nearby"
+    },
+    {
+      "a": "night_owl",
+      "b": "para_kid",
+      "kind": "crossover",
+      "headline": "The para at 2 am.",
+      "line": "When the para's chairs empty, the Night Owl arrives. The Para Kid knows the pandal nobody photographs.",
+      "plan": "Their para after midnight, then the walk"
+    },
+    {
+      "a": "night_owl",
+      "b": "art_kid",
+      "kind": "crossover",
+      "headline": "The lights, explained.",
+      "line": "The Night Owl loves how it looks at three; the Art Kid knows who wired it.",
+      "plan": "Lighting-led pandals after midnight"
+    },
+    {
+      "a": "night_owl",
+      "b": "dhunuchi",
+      "kind": "crossover",
+      "headline": "After the arati, the night.",
+      "line": "The Dhunuchi lights the pandal up at eight; the Night Owl takes over at one.",
+      "plan": "Arati, then the night walk"
+    },
+    {
+      "a": "pandal_hunter",
+      "b": "pujo_romantic",
+      "kind": "crossover",
+      "headline": "The efficient route, the long way home.",
+      "line": "The Hunter plans it perfectly; the Romantic makes it slower on purpose.",
+      "plan": "The shortlist, with one sunset"
+    },
+    {
+      "a": "pandal_hunter",
+      "b": "dhunuchi",
+      "kind": "crossover",
+      "headline": "The best backdrops, found fast.",
+      "line": "The Hunter knows where every photogenic pandal is. The Dhunuchi knows what to wear.",
+      "plan": "Five looks, five pandals"
+    },
+    {
+      "a": "pandal_hunter",
+      "b": "shiuli",
+      "kind": "crossover",
+      "headline": "Early, for different reasons.",
+      "line": "One beats the queue; the other beats the city waking up. Start together at six.",
+      "plan": "Bonedi baris at dawn, then the sweep"
+    },
+    {
+      "a": "para_kid",
+      "b": "pujo_romantic",
+      "kind": "crossover",
+      "headline": "Anjali, side by side.",
+      "line": "The para's aunties will notice. Let them.",
+      "plan": "Ashtami anjali, then the dusk route"
+    },
+    {
+      "a": "para_kid",
+      "b": "art_kid",
+      "kind": "crossover",
+      "headline": "The para's pandal, taken seriously.",
+      "line": "The Art Kid will finally explain why the decorator's work is art.",
+      "plan": "The para, then one theme pandal"
+    },
+    {
+      "a": "pujo_romantic",
+      "b": "pet_pujari",
+      "kind": "crossover",
+      "headline": "One plate, two people, then another plate.",
+      "line": "One shares; the other orders more.",
+      "plan": "Phuchka, sherbet, then a proper dinner"
+    },
+    {
+      "a": "pujo_romantic",
+      "b": "dhunuchi",
+      "kind": "crossover",
+      "headline": "Dressed up, for different audiences.",
+      "line": "One dresses for one person, one for the whole pandal. Both of you will look incredible.",
+      "plan": "Golden-hour photos, then arati"
+    },
+    {
+      "a": "pet_pujari",
+      "b": "dhunuchi",
+      "kind": "crossover",
+      "headline": "Photo first, then food.",
+      "line": "The Dhunuchi needs the shot; the Pet Pujari needs the plate. The stall outside the arati serves both.",
+      "plan": "Arati, then Park Circus"
+    },
+    {
+      "a": "pet_pujari",
+      "b": "shiuli",
+      "kind": "crossover",
+      "headline": "The dawn menu.",
+      "line": "The Shiuli knows Tiretta Bazaar's breakfast. The Pet Pujari will never sleep in again.",
+      "plan": "Kochuri at six, the bonedi baris, a Chinese breakfast"
+    },
+    {
+      "a": "art_kid",
+      "b": "addabaaz",
+      "kind": "crossover",
+      "headline": "The placard, read aloud to nineteen people.",
+      "line": "The Addabaaz will turn one theme into the best adda of the night.",
+      "plan": "One theme pandal, then the lawn"
+    },
+    {
+      "a": "addabaaz",
+      "b": "shiuli",
+      "kind": "crossover",
+      "headline": "The adda ends at one. The Shiuli's day starts at four.",
+      "line": "You'll meet at anjali, or not at all. Worth it.",
+      "plan": "Ashtami anjali, then an early lunch"
+    }
+  ]
+}

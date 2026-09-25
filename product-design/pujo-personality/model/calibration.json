@@ -1,0 +1,75 @@
+{
+  "modelVersion": "2026.1",
+  "kind": "neutral-prior",
+  "population": "20000 uniformly random respondents over the core and rapid-fire flow, with tie-breaker",
+  "note": "Offsets added to archetype scores so random answering favours no archetype. Regenerate whenever questions.json, archetypes.json or the scoring defaults change.",
+  "bias": {
+    "night_owl": -0.016,
+    "pandal_hunter": 0.07,
+    "para_kid": 0,
+    "pujo_romantic": -0.192,
+    "pet_pujari": -0.07,
+    "art_kid": 0.137,
+    "addabaaz": -0.092,
+    "dhunuchi": 0.003,
+    "shiuli": 0.159
+  },
+  "neutral": {
+    "night": {
+      "mean": 0.498,
+      "sd": 0.065
+    },
+    "dawn": {
+      "mean": 0.496,
+      "sd": 0.066
+    },
+    "roam": {
+      "mean": 0.498,
+      "sd": 0.06
+    },
+    "plan": {
+      "mean": 0.496,
+      "sd": 0.074
+    },
+    "crowd": {
+      "mean": 0.5,
+      "sd": 0.089
+    },
+    "squad": {
+      "mean": 0.497,
+      "sd": 0.076
+    },
+    "roots": {
+      "mean": 0.496,
+      "sd": 0.057
+    },
+    "heritage": {
+      "mean": 0.497,
+      "sd": 0.052
+    },
+    "art": {
+      "mean": 0.496,
+      "sd": 0.051
+    },
+    "feast": {
+      "mean": 0.495,
+      "sd": 0.075
+    },
+    "shaaj": {
+      "mean": 0.498,
+      "sd": 0.075
+    },
+    "spotlight": {
+      "mean": 0.496,
+      "sd": 0.056
+    },
+    "romance": {
+      "mean": 0.495,
+      "sd": 0.069
+    },
+    "rhythm": {
+      "mean": 0.492,
+      "sd": 0.069
+    }
+  }
+}

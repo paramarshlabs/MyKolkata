@@ -12,6 +12,10 @@ curve in this document is rendered and interactive there: the medallion blooms, 
 width axes are draggable, the easing curves play, and the Pujo countdown runs. When the two
 disagree, the brand kit is right.
 
+**Version 1.5** — the Pujo Personality: nine archetype **sigils** drawn in the emblem language
+(§7C), archetype card grounds, the Pujo DNA chart and share cards (§9.8). Full rationale in
+[`product-design/pujo-personality/08-visual-bible.md`](../product-design/pujo-personality/08-visual-bible.md).
+
 **Version 1.4** — the flat black replaced with a cool three-step surface scale (§3.1); **Taxi
 Yellow** introduced as the warm accent Warm Sand's retirement had left missing (§3.1, §3.7); cards,
 photography and whites pushed for contrast (§9.3); the navigation rebuilt as floating glass (§9.4);
@@ -546,6 +550,31 @@ The deliberate opposite: **32px grid, 1.5px stroke, no fills, rounded joins.** U
 - **An icon without a job does not ship.**
 - An icon never carries meaning alone; it always sits beside a word.
 
+### 7C. Archetype sigils — v1.5
+
+The nine Pujo Personality archetypes each have a sigil, drawn **exactly like an emblem**: filled,
+never outlined, on the 64px grid, never below 40px, a Pearl body with one accent. The accent is
+Crimson, or Taxi Yellow where the object itself is yellow (the Night Owl's bulb, the Pet Pujari's
+beguni). On paper the body becomes Obsidian and the accent Ruby, as for every emblem.
+
+| Archetype | Sigil | Accent |
+|---|---|---|
+| Night Owl | A crescent cradling one Chandannagar bulb | Taxi Yellow |
+| Pandal Hunter | A compass rose of alpona teardrops | Crimson, the north point |
+| Para Kid | The dhaak with its plume (the *Dhaak* emblem) | Crimson |
+| Pujo Romantic | Two kaash plumes tied with one thread | Crimson, the thread |
+| Pet Pujari | A sal-leaf plate, khichuri heaped on it | Taxi Yellow, the beguni |
+| Art Kid | The chalchitra arch | Crimson, the central disc |
+| Addabaaz | Two bhaar cups touching | Crimson, the steam |
+| Dhunuchi | The dhunuchi, smoke rising (the *Dhunuchi* emblem) | Crimson, the embers; Taxi Yellow on its own Crimson Depth card |
+| Shiuli | Five petals and one stem (the *Shiuli* emblem) | Taxi Yellow, the stem |
+
+- One source: the shapes live as data in `frontend/lib/pujo-personality/sigils.ts`, so the page,
+  the share-card canvas and the link previews all draw the same sigil.
+- A sigil blooms once, part by part, in the reveal. That is the page's one moment (§11.3).
+  Everywhere else it is still.
+- A sigil is an identity, never a control, and never sits directly on a photograph.
+
 ## 8. Layout — the band
 
 ### 8.1 The primitive
@@ -765,7 +794,7 @@ moment — not a widget. It is a **homecoming**, and it says so.
 │  │ 29 │ │ 21 │ │ 08 │ │ 05 │                          │
 │  │days│ │hrs │ │mins│ │secs│                          │
 │  └────┘ └────┘ └────┘ └────┘                          │
-│  till Mahalaya, 11 October.                           │
+│  till Mahalaya, 10 October.                           │
 └───────────────────────────────────────────────────────┘
 ```
 
@@ -805,6 +834,45 @@ and never "Don't miss out".
 - **Every date lives in one constant** and moves each year with the panjika. Confirm before each season.
 - The clock is information, so it keeps ticking under `prefers-reduced-motion` (§11.3).
 - No crimson in this band at all. The warmth comes from the horizon, not the accent.
+
+### 9.8 The Pujo Personality — v1.5
+
+A chapter of this system, not a new brand: variety comes from the archetype's ground, hour,
+Bengali name and sigil, never from new UI colours.
+
+**Card grounds.** Each archetype owns one surface from the existing scale and one accent for
+small labels such as its hour. Sigil accents follow §7C.
+
+| Archetype | Ground | Label accent |
+|---|---|---|
+| Night Owl | Obsidian | Taxi Yellow |
+| Pandal Hunter | Slate | Taxi Yellow |
+| Para Kid | Deep Bordeaux | Taxi Yellow |
+| Pujo Romantic | Bordeaux Deep | Soft Blush |
+| Pet Pujari | Ink | Taxi Yellow |
+| Art Kid | Soft Pearl (paper) | Ruby |
+| Addabaaz | Ink | Taxi Yellow |
+| Dhunuchi | Crimson Depth | Soft Pearl (Crimson disappears on it: the tick is Pearl, and the sigil's embers Taxi Yellow) |
+| Shiuli | Soft Blush (paper) | Ruby |
+
+**The profile band.** The sigil, then the Bengali name leading at `wght 700`, the Latin name
+following in Display, the tagline in the caption device (§9.6). The one Crimson moment is the
+primary button, *Share my Pujo →*.
+
+**The Pujo DNA chart.** Fourteen filled teardrops around a Crimson disc, one per dimension,
+grouped by family, with the medallion's gaps at ±90°. Petal length is relative to how most
+people answer; a dashed ring marks typical. Petals are labelled on tap, never on the chart, and a
+list beneath says the same in words. Static on share cards.
+
+**Share cards** are drawn on the phone, on a canvas: Story 1080 × 1920 (key content clear of the
+top 220px and bottom 380px) and Post 1080 × 1350. Link previews (1200 × 630) are built on the
+server from **pre-shaped outlines**, because the image renderer cannot shape Bengali and the
+house Latin faces are licensed web fonts that stay in `public/fonts`. A first name may go on a
+card image; it never goes into a link. Prefilled captions are product copy: no emoji.
+
+**The reveal**, the one unrequested moment: letterbox bars retract (700ms), the Bengali name
+rises 12px (320ms), the sigil blooms part by part (~1.3s), the tagline appears (320ms). Under
+reduced motion it renders in its final state.
 
 ## 10. Photography
 

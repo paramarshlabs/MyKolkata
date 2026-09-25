@@ -10,6 +10,7 @@ import { SectionHead } from '@/components/brand/SectionHead'
 import { Medallion, Sprig } from '@/components/brand/kolka'
 import { LaalPaar } from '@/components/brand/Alpona'
 import { HomeEntry } from '@/components/brand/HomeEntry'
+import { PersonalityEntry } from '@/components/pujo-personality/PersonalityEntry'
 
 export const dynamic = 'force-dynamic'
 
@@ -72,6 +73,8 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      <PersonalityEntry />
 
       <section className="mk-band" aria-labelledby="news-title">
         <div className="mk-wrap">

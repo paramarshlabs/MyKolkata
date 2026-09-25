@@ -3,7 +3,7 @@
    These Gregorian dates shift every year with the lunar calendar — confirm
    against the panjika before each season. This is the only place they live.
    ========================================================================== */
-export const MAHALAYA = '2026-10-11T00:00:00+05:30'
+export const MAHALAYA = '2026-10-10T00:00:00+05:30'
 
 export const PUJO_DAYS = [
   { bn: 'ষষ্ঠী', en: 'Shashthi', iso: '2026-10-17T00:00:00+05:30' },
@@ -15,4 +15,9 @@ export const PUJO_DAYS = [
 
 export function formatPujoDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' })
+}
+
+/* "10 October": for sentences, where the short month reads as a table */
+export function formatPujoDateLong(iso: string) {
+  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone: 'Asia/Kolkata' })
 }

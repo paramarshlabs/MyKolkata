@@ -1,0 +1,2866 @@
+{
+  "version": "2026.1",
+  "evidenceFormat": "evidence maps a dimension to [value, weight]. value is where this answer places the person on that dimension (0-1). weight is how much the answer should move the estimate (0.2 light, 0.5 medium, 0.8-1.0 strong).",
+  "flow": {
+    "core": [
+      "q_last_pandal",
+      "q_mahalaya",
+      "q_plan",
+      "q_queue",
+      "q_plate",
+      "q_ashtami_look",
+      "q_theme_pandal",
+      "q_crew",
+      "q_soundtrack",
+      "q_dhaak",
+      "q_love",
+      "q_dashami",
+      "q_frame"
+    ],
+    "rapid": [
+      "rf_metro",
+      "rf_theme",
+      "rf_photo",
+      "rf_crush",
+      "rf_para"
+    ],
+    "tiebreakTrigger": "Shown only when the top two archetypes are within the configured margin after core + rapid. One question, chosen by the model.",
+    "preferences": [
+      "pref_status",
+      "pref_diet",
+      "pref_move",
+      "pref_budget",
+      "pref_turf",
+      "pref_age"
+    ]
+  },
+  "questions": [
+    {
+      "id": "q_last_pandal",
+      "block": "core",
+      "type": "single",
+      "prompt": "It's 1:30 am on Saptami night. Your friends say, 'One last pandal.'",
+      "visual": "A lit pandal gate at the end of an empty lane. Wet road, sodium light, one rickshaw parked.",
+      "rationale": "Opens on the most recognisable Pujo dilemma. Separates night people from dawn people in one tap, and the reasons people give for staying out (food, squad, quality, romance) split four more archetypes.",
+      "musicReinforce": "No. Listening timestamps are deliberately not used (see 05-music-and-spotify.md).",
+      "options": [
+        {
+          "id": "a",
+          "text": "Obviously. The night's only getting started.",
+          "reaction": "Correct. The lights look better now anyway.",
+          "evidence": {
+            "night": [
+              0.95,
+              1.0
+            ],
+            "roam": [
+              0.75,
+              0.5
+            ],
+            "plan": [
+              0.25,
+              0.4
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Only if there's a roll on the way.",
+          "reaction": "Priorities, in the right order.",
+          "evidence": {
+            "feast": [
+              0.9,
+              0.9
+            ],
+            "night": [
+              0.7,
+              0.5
+            ]
+          }
+        },
+        {
+          "id": "c",
+          "text": "Which one? Send the pin. I'll tell you if it's worth it.",
+          "reaction": "Quality control has entered the chat.",
+          "evidence": {
+            "plan": [
+              0.9,
+              0.8
+            ],
+            "roam": [
+              0.75,
+              0.4
+            ],
+            "art": [
+              0.65,
+              0.4
+            ]
+          }
+        },
+        {
+          "id": "d",
+          "text": "Only if all fifteen of us are going. Nobody gets left behind at Maddox.",
+          "reaction": "Head count first. Then pandal.",
+          "evidence": {
+            "squad": [
+              0.95,
+              1.0
+            ],
+            "night": [
+              0.65,
+              0.4
+            ],
+            "crowd": [
+              0.75,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "e",
+          "text": "Only if it's just the two of us.",
+          "reaction": "The long way home, then.",
+          "evidence": {
+            "romance": [
+              0.85,
+              0.8
+            ],
+            "squad": [
+              0.1,
+              0.6
+            ],
+            "night": [
+              0.65,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "f",
+          "text": "I've been asleep since eleven. Ashtami anjali is at eight.",
+          "reaction": "Someone has to be awake for the best part of the morning.",
+          "evidence": {
+            "dawn": [
+              0.9,
+              0.9
+            ],
+            "night": [
+              0.05,
+              1.0
+            ],
+            "roots": [
+              0.7,
+              0.5
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "q_mahalaya",
+      "block": "core",
+      "type": "single",
+      "prompt": "Mahalaya. 4 am. Mahishasuramardini is on the radio.",
+      "visual": "An old radio on a windowsill, blue pre-dawn light, a shiuli branch outside the grille.",
+      "rationale": "The strongest heritage and dawn signal in Bengali culture. Includes an honest 'I hear it through the wall' answer and a newcomer answer, so nobody is forced to pretend.",
+      "musicReinforce": "Partly. Heavy Rabindrasangeet or devotional listening would support heritage, if a music source is ever connected and cleared.",
+      "options": [
+        {
+          "id": "a",
+          "text": "I'm up. Eyes closed. It isn't Pujo until I hear that voice.",
+          "reaction": "Birendra Krishna Bhadra, every year, since before any of us.",
+          "evidence": {
+            "dawn": [
+              0.95,
+              1.0
+            ],
+            "heritage": [
+              0.95,
+              1.0
+            ],
+            "roots": [
+              0.6,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "I'm up, technically. I never went to sleep.",
+          "reaction": "That counts. Barely.",
+          "evidence": {
+            "night": [
+              0.9,
+              0.8
+            ],
+            "dawn": [
+              0.4,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "c",
+          "text": "I'm at the para already. Someone has to set up the speakers.",
+          "reaction": "The whole para wakes up because of you.",
+          "evidence": {
+            "roots": [
+              0.95,
+              1.0
+            ],
+            "dawn": [
+              0.75,
+              0.5
+            ],
+            "squad": [
+              0.6,
+              0.3
+            ],
+            "rhythm": [
+              0.55,
+              0.2
+            ]
+          }
+        },
+        {
+          "id": "d",
+          "text": "It plays in the next room. I hear it through the wall and go back to sleep.",
+          "reaction": "Honest. It still counts as hearing it.",
+          "evidence": {
+            "dawn": [
+              0.2,
+              0.6
+            ],
+            "heritage": [
+              0.55,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "e",
+          "text": "Mahalaya? Tell me more.",
+          "reaction": "Short version: this is the morning the countdown starts.",
+          "evidence": {},
+          "flags": [
+            "new_to_pujo"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "q_plan",
+      "block": "core",
+      "type": "single",
+      "prompt": "Your Pujo plan, as it exists right now:",
+      "visual": "A phone with a group chat open, a folded paper map, a Metro smart card.",
+      "rationale": "Planning style is the cleanest behavioural split between Pandal Hunter, Art Kid, Addabaaz, Shiuli, Night Owl and Para Kid. Every answer is funny, so none feels like the wrong one.",
+      "musicReinforce": "No.",
+      "options": [
+        {
+          "id": "a",
+          "text": "A spreadsheet. Tabs for North, South and Salt Lake. Metro timings.",
+          "reaction": "Respect. And concern.",
+          "evidence": {
+            "plan": [
+              0.97,
+              1.0
+            ],
+            "roam": [
+              0.9,
+              0.8
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "A shortlist of six pandals whose themes I actually care about.",
+          "reaction": "Curated, not crowded.",
+          "evidence": {
+            "art": [
+              0.85,
+              0.8
+            ],
+            "plan": [
+              0.7,
+              0.5
+            ],
+            "crowd": [
+              0.3,
+              0.3
+            ],
+            "roam": [
+              0.55,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "c",
+          "text": "A group chat with 23 people, 400 messages and no decisions.",
+          "reaction": "It'll all be decided at 9 pm, outside a Metro station.",
+          "evidence": {
+            "squad": [
+              0.95,
+              0.9
+            ],
+            "plan": [
+              0.25,
+              0.4
+            ],
+            "crowd": [
+              0.7,
+              0.2
+            ]
+          }
+        },
+        {
+          "id": "d",
+          "text": "An alarm for 5 am. The old bonedi baris, before the city wakes up.",
+          "reaction": "The goddess, the thakur dalan and you. Nobody else yet.",
+          "evidence": {
+            "dawn": [
+              0.92,
+              0.9
+            ],
+            "heritage": [
+              0.9,
+              0.8
+            ],
+            "crowd": [
+              0.08,
+              0.5
+            ]
+          }
+        },
+        {
+          "id": "e",
+          "text": "Plan? I'll know where I'm going when I get there.",
+          "reaction": "The city will decide. It usually does.",
+          "evidence": {
+            "plan": [
+              0.08,
+              0.9
+            ],
+            "night": [
+              0.65,
+              0.3
+            ],
+            "roam": [
+              0.6,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "f",
+          "text": "Same as every year: my para, my people, my plastic chair.",
+          "reaction": "The chair has your name on it. Metaphorically.",
+          "evidence": {
+            "roots": [
+              0.95,
+              1.0
+            ],
+            "roam": [
+              0.08,
+              0.8
+            ],
+            "squad": [
+              0.65,
+              0.3
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "q_queue",
+      "block": "core",
+      "type": "single",
+      "prompt": "This year's viral replica pandal has a two-kilometre queue.",
+      "visual": "A queue curving under barricades and fairy lights, a replica facade glowing in the distance.",
+      "rationale": "Crowd appetite, asked through the one situation every Kolkatan has an opinion on. Also separates strategic avoiders (Hunter), quiet seekers (Shiuli), night timers (Night Owl) and photo seekers (Dhunuchi).",
+      "musicReinforce": "No.",
+      "options": [
+        {
+          "id": "a",
+          "text": "Perfect. The crush is half the fun.",
+          "reaction": "You and forty thousand friends.",
+          "evidence": {
+            "crowd": [
+              0.95,
+              1.0
+            ],
+            "squad": [
+              0.7,
+              0.3
+            ],
+            "spotlight": [
+              0.55,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Already done. I went at 11 am on Chaturthi.",
+          "reaction": "Before the barricades went up. Of course.",
+          "evidence": {
+            "plan": [
+              0.95,
+              0.9
+            ],
+            "roam": [
+              0.8,
+              0.4
+            ],
+            "crowd": [
+              0.35,
+              0.5
+            ]
+          }
+        },
+        {
+          "id": "c",
+          "text": "Hard pass. There's a bonedi bari in North Kolkata with no queue at all.",
+          "reaction": "A thakur dalan and two hundred years of quiet.",
+          "evidence": {
+            "crowd": [
+              0.05,
+              1.0
+            ],
+            "heritage": [
+              0.9,
+              0.8
+            ],
+            "dawn": [
+              0.6,
+              0.2
+            ]
+          }
+        },
+        {
+          "id": "d",
+          "text": "We're here for the stalls outside, not the queue.",
+          "reaction": "The queue is for the pandal. The stalls are for you.",
+          "evidence": {
+            "feast": [
+              0.9,
+              0.8
+            ],
+            "crowd": [
+              0.6,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "e",
+          "text": "Worth it if there's a good photo at the end.",
+          "reaction": "Lighting check. Outfit check. Queue check.",
+          "evidence": {
+            "spotlight": [
+              0.85,
+              0.7
+            ],
+            "shaaj": [
+              0.7,
+              0.4
+            ],
+            "crowd": [
+              0.6,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "f",
+          "text": "I'll come back at 3 am. It'll be empty, and better.",
+          "reaction": "The pandal is a different place after midnight.",
+          "evidence": {
+            "night": [
+              0.9,
+              0.8
+            ],
+            "crowd": [
+              0.25,
+              0.5
+            ],
+            "plan": [
+              0.4,
+              0.2
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "q_plate",
+      "block": "core",
+      "type": "image",
+      "prompt": "Pick your Pujo plate.",
+      "visual": "Six plates shot from above on a steel table: sal-leaf bhog, a roll in paper, biryani with its potato, phuchka, a steel tumbler of water, a table pushed together for twelve.",
+      "rationale": "Food is the easiest thing to answer honestly. Each plate carries a time of day, a social setting and a food intensity, not just a cuisine.",
+      "musicReinforce": "No.",
+      "options": [
+        {
+          "id": "a",
+          "text": "Khichuri bhog on a sal-leaf plate, sitting on the floor with the para.",
+          "reaction": "Labra, beguni, a little payesh. Nothing tastes like it.",
+          "evidence": {
+            "roots": [
+              0.9,
+              0.9
+            ],
+            "feast": [
+              0.65,
+              0.4
+            ],
+            "heritage": [
+              0.65,
+              0.4
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "An egg-chicken roll at 2 am, eaten walking.",
+          "reaction": "The official food of the second half of the night.",
+          "evidence": {
+            "night": [
+              0.9,
+              0.8
+            ],
+            "feast": [
+              0.7,
+              0.5
+            ],
+            "roam": [
+              0.6,
+              0.2
+            ]
+          }
+        },
+        {
+          "id": "c",
+          "text": "A biryani pilgrimage. The aloo is non-negotiable.",
+          "reaction": "Kolkata biryani, as it was meant to be.",
+          "evidence": {
+            "feast": [
+              0.97,
+              1.0
+            ],
+            "roam": [
+              0.55,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "d",
+          "text": "One plate of phuchka, shared. Two people, no talking.",
+          "reaction": "The phuchka-kaku has seen a thousand love stories.",
+          "evidence": {
+            "romance": [
+              0.9,
+              0.9
+            ],
+            "feast": [
+              0.6,
+              0.3
+            ],
+            "squad": [
+              0.15,
+              0.4
+            ]
+          }
+        },
+        {
+          "id": "e",
+          "text": "Whatever's closest. Food is fuel. Pandals are the point.",
+          "reaction": "Efficient. Somewhere, a biryani weeps.",
+          "evidence": {
+            "feast": [
+              0.08,
+              0.9
+            ],
+            "plan": [
+              0.75,
+              0.4
+            ],
+            "roam": [
+              0.75,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "f",
+          "text": "Anywhere with a table for twelve.",
+          "reaction": "Pushing three tables together is a Pujo skill.",
+          "evidence": {
+            "squad": [
+              0.95,
+              0.9
+            ],
+            "feast": [
+              0.65,
+              0.4
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "q_ashtami_look",
+      "block": "core",
+      "type": "single",
+      "prompt": "Ashtami morning. What are you wearing?",
+      "visual": "An open wardrobe: a saree and a panjabi on hangers, sneakers on the floor, a pair of jhumkas on the shelf.",
+      "rationale": "Style investment without asking 'how fashionable are you'. Each outfit also signals heritage, art, roaming, romance or the night.",
+      "musicReinforce": "No.",
+      "options": [
+        {
+          "id": "a",
+          "text": "A look I've planned since July. Three more for the next three days.",
+          "reaction": "Five days, five looks. A campaign, not an outfit.",
+          "evidence": {
+            "shaaj": [
+              0.97,
+              1.0
+            ],
+            "spotlight": [
+              0.8,
+              0.6
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Laal-paar white, or a crisp white panjabi. Some things you don't redesign.",
+          "reaction": "The original look. It never loses.",
+          "evidence": {
+            "heritage": [
+              0.85,
+              0.8
+            ],
+            "roots": [
+              0.7,
+              0.5
+            ],
+            "shaaj": [
+              0.6,
+              0.3
+            ],
+            "dawn": [
+              0.6,
+              0.2
+            ]
+          }
+        },
+        {
+          "id": "c",
+          "text": "Handloom from a small label, thrifted jhumkas, one strange ring.",
+          "reaction": "The strange ring is doing a lot of work. Good.",
+          "evidence": {
+            "art": [
+              0.75,
+              0.6
+            ],
+            "shaaj": [
+              0.65,
+              0.5
+            ],
+            "spotlight": [
+              0.3,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "d",
+          "text": "Sneakers. Anything I can walk twenty kilometres in.",
+          "reaction": "Your feet will thank you. Your photos won't.",
+          "evidence": {
+            "roam": [
+              0.85,
+              0.8
+            ],
+            "plan": [
+              0.65,
+              0.4
+            ],
+            "shaaj": [
+              0.1,
+              0.8
+            ]
+          }
+        },
+        {
+          "id": "e",
+          "text": "Something that matches the person I'm going with.",
+          "reaction": "Coordinated, but deniable.",
+          "evidence": {
+            "romance": [
+              0.9,
+              0.9
+            ],
+            "shaaj": [
+              0.65,
+              0.4
+            ],
+            "squad": [
+              0.15,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "f",
+          "text": "Black. It's a night look.",
+          "reaction": "Dressed for 2 am, at 10 am.",
+          "evidence": {
+            "night": [
+              0.85,
+              0.7
+            ],
+            "shaaj": [
+              0.5,
+              0.3
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "q_theme_pandal",
+      "block": "core",
+      "type": "single",
+      "prompt": "You walk into a pandal built entirely from clay cups. First thing you do?",
+      "visual": "A wall of thousands of bhaar cups lit from behind; a small placard with an artist's name.",
+      "rationale": "The theme-pandal moment is where the Art Kid, the Dhunuchi, the Hunter, the Shiuli and the Romantic visibly behave differently in the same room.",
+      "musicReinforce": "No.",
+      "options": [
+        {
+          "id": "a",
+          "text": "Find the placard. Who made this, and why?",
+          "reaction": "The artist would like to meet you.",
+          "evidence": {
+            "art": [
+              0.95,
+              1.0
+            ],
+            "plan": [
+              0.5,
+              0.2
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Find the angle nobody has shot yet.",
+          "reaction": "Somewhere near the floor, probably.",
+          "evidence": {
+            "art": [
+              0.8,
+              0.7
+            ],
+            "spotlight": [
+              0.2,
+              0.4
+            ]
+          }
+        },
+        {
+          "id": "c",
+          "text": "Selfie with it behind me. Content is content.",
+          "reaction": "The cups are the backdrop. You're the point.",
+          "evidence": {
+            "spotlight": [
+              0.92,
+              0.9
+            ],
+            "shaaj": [
+              0.6,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "d",
+          "text": "Check the time. Eleven more on the list.",
+          "reaction": "Admired, at walking pace.",
+          "evidence": {
+            "plan": [
+              0.9,
+              0.8
+            ],
+            "roam": [
+              0.9,
+              0.6
+            ],
+            "art": [
+              0.35,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "e",
+          "text": "Honestly? I miss the old ek-chala thakur.",
+          "reaction": "Beautiful, but not the same. You're allowed to say it.",
+          "evidence": {
+            "heritage": [
+              0.92,
+              0.9
+            ],
+            "art": [
+              0.4,
+              0.3
+            ],
+            "dawn": [
+              0.55,
+              0.2
+            ]
+          }
+        },
+        {
+          "id": "f",
+          "text": "Look for the person I came with. They'd love this.",
+          "reaction": "Seeing it through their eyes. Very you.",
+          "evidence": {
+            "romance": [
+              0.85,
+              0.8
+            ],
+            "squad": [
+              0.2,
+              0.3
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "q_crew",
+      "block": "core",
+      "type": "single",
+      "prompt": "Your ideal Pujo crew:",
+      "visual": "Silhouettes at the same pandal gate: one person, a pair, a crowd, a family, a person with a camera.",
+      "rationale": "Squad size is the main axis that separates Night Owl from Addabaaz and Romantic from everyone. Family is offered as its own answer so the Para Kid is not mistaken for a party person.",
+      "musicReinforce": "No.",
+      "options": [
+        {
+          "id": "a",
+          "text": "One person. The right one.",
+          "reaction": "Pujo for two.",
+          "evidence": {
+            "squad": [
+              0.08,
+              1.0
+            ],
+            "romance": [
+              0.85,
+              0.7
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Two or three who can walk all night without complaining.",
+          "reaction": "A small crew with strong knees.",
+          "evidence": {
+            "squad": [
+              0.35,
+              0.8
+            ],
+            "night": [
+              0.7,
+              0.5
+            ],
+            "roam": [
+              0.75,
+              0.5
+            ]
+          }
+        },
+        {
+          "id": "c",
+          "text": "The whole gang. Fifteen minimum. Someone always gets lost.",
+          "reaction": "It isn't Pujo until someone's phone dies at Gariahat.",
+          "evidence": {
+            "squad": [
+              0.97,
+              1.0
+            ],
+            "crowd": [
+              0.7,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "d",
+          "text": "Family, cousins, and the para aunties who watched me grow up.",
+          "reaction": "They still ask about your exams. You still go.",
+          "evidence": {
+            "roots": [
+              0.92,
+              0.9
+            ],
+            "squad": [
+              0.7,
+              0.4
+            ],
+            "heritage": [
+              0.6,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "e",
+          "text": "Just me and my camera, early, before anyone else is up.",
+          "reaction": "The city, before it belongs to anyone.",
+          "evidence": {
+            "squad": [
+              0.05,
+              0.9
+            ],
+            "art": [
+              0.65,
+              0.4
+            ],
+            "dawn": [
+              0.7,
+              0.4
+            ],
+            "crowd": [
+              0.1,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "f",
+          "text": "Whoever's dancing. I'll find them.",
+          "reaction": "Follow the dhaak. Find your people.",
+          "evidence": {
+            "rhythm": [
+              0.9,
+              0.8
+            ],
+            "spotlight": [
+              0.75,
+              0.5
+            ],
+            "squad": [
+              0.7,
+              0.3
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "q_soundtrack",
+      "block": "core",
+      "type": "multi",
+      "maxSelect": 2,
+      "prompt": "Pick your Pujo soundtrack. Up to two.",
+      "visual": "Six cassette-spine tiles, hand-lettered, each with a small sound-wave strip. Optional ten-second preview on tap.",
+      "rationale": "The in-quiz music signal. It replaces a Spotify connection at launch, works for YouTube Music and JioSaavn listeners, and gives the music block of the reveal something real to say.",
+      "musicReinforce": "Yes. This is the question a connected music source would reinforce, if one is ever cleared. Until then, self-report is the signal.",
+      "options": [
+        {
+          "id": "a",
+          "text": "Mahishasuramardini, then Rabindrasangeet.",
+          "reaction": "The dawn setting.",
+          "evidence": {
+            "heritage": [
+              0.95,
+              0.8
+            ],
+            "dawn": [
+              0.75,
+              0.5
+            ],
+            "rhythm": [
+              0.3,
+              0.2
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Bangla band, loud. Fossils, Chandrabindoo, Cactus.",
+          "reaction": "Loud enough for the whole para.",
+          "evidence": {
+            "squad": [
+              0.7,
+              0.3
+            ],
+            "night": [
+              0.6,
+              0.3
+            ],
+            "rhythm": [
+              0.65,
+              0.4
+            ],
+            "heritage": [
+              0.5,
+              0.2
+            ]
+          }
+        },
+        {
+          "id": "c",
+          "text": "The Pujo-y prem playlist. Anupam Roy, Arijit's Bangla songs.",
+          "reaction": "Songs for the walk back.",
+          "evidence": {
+            "romance": [
+              0.9,
+              0.8
+            ]
+          }
+        },
+        {
+          "id": "d",
+          "text": "Dhaak remixes and every Bollywood Pujo song ever made.",
+          "reaction": "Dola re dola, on loop.",
+          "evidence": {
+            "rhythm": [
+              0.95,
+              0.8
+            ],
+            "spotlight": [
+              0.65,
+              0.4
+            ],
+            "crowd": [
+              0.65,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "e",
+          "text": "Whatever's new in Bangla indie and hip-hop.",
+          "reaction": "You'll have a new favourite by Navami.",
+          "evidence": {
+            "art": [
+              0.65,
+              0.4
+            ],
+            "night": [
+              0.65,
+              0.3
+            ],
+            "heritage": [
+              0.2,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "f",
+          "text": "Old Pujo songs. Hemanta, Manna Dey, R.D. Burman's Bangla albums.",
+          "reaction": "Pujor gaan, the way it used to arrive every year.",
+          "evidence": {
+            "heritage": [
+              0.9,
+              0.7
+            ],
+            "romance": [
+              0.6,
+              0.4
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "q_dhaak",
+      "block": "core",
+      "type": "single",
+      "prompt": "The dhaak starts. You:",
+      "visual": "Close-up of a dhaaki's hands mid-strike, the white plume blurred with motion.",
+      "rationale": "The body's answer to the dhaak separates the Dhunuchi (performs), the Para Kid (belongs), the Art Kid (observes), the Addabaaz (gathers), the Pet Pujari (keeps eating) and the Hunter (moves on).",
+      "musicReinforce": "Partly. Dance-heavy listening would support Dhaak energy, if a music source is ever connected and cleared.",
+      "options": [
+        {
+          "id": "a",
+          "text": "Dance. Immediately. Somebody hand me a dhunuchi.",
+          "reaction": "Smoke, rhythm, spotlight. You were made for this part.",
+          "evidence": {
+            "rhythm": [
+              0.97,
+              1.0
+            ],
+            "spotlight": [
+              0.85,
+              0.7
+            ],
+            "crowd": [
+              0.7,
+              0.2
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Stand close. That sound is my whole childhood.",
+          "reaction": "Some sounds are a place.",
+          "evidence": {
+            "heritage": [
+              0.8,
+              0.6
+            ],
+            "roots": [
+              0.75,
+              0.6
+            ],
+            "rhythm": [
+              0.6,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "c",
+          "text": "Film the dhaaki's hands. That's the shot.",
+          "reaction": "The hands, the plume, the blur. Yes.",
+          "evidence": {
+            "art": [
+              0.85,
+              0.8
+            ],
+            "rhythm": [
+              0.45,
+              0.2
+            ]
+          }
+        },
+        {
+          "id": "d",
+          "text": "Pull my friends into the circle.",
+          "reaction": "Nobody stands at the edge on your watch.",
+          "evidence": {
+            "squad": [
+              0.9,
+              0.8
+            ],
+            "rhythm": [
+              0.8,
+              0.5
+            ]
+          }
+        },
+        {
+          "id": "e",
+          "text": "Keep eating. Nod along.",
+          "reaction": "Multitasking, Pujo-style.",
+          "evidence": {
+            "feast": [
+              0.85,
+              0.7
+            ],
+            "rhythm": [
+              0.35,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "f",
+          "text": "Two minutes, then keep moving. The city's big.",
+          "reaction": "The dhaak will follow you to the next one anyway.",
+          "evidence": {
+            "roam": [
+              0.85,
+              0.6
+            ],
+            "plan": [
+              0.65,
+              0.3
+            ],
+            "rhythm": [
+              0.3,
+              0.3
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "q_love",
+      "block": "core",
+      "type": "single",
+      "prompt": "Pujo and love. Be honest.",
+      "visual": "Deliberately ambiguous: two silhouettes against pandal light, or one person alone at a ghat.",
+      "rationale": "Measures whether Pujo is experienced as a love story, including romanticising the city itself, without asking about relationship status. Every answer is dignified, including 'not interested'.",
+      "musicReinforce": "Partly, and display-only. Romantic listening can flavour the reveal text; it is never used to infer relationship status or orientation.",
+      "options": [
+        {
+          "id": "a",
+          "text": "Pujo is literally why I believe in love.",
+          "reaction": "Five days a year, the whole city agrees with you.",
+          "evidence": {
+            "romance": [
+              0.97,
+              1.0
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "I romanticise the city, not people. The lights, the rain, 3 am.",
+          "reaction": "The city is the love story. Fair.",
+          "evidence": {
+            "night": [
+              0.75,
+              0.6
+            ],
+            "romance": [
+              0.55,
+              0.4
+            ],
+            "heritage": [
+              0.55,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "c",
+          "text": "Love is a distraction. There are forty pandals left.",
+          "reaction": "Focused. Admirable. Slightly terrifying.",
+          "evidence": {
+            "romance": [
+              0.05,
+              0.9
+            ],
+            "plan": [
+              0.85,
+              0.6
+            ],
+            "roam": [
+              0.8,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "d",
+          "text": "I'm here to be seen. Whatever happens after is a bonus.",
+          "reaction": "Main character energy, Kolkata edition.",
+          "evidence": {
+            "spotlight": [
+              0.9,
+              0.8
+            ],
+            "shaaj": [
+              0.75,
+              0.4
+            ],
+            "romance": [
+              0.55,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "e",
+          "text": "My love language is sharing food.",
+          "reaction": "Half a roll is a declaration.",
+          "evidence": {
+            "feast": [
+              0.9,
+              0.8
+            ],
+            "romance": [
+              0.55,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "f",
+          "text": "Pujo is for my people. The para is my love story.",
+          "reaction": "Maybe the truest one.",
+          "evidence": {
+            "roots": [
+              0.9,
+              0.8
+            ],
+            "squad": [
+              0.65,
+              0.3
+            ],
+            "romance": [
+              0.35,
+              0.3
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "q_dashami",
+      "block": "core",
+      "type": "single",
+      "prompt": "Dashami. The goddess leaves. Where are you?",
+      "visual": "Dusk at the ghat: sindoor-red hands, the water, a procession blurred by motion.",
+      "rationale": "The emotional close of the quiz. How someone says goodbye to Pujo is one of the most identity-revealing moments of the festival.",
+      "musicReinforce": "No.",
+      "options": [
+        {
+          "id": "a",
+          "text": "At the para. Sindoor khela, Bijoya hugs, crying a little.",
+          "reaction": "Asche bochor abar hobe.",
+          "evidence": {
+            "roots": [
+              0.95,
+              1.0
+            ],
+            "heritage": [
+              0.65,
+              0.3
+            ],
+            "squad": [
+              0.65,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "At the ghat, watching the immersion in silence.",
+          "reaction": "The quietest moment of the loudest week.",
+          "evidence": {
+            "heritage": [
+              0.85,
+              0.7
+            ],
+            "crowd": [
+              0.25,
+              0.5
+            ],
+            "romance": [
+              0.5,
+              0.2
+            ],
+            "dawn": [
+              0.55,
+              0.2
+            ]
+          }
+        },
+        {
+          "id": "c",
+          "text": "In the bhasan procession, dancing like there's no tomorrow.",
+          "reaction": "Every bhasan needs someone like you at the front.",
+          "evidence": {
+            "rhythm": [
+              0.95,
+              0.9
+            ],
+            "spotlight": [
+              0.8,
+              0.5
+            ],
+            "crowd": [
+              0.85,
+              0.5
+            ]
+          }
+        },
+        {
+          "id": "d",
+          "text": "Posting the Pujo dump. Twenty slides, captions drafted since Saptami.",
+          "reaction": "Slide 14 is the one. You know it.",
+          "evidence": {
+            "spotlight": [
+              0.9,
+              0.8
+            ],
+            "shaaj": [
+              0.7,
+              0.4
+            ]
+          }
+        },
+        {
+          "id": "e",
+          "text": "Doing the Bijoya rounds. Every relative, every plate of mishti.",
+          "reaction": "Nimki, narkel naru, and one more rosogolla to be polite.",
+          "evidence": {
+            "feast": [
+              0.9,
+              0.8
+            ],
+            "roots": [
+              0.65,
+              0.4
+            ]
+          }
+        },
+        {
+          "id": "f",
+          "text": "Wherever the gang is. The last night together counts.",
+          "reaction": "Group photo, blurry, perfect.",
+          "evidence": {
+            "squad": [
+              0.9,
+              0.8
+            ],
+            "night": [
+              0.65,
+              0.3
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "q_frame",
+      "block": "core",
+      "type": "image",
+      "prompt": "One frame from your Pujo. Pick it.",
+      "visual": "Nine photographs in a 3 by 3 grid, one per archetype, shot in the house grade. No text on the images.",
+      "rationale": "The self-verification question. People accept results that match how they see themselves. It is weighted like any other question (not a veto), so a person's behaviour elsewhere in the quiz can still overrule the frame they picked.",
+      "musicReinforce": "No.",
+      "options": [
+        {
+          "id": "night_owl",
+          "text": "An empty lane at 3 am, one pandal still glowing.",
+          "reaction": "",
+          "evidence": {
+            "night": [
+              0.95,
+              0.8
+            ],
+            "crowd": [
+              0.3,
+              0.3
+            ],
+            "roam": [
+              0.7,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "pandal_hunter",
+          "text": "A map with forty pins, and a Metro card.",
+          "reaction": "",
+          "evidence": {
+            "plan": [
+              0.95,
+              0.8
+            ],
+            "roam": [
+              0.95,
+              0.6
+            ]
+          }
+        },
+        {
+          "id": "para_kid",
+          "text": "Plastic chairs, the para pandal, the dhaaki who comes every year.",
+          "reaction": "",
+          "evidence": {
+            "roots": [
+              0.95,
+              0.8
+            ],
+            "rhythm": [
+              0.65,
+              0.3
+            ],
+            "squad": [
+              0.7,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "pujo_romantic",
+          "text": "Two hands, one plate of phuchka, a rickshaw at dusk.",
+          "reaction": "",
+          "evidence": {
+            "romance": [
+              0.95,
+              0.8
+            ],
+            "squad": [
+              0.1,
+              0.4
+            ]
+          }
+        },
+        {
+          "id": "pet_pujari",
+          "text": "A table: biryani, a roll, a box of mishti.",
+          "reaction": "",
+          "evidence": {
+            "feast": [
+              0.97,
+              0.9
+            ]
+          }
+        },
+        {
+          "id": "art_kid",
+          "text": "A jute installation, and the artist's name on a placard.",
+          "reaction": "",
+          "evidence": {
+            "art": [
+              0.95,
+              0.9
+            ],
+            "crowd": [
+              0.25,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "addabaaz",
+          "text": "Fifteen friends on the grass at Maddox, midnight.",
+          "reaction": "",
+          "evidence": {
+            "squad": [
+              0.97,
+              0.8
+            ],
+            "night": [
+              0.7,
+              0.3
+            ],
+            "crowd": [
+              0.75,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "dhunuchi",
+          "text": "Dhunuchi smoke, a dancer mid-turn, everyone filming.",
+          "reaction": "",
+          "evidence": {
+            "spotlight": [
+              0.95,
+              0.8
+            ],
+            "rhythm": [
+              0.9,
+              0.5
+            ],
+            "shaaj": [
+              0.85,
+              0.4
+            ]
+          }
+        },
+        {
+          "id": "shiuli",
+          "text": "Shiuli on wet grass, a radio, 5 am.",
+          "reaction": "",
+          "evidence": {
+            "dawn": [
+              0.95,
+              0.8
+            ],
+            "heritage": [
+              0.9,
+              0.6
+            ],
+            "crowd": [
+              0.08,
+              0.3
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "rf_metro",
+      "block": "rapid",
+      "type": "binary",
+      "prompt": "Last Metro or first Metro?",
+      "rationale": "Chronotype, in two words.",
+      "musicReinforce": "No.",
+      "options": [
+        {
+          "id": "a",
+          "text": "Last",
+          "evidence": {
+            "night": [
+              0.85,
+              0.35
+            ],
+            "dawn": [
+              0.2,
+              0.35
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "First",
+          "evidence": {
+            "dawn": [
+              0.85,
+              0.35
+            ],
+            "night": [
+              0.2,
+              0.35
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "rf_theme",
+      "block": "rapid",
+      "type": "binary",
+      "prompt": "Theme or sabeki?",
+      "rationale": "Kolkata's oldest Pujo argument. Also a shareable badge.",
+      "musicReinforce": "No.",
+      "options": [
+        {
+          "id": "a",
+          "text": "Theme",
+          "evidence": {
+            "art": [
+              0.8,
+              0.35
+            ],
+            "heritage": [
+              0.25,
+              0.35
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Sabeki",
+          "evidence": {
+            "heritage": [
+              0.85,
+              0.35
+            ],
+            "art": [
+              0.4,
+              0.2
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "rf_photo",
+      "block": "rapid",
+      "type": "binary",
+      "prompt": "In the photo, or taking it?",
+      "rationale": "Separates the Dhunuchi (in front of the lens) from the Art Kid (behind it).",
+      "musicReinforce": "No.",
+      "options": [
+        {
+          "id": "a",
+          "text": "In it",
+          "evidence": {
+            "spotlight": [
+              0.85,
+              0.35
+            ],
+            "shaaj": [
+              0.7,
+              0.2
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Taking it",
+          "evidence": {
+            "spotlight": [
+              0.2,
+              0.35
+            ],
+            "art": [
+              0.7,
+              0.2
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "rf_crush",
+      "block": "rapid",
+      "type": "binary",
+      "prompt": "The crush or the quiet?",
+      "rationale": "A second crowd reading, since only one core question measures it directly.",
+      "musicReinforce": "No.",
+      "options": [
+        {
+          "id": "a",
+          "text": "The crush",
+          "evidence": {
+            "crowd": [
+              0.9,
+              0.35
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "The quiet",
+          "evidence": {
+            "crowd": [
+              0.1,
+              0.35
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "rf_para",
+      "block": "rapid",
+      "type": "binary",
+      "prompt": "Your para, or the whole city?",
+      "rationale": "Roots against roaming.",
+      "musicReinforce": "No.",
+      "options": [
+        {
+          "id": "a",
+          "text": "My para",
+          "evidence": {
+            "roots": [
+              0.85,
+              0.35
+            ],
+            "roam": [
+              0.15,
+              0.35
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "The whole city",
+          "evidence": {
+            "roam": [
+              0.85,
+              0.35
+            ],
+            "roots": [
+              0.25,
+              0.2
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "rf_table",
+      "block": "rapid",
+      "type": "binary",
+      "prompt": "Table for two, or table for twelve?",
+      "rationale": "Squad size. Held in reserve for the rapid round.",
+      "musicReinforce": "No.",
+      "options": [
+        {
+          "id": "a",
+          "text": "Two",
+          "evidence": {
+            "squad": [
+              0.15,
+              0.35
+            ],
+            "romance": [
+              0.7,
+              0.2
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Twelve",
+          "evidence": {
+            "squad": [
+              0.9,
+              0.35
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "rf_plate",
+      "block": "rapid",
+      "type": "binary",
+      "prompt": "One more pandal, or one more plate?",
+      "rationale": "Roaming against food. Held in reserve.",
+      "musicReinforce": "No.",
+      "options": [
+        {
+          "id": "a",
+          "text": "Pandal",
+          "evidence": {
+            "roam": [
+              0.8,
+              0.35
+            ],
+            "feast": [
+              0.3,
+              0.35
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Plate",
+          "evidence": {
+            "feast": [
+              0.85,
+              0.35
+            ],
+            "roam": [
+              0.4,
+              0.2
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "rf_dance",
+      "block": "rapid",
+      "type": "binary",
+      "prompt": "Dance, or watch?",
+      "rationale": "Dhaak energy. Held in reserve.",
+      "musicReinforce": "Partly.",
+      "options": [
+        {
+          "id": "a",
+          "text": "Dance",
+          "evidence": {
+            "rhythm": [
+              0.9,
+              0.35
+            ],
+            "spotlight": [
+              0.7,
+              0.2
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Watch",
+          "evidence": {
+            "rhythm": [
+              0.25,
+              0.35
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "tb_night",
+      "block": "tiebreak",
+      "dim": "night",
+      "type": "binary",
+      "prompt": "It's 2 am. Are you out, or asleep?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Out",
+          "evidence": {
+            "night": [
+              0.95,
+              1.0
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Asleep",
+          "evidence": {
+            "night": [
+              0.05,
+              1.0
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "tb_dawn",
+      "block": "tiebreak",
+      "dim": "dawn",
+      "type": "binary",
+      "prompt": "Mahalaya at 4 am. Alarm on, or alarm off?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Alarm on",
+          "evidence": {
+            "dawn": [
+              0.95,
+              1.0
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Alarm off",
+          "evidence": {
+            "dawn": [
+              0.05,
+              1.0
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "tb_roam",
+      "block": "tiebreak",
+      "dim": "roam",
+      "type": "binary",
+      "prompt": "Forty pandals, or four?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Forty",
+          "evidence": {
+            "roam": [
+              0.95,
+              1.0
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Four",
+          "evidence": {
+            "roam": [
+              0.1,
+              1.0
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "tb_plan",
+      "block": "tiebreak",
+      "dim": "plan",
+      "type": "binary",
+      "prompt": "Spreadsheet, or vibes?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Spreadsheet",
+          "evidence": {
+            "plan": [
+              0.95,
+              1.0
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Vibes",
+          "evidence": {
+            "plan": [
+              0.05,
+              1.0
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "tb_crowd",
+      "block": "tiebreak",
+      "dim": "crowd",
+      "type": "binary",
+      "prompt": "The crush, or the quiet?",
+      "options": [
+        {
+          "id": "a",
+          "text": "The crush",
+          "evidence": {
+            "crowd": [
+              0.95,
+              1.0
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "The quiet",
+          "evidence": {
+            "crowd": [
+              0.05,
+              1.0
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "tb_squad",
+      "block": "tiebreak",
+      "dim": "squad",
+      "type": "binary",
+      "prompt": "Table for two, or table for twelve?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Two",
+          "evidence": {
+            "squad": [
+              0.1,
+              1.0
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Twelve",
+          "evidence": {
+            "squad": [
+              0.95,
+              1.0
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "tb_roots",
+      "block": "tiebreak",
+      "dim": "roots",
+      "type": "binary",
+      "prompt": "Your para, or the whole city?",
+      "options": [
+        {
+          "id": "a",
+          "text": "My para",
+          "evidence": {
+            "roots": [
+              0.95,
+              1.0
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "The whole city",
+          "evidence": {
+            "roots": [
+              0.1,
+              1.0
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "tb_heritage",
+      "block": "tiebreak",
+      "dim": "heritage",
+      "type": "binary",
+      "prompt": "Sabeki, or theme?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sabeki",
+          "evidence": {
+            "heritage": [
+              0.95,
+              1.0
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Theme",
+          "evidence": {
+            "heritage": [
+              0.1,
+              1.0
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "tb_art",
+      "block": "tiebreak",
+      "dim": "art",
+      "type": "binary",
+      "prompt": "Read the placard, or skip it?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Read it",
+          "evidence": {
+            "art": [
+              0.95,
+              1.0
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Skip it",
+          "evidence": {
+            "art": [
+              0.1,
+              1.0
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "tb_feast",
+      "block": "tiebreak",
+      "dim": "feast",
+      "type": "binary",
+      "prompt": "One more pandal, or one more plate?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Pandal",
+          "evidence": {
+            "feast": [
+              0.1,
+              1.0
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Plate",
+          "evidence": {
+            "feast": [
+              0.95,
+              1.0
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "tb_shaaj",
+      "block": "tiebreak",
+      "dim": "shaaj",
+      "type": "binary",
+      "prompt": "Outfit planned, or outfit happened?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Planned",
+          "evidence": {
+            "shaaj": [
+              0.95,
+              1.0
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Happened",
+          "evidence": {
+            "shaaj": [
+              0.1,
+              1.0
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "tb_spotlight",
+      "block": "tiebreak",
+      "dim": "spotlight",
+      "type": "binary",
+      "prompt": "In the photo, or behind it?",
+      "options": [
+        {
+          "id": "a",
+          "text": "In it",
+          "evidence": {
+            "spotlight": [
+              0.95,
+              1.0
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Behind it",
+          "evidence": {
+            "spotlight": [
+              0.1,
+              1.0
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "tb_romance",
+      "block": "tiebreak",
+      "dim": "romance",
+      "type": "binary",
+      "prompt": "Pujo with one person, or Pujo with everyone?",
+      "options": [
+        {
+          "id": "a",
+          "text": "One person",
+          "evidence": {
+            "romance": [
+              0.9,
+              1.0
+            ],
+            "squad": [
+              0.1,
+              0.5
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Everyone",
+          "evidence": {
+            "romance": [
+              0.2,
+              1.0
+            ],
+            "squad": [
+              0.9,
+              0.5
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "tb_rhythm",
+      "block": "tiebreak",
+      "dim": "rhythm",
+      "type": "binary",
+      "prompt": "When the dhaak starts: dance, or watch?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Dance",
+          "evidence": {
+            "rhythm": [
+              0.95,
+              1.0
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Watch",
+          "evidence": {
+            "rhythm": [
+              0.15,
+              1.0
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "alt_memory",
+      "block": "alternate",
+      "type": "single",
+      "prompt": "Which Pujo memory hits hardest?",
+      "rationale": "Nostalgia without asking about age. Swap in for q_mahalaya in A/B tests or next season.",
+      "musicReinforce": "No.",
+      "options": [
+        {
+          "id": "a",
+          "text": "A cap-gun and a balloon from the mela.",
+          "reaction": "Every para kid's first Pujo.",
+          "evidence": {
+            "heritage": [
+              0.8,
+              0.6
+            ],
+            "roots": [
+              0.7,
+              0.5
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "New shoes, and the blister by Saptami.",
+          "reaction": "Pujo'r notun juto. A rite of passage.",
+          "evidence": {
+            "roam": [
+              0.75,
+              0.5
+            ],
+            "shaaj": [
+              0.6,
+              0.4
+            ]
+          }
+        },
+        {
+          "id": "c",
+          "text": "Navami night: the lights, not wanting to go home.",
+          "reaction": "Ore Nabami nishi, na hoiyo re obosan.",
+          "evidence": {
+            "night": [
+              0.85,
+              0.7
+            ],
+            "romance": [
+              0.55,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "d",
+          "text": "Reading the Pujabarshiki under the fan.",
+          "reaction": "Feluda, a fan, and a whole afternoon.",
+          "evidence": {
+            "heritage": [
+              0.9,
+              0.8
+            ],
+            "squad": [
+              0.2,
+              0.3
+            ],
+            "crowd": [
+              0.2,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "e",
+          "text": "The year we lost half the group at Maddox and found them at 3 am.",
+          "reaction": "Legendary. Still told every year.",
+          "evidence": {
+            "squad": [
+              0.9,
+              0.8
+            ],
+            "night": [
+              0.7,
+              0.4
+            ]
+          }
+        },
+        {
+          "id": "f",
+          "text": "The first theme pandal that stopped me in my tracks.",
+          "reaction": "The day Pujo became art.",
+          "evidence": {
+            "art": [
+              0.9,
+              0.8
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "alt_rain",
+      "block": "alternate",
+      "type": "single",
+      "prompt": "It rains on Saptami. Properly.",
+      "rationale": "Pujo rain is universal and funny. Useful as a replacement for q_queue, and for the rain-mode recommendations.",
+      "musicReinforce": "No.",
+      "options": [
+        {
+          "id": "a",
+          "text": "Keep going. Pandals look best wet.",
+          "reaction": "Reflections everywhere. Worth the socks.",
+          "evidence": {
+            "night": [
+              0.7,
+              0.4
+            ],
+            "art": [
+              0.65,
+              0.4
+            ],
+            "roam": [
+              0.7,
+              0.4
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Re-route everything by Metro in ninety seconds.",
+          "reaction": "Contingency plan B, activated.",
+          "evidence": {
+            "plan": [
+              0.95,
+              0.9
+            ],
+            "roam": [
+              0.8,
+              0.4
+            ]
+          }
+        },
+        {
+          "id": "c",
+          "text": "Chai and adda under the pandal until it stops.",
+          "reaction": "Rain is just more adda time.",
+          "evidence": {
+            "squad": [
+              0.85,
+              0.7
+            ],
+            "roots": [
+              0.6,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "d",
+          "text": "Khichuri weather. I'm eating.",
+          "reaction": "The correct response to rain, historically.",
+          "evidence": {
+            "feast": [
+              0.9,
+              0.8
+            ]
+          }
+        },
+        {
+          "id": "e",
+          "text": "Rain, Pujo, one umbrella for two. Cinema.",
+          "reaction": "You planned the rain. Admit it.",
+          "evidence": {
+            "romance": [
+              0.95,
+              0.9
+            ]
+          }
+        },
+        {
+          "id": "f",
+          "text": "My hair. My outfit. My plans.",
+          "reaction": "Mourned. Then re-styled.",
+          "evidence": {
+            "shaaj": [
+              0.9,
+              0.8
+            ],
+            "spotlight": [
+              0.7,
+              0.4
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "alt_phone",
+      "block": "alternate",
+      "type": "single",
+      "prompt": "Your phone at the end of Navami:",
+      "rationale": "A playful behavioural recap question. Good for the post-Pujo 'evolution' check-in.",
+      "musicReinforce": "No.",
+      "options": [
+        {
+          "id": "a",
+          "text": "3% battery. 400 photos of lights.",
+          "reaction": "",
+          "evidence": {
+            "night": [
+              0.85,
+              0.6
+            ],
+            "art": [
+              0.6,
+              0.4
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "A map with 38 pins.",
+          "reaction": "",
+          "evidence": {
+            "plan": [
+              0.9,
+              0.8
+            ],
+            "roam": [
+              0.9,
+              0.6
+            ]
+          }
+        },
+        {
+          "id": "c",
+          "text": "Nine new numbers saved.",
+          "reaction": "",
+          "evidence": {
+            "squad": [
+              0.9,
+              0.8
+            ],
+            "crowd": [
+              0.7,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "d",
+          "text": "Screen time: eleven minutes. I was busy being there.",
+          "reaction": "",
+          "evidence": {
+            "roots": [
+              0.75,
+              0.5
+            ],
+            "spotlight": [
+              0.1,
+              0.6
+            ],
+            "heritage": [
+              0.6,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "e",
+          "text": "One reel, fourteen drafts.",
+          "reaction": "",
+          "evidence": {
+            "spotlight": [
+              0.9,
+              0.8
+            ],
+            "shaaj": [
+              0.75,
+              0.4
+            ]
+          }
+        },
+        {
+          "id": "f",
+          "text": "Photos of food. Only food.",
+          "reaction": "",
+          "evidence": {
+            "feast": [
+              0.95,
+              0.9
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "alt_detour",
+      "block": "alternate",
+      "type": "single",
+      "prompt": "A free afternoon between pandals. Pick a detour.",
+      "rationale": "Maps directly to year-round Kolkata places, so it doubles as a seed for the post-Pujo identity.",
+      "musicReinforce": "No.",
+      "options": [
+        {
+          "id": "a",
+          "text": "College Street, and a table at Coffee House.",
+          "reaction": "",
+          "evidence": {
+            "heritage": [
+              0.85,
+              0.6
+            ],
+            "squad": [
+              0.6,
+              0.4
+            ]
+          }
+        },
+        {
+          "id": "b",
+          "text": "Kumartuli lanes, to see where the goddess was made.",
+          "reaction": "",
+          "evidence": {
+            "art": [
+              0.85,
+              0.7
+            ],
+            "heritage": [
+              0.7,
+              0.4
+            ]
+          }
+        },
+        {
+          "id": "c",
+          "text": "Park Circus, for kebabs.",
+          "reaction": "",
+          "evidence": {
+            "feast": [
+              0.95,
+              0.9
+            ],
+            "roam": [
+              0.6,
+              0.2
+            ]
+          }
+        },
+        {
+          "id": "d",
+          "text": "Prinsep Ghat at sunset. Not talking.",
+          "reaction": "",
+          "evidence": {
+            "romance": [
+              0.9,
+              0.8
+            ],
+            "crowd": [
+              0.3,
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "e",
+          "text": "Home, for a nap. Tonight is long.",
+          "reaction": "",
+          "evidence": {
+            "night": [
+              0.9,
+              0.8
+            ],
+            "plan": [
+              0.6,
+              0.2
+            ]
+          }
+        },
+        {
+          "id": "f",
+          "text": "The para. Someone needs help with the bhog.",
+          "reaction": "",
+          "evidence": {
+            "roots": [
+              0.95,
+              0.9
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "pref_status",
+      "block": "preference",
+      "type": "single",
+      "prompt": "Where are you this Pujo?",
+      "facet": "status",
+      "options": [
+        {
+          "id": "local",
+          "text": "Here, like every year"
+        },
+        {
+          "id": "homecomer",
+          "text": "Coming home for Pujo"
+        },
+        {
+          "id": "first_pujo",
+          "text": "My first Pujo in Kolkata"
+        },
+        {
+          "id": "far_away",
+          "text": "Far away, watching"
+        }
+      ]
+    },
+    {
+      "id": "pref_diet",
+      "block": "preference",
+      "type": "single",
+      "prompt": "What do you eat?",
+      "facet": "diet",
+      "options": [
+        {
+          "id": "veg",
+          "text": "Veg"
+        },
+        {
+          "id": "egg",
+          "text": "Veg, and eggs"
+        },
+        {
+          "id": "non_veg",
+          "text": "Everything"
+        },
+        {
+          "id": "jain",
+          "text": "Jain"
+        },
+        {
+          "id": "skip",
+          "text": "Skip"
+        }
+      ]
+    },
+    {
+      "id": "pref_move",
+      "block": "preference",
+      "type": "single",
+      "prompt": "How do you get around?",
+      "facet": "move",
+      "options": [
+        {
+          "id": "walk",
+          "text": "On foot"
+        },
+        {
+          "id": "metro",
+          "text": "Metro"
+        },
+        {
+          "id": "cab",
+          "text": "Cabs"
+        },
+        {
+          "id": "bike",
+          "text": "Bike or scooter"
+        },
+        {
+          "id": "mix",
+          "text": "Whatever's moving"
+        }
+      ]
+    },
+    {
+      "id": "pref_budget",
+      "block": "preference",
+      "type": "single",
+      "prompt": "A day of Pujo, food and travel, costs you about:",
+      "facet": "budget",
+      "options": [
+        {
+          "id": "under_500",
+          "text": "Under ₹500"
+        },
+        {
+          "id": "500_1500",
+          "text": "₹500 to ₹1,500"
+        },
+        {
+          "id": "1500_3000",
+          "text": "₹1,500 to ₹3,000"
+        },
+        {
+          "id": "above_3000",
+          "text": "More"
+        },
+        {
+          "id": "skip",
+          "text": "Skip"
+        }
+      ]
+    },
+    {
+      "id": "pref_turf",
+      "block": "preference",
+      "type": "single",
+      "prompt": "Your side of the city:",
+      "facet": "turf",
+      "options": [
+        {
+          "id": "north",
+          "text": "North"
+        },
+        {
+          "id": "central",
+          "text": "Central"
+        },
+        {
+          "id": "south",
+          "text": "South"
+        },
+        {
+          "id": "saltlake_newtown",
+          "text": "Salt Lake or New Town"
+        },
+        {
+          "id": "behala",
+          "text": "Behala"
+        },
+        {
+          "id": "dumdum_north_suburbs",
+          "text": "Dum Dum and the north suburbs"
+        },
+        {
+          "id": "howrah",
+          "text": "Howrah"
+        },
+        {
+          "id": "other",
+          "text": "Somewhere else"
+        }
+      ]
+    },
+    {
+      "id": "pref_age",
+      "block": "preference",
+      "type": "single",
+      "prompt": "Your age:",
+      "facet": "age_band",
+      "note": "Asked before anything is saved or shared. Under 18 gets the full reveal and a downloadable card, and nothing is stored.",
+      "options": [
+        {
+          "id": "under_18",
+          "text": "Under 18"
+        },
+        {
+          "id": "18_21",
+          "text": "18 to 21"
+        },
+        {
+          "id": "22_25",
+          "text": "22 to 25"
+        },
+        {
+          "id": "26_30",
+          "text": "26 to 30"
+        },
+        {
+          "id": "30_plus",
+          "text": "Over 30"
+        }
+      ]
+    }
+  ]
+}

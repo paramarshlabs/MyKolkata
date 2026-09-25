@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from 'next'
 import { preload } from 'react-dom'
 import { GoogleAnalytics } from '@next/third-parties/google'
-import { Analytics } from '@vercel/analytics/next'
 import { AppProviders } from '@/components/providers/AppProviders'
+import { SiteAnalytics } from '@/components/providers/SiteAnalytics'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -32,7 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <body>
         <AppProviders>{children}</AppProviders>
-        <Analytics />
+        <SiteAnalytics />
       </body>
       {/* loads after hydration and records client-side navigations too */}
       {process.env.NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />}

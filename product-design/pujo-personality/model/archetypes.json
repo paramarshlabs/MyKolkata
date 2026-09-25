@@ -1,0 +1,583 @@
+{
+  "version": "2026.1",
+  "note": "Prototype values (mu) and importance weights (lambda) per dimension. Importance says how much a dimension defines the archetype: 1.5+ signature, 1.0 defining, 0.5-0.75 relevant, 0.25 incidental. Tuned against model/simulate.mjs; retune only with the simulation and real 'That's me' feedback.",
+  "dimensionOrder": [
+    "night",
+    "dawn",
+    "roam",
+    "plan",
+    "crowd",
+    "squad",
+    "roots",
+    "heritage",
+    "art",
+    "feast",
+    "shaaj",
+    "spotlight",
+    "romance",
+    "rhythm"
+  ],
+  "archetypes": [
+    {
+      "id": "night_owl",
+      "name": "Night Owl",
+      "bn": "রাতজাগা",
+      "tagline": "Pujo starts after midnight.",
+      "clock": "1 am",
+      "sigil": "A crescent cradling a single Chandannagar bulb",
+      "cardGround": "obsidian",
+      "cardAccent": "taxi",
+      "prototype": {
+        "night": 0.95,
+        "dawn": 0.1,
+        "roam": 0.75,
+        "plan": 0.3,
+        "crowd": 0.45,
+        "squad": 0.4,
+        "roots": 0.25,
+        "heritage": 0.45,
+        "art": 0.5,
+        "feast": 0.6,
+        "shaaj": 0.35,
+        "spotlight": 0.3,
+        "romance": 0.5,
+        "rhythm": 0.4
+      },
+      "importance": {
+        "night": 1.5,
+        "dawn": 1.0,
+        "roam": 1.0,
+        "plan": 0.75,
+        "crowd": 0.5,
+        "squad": 0.5,
+        "roots": 0.5,
+        "heritage": 0.25,
+        "art": 0.25,
+        "feast": 0.5,
+        "shaaj": 0.25,
+        "spotlight": 0.25,
+        "romance": 0.5,
+        "rhythm": 0.25
+      }
+    },
+    {
+      "id": "pandal_hunter",
+      "name": "Pandal Hunter",
+      "bn": "প্যান্ডেল শিকারি",
+      "tagline": "Every pandal. On purpose.",
+      "clock": "11 am",
+      "sigil": "A compass rose drawn with alpona teardrops",
+      "cardGround": "slate",
+      "cardAccent": "taxi",
+      "prototype": {
+        "night": 0.55,
+        "dawn": 0.5,
+        "roam": 0.95,
+        "plan": 0.95,
+        "crowd": 0.4,
+        "squad": 0.35,
+        "roots": 0.15,
+        "heritage": 0.4,
+        "art": 0.55,
+        "feast": 0.25,
+        "shaaj": 0.15,
+        "spotlight": 0.3,
+        "romance": 0.1,
+        "rhythm": 0.2
+      },
+      "importance": {
+        "night": 0.5,
+        "dawn": 0.25,
+        "roam": 1.5,
+        "plan": 1.5,
+        "crowd": 0.75,
+        "squad": 0.5,
+        "roots": 0.75,
+        "heritage": 0.25,
+        "art": 0.5,
+        "feast": 0.75,
+        "shaaj": 0.75,
+        "spotlight": 0.25,
+        "romance": 0.75,
+        "rhythm": 0.5
+      }
+    },
+    {
+      "id": "para_kid",
+      "name": "Para Kid",
+      "bn": "পাড়াতুতো",
+      "tagline": "Every road leads back to the para.",
+      "clock": "8 am",
+      "sigil": "The dhaak, with its white plume",
+      "cardGround": "bordeaux",
+      "cardAccent": "crimson",
+      "prototype": {
+        "night": 0.6,
+        "dawn": 0.55,
+        "roam": 0.1,
+        "plan": 0.45,
+        "crowd": 0.6,
+        "squad": 0.8,
+        "roots": 0.95,
+        "heritage": 0.65,
+        "art": 0.25,
+        "feast": 0.55,
+        "shaaj": 0.45,
+        "spotlight": 0.4,
+        "romance": 0.35,
+        "rhythm": 0.7
+      },
+      "importance": {
+        "night": 0.75,
+        "dawn": 0.5,
+        "roam": 1.5,
+        "plan": 0.25,
+        "crowd": 0.5,
+        "squad": 0.75,
+        "roots": 1.5,
+        "heritage": 0.5,
+        "art": 0.5,
+        "feast": 0.5,
+        "shaaj": 0.25,
+        "spotlight": 0.25,
+        "romance": 0.25,
+        "rhythm": 0.75
+      }
+    },
+    {
+      "id": "pujo_romantic",
+      "name": "Pujo Romantic",
+      "bn": "মনকেমন",
+      "tagline": "Pujo is a love story. You're in it.",
+      "clock": "6 pm",
+      "sigil": "Two kaash plumes leaning into each other",
+      "cardGround": "bordeaux_deep",
+      "cardAccent": "blush",
+      "prototype": {
+        "night": 0.55,
+        "dawn": 0.35,
+        "roam": 0.45,
+        "plan": 0.4,
+        "crowd": 0.3,
+        "squad": 0.1,
+        "roots": 0.4,
+        "heritage": 0.6,
+        "art": 0.45,
+        "feast": 0.5,
+        "shaaj": 0.7,
+        "spotlight": 0.3,
+        "romance": 0.95,
+        "rhythm": 0.35
+      },
+      "importance": {
+        "night": 0.5,
+        "dawn": 0.25,
+        "roam": 0.5,
+        "plan": 0.25,
+        "crowd": 0.5,
+        "squad": 1.25,
+        "roots": 0.25,
+        "heritage": 0.5,
+        "art": 0.25,
+        "feast": 0.25,
+        "shaaj": 0.75,
+        "spotlight": 0.5,
+        "romance": 1.5,
+        "rhythm": 0.25
+      }
+    },
+    {
+      "id": "pet_pujari",
+      "name": "Pet Pujari",
+      "bn": "পেটপুজারি",
+      "tagline": "Thakur dekha is the excuse.",
+      "clock": "2 pm",
+      "sigil": "A sal-leaf plate",
+      "cardGround": "ink",
+      "cardAccent": "taxi",
+      "prototype": {
+        "night": 0.6,
+        "dawn": 0.3,
+        "roam": 0.6,
+        "plan": 0.55,
+        "crowd": 0.55,
+        "squad": 0.55,
+        "roots": 0.35,
+        "heritage": 0.4,
+        "art": 0.15,
+        "feast": 0.97,
+        "shaaj": 0.2,
+        "spotlight": 0.25,
+        "romance": 0.3,
+        "rhythm": 0.3
+      },
+      "importance": {
+        "night": 0.5,
+        "dawn": 0.25,
+        "roam": 0.5,
+        "plan": 0.25,
+        "crowd": 0.25,
+        "squad": 0.25,
+        "roots": 0.25,
+        "heritage": 0.25,
+        "art": 0.75,
+        "feast": 1.75,
+        "shaaj": 0.5,
+        "spotlight": 0.25,
+        "romance": 0.25,
+        "rhythm": 0.25
+      }
+    },
+    {
+      "id": "art_kid",
+      "name": "Art Kid",
+      "bn": "থিম-পাগল",
+      "tagline": "Every pandal is a gallery if you look long enough.",
+      "clock": "4 pm",
+      "sigil": "The chalchitra arch",
+      "cardGround": "pearl",
+      "cardAccent": "ruby",
+      "prototype": {
+        "night": 0.4,
+        "dawn": 0.45,
+        "roam": 0.65,
+        "plan": 0.65,
+        "crowd": 0.2,
+        "squad": 0.25,
+        "roots": 0.15,
+        "heritage": 0.45,
+        "art": 0.97,
+        "feast": 0.25,
+        "shaaj": 0.5,
+        "spotlight": 0.2,
+        "romance": 0.3,
+        "rhythm": 0.25
+      },
+      "importance": {
+        "night": 0.5,
+        "dawn": 0.25,
+        "roam": 0.5,
+        "plan": 0.5,
+        "crowd": 0.75,
+        "squad": 0.75,
+        "roots": 0.5,
+        "heritage": 0.25,
+        "art": 1.75,
+        "feast": 0.5,
+        "shaaj": 0.25,
+        "spotlight": 0.75,
+        "romance": 0.25,
+        "rhythm": 0.25
+      }
+    },
+    {
+      "id": "addabaaz",
+      "name": "Addabaaz",
+      "bn": "আড্ডাবাজ",
+      "tagline": "The pandal is just the venue.",
+      "clock": "10 pm",
+      "sigil": "Two clay bhaar cups, touching",
+      "cardGround": "ink",
+      "cardAccent": "crimson",
+      "prototype": {
+        "night": 0.75,
+        "dawn": 0.15,
+        "roam": 0.3,
+        "plan": 0.4,
+        "crowd": 0.8,
+        "squad": 0.97,
+        "roots": 0.45,
+        "heritage": 0.35,
+        "art": 0.2,
+        "feast": 0.6,
+        "shaaj": 0.55,
+        "spotlight": 0.55,
+        "romance": 0.4,
+        "rhythm": 0.55
+      },
+      "importance": {
+        "night": 0.75,
+        "dawn": 0.5,
+        "roam": 0.75,
+        "plan": 0.25,
+        "crowd": 0.75,
+        "squad": 1.75,
+        "roots": 0.25,
+        "heritage": 0.25,
+        "art": 0.5,
+        "feast": 0.5,
+        "shaaj": 0.25,
+        "spotlight": 0.5,
+        "romance": 0.25,
+        "rhythm": 0.5
+      }
+    },
+    {
+      "id": "dhunuchi",
+      "name": "Dhunuchi",
+      "bn": "ধুনুচি",
+      "tagline": "When the dhaak starts, so do you.",
+      "clock": "8 pm",
+      "sigil": "The dhunuchi, smoke rising",
+      "cardGround": "crimson_depth",
+      "cardAccent": "pearl",
+      "prototype": {
+        "night": 0.55,
+        "dawn": 0.3,
+        "roam": 0.45,
+        "plan": 0.5,
+        "crowd": 0.7,
+        "squad": 0.6,
+        "roots": 0.5,
+        "heritage": 0.4,
+        "art": 0.35,
+        "feast": 0.3,
+        "shaaj": 0.97,
+        "spotlight": 0.97,
+        "romance": 0.5,
+        "rhythm": 0.85
+      },
+      "importance": {
+        "night": 0.25,
+        "dawn": 0.25,
+        "roam": 0.25,
+        "plan": 0.25,
+        "crowd": 0.75,
+        "squad": 0.5,
+        "roots": 0.25,
+        "heritage": 0.25,
+        "art": 0.25,
+        "feast": 0.5,
+        "shaaj": 1.5,
+        "spotlight": 1.5,
+        "romance": 0.25,
+        "rhythm": 1.0
+      }
+    },
+    {
+      "id": "shiuli",
+      "name": "Shiuli",
+      "bn": "শিউলি",
+      "tagline": "Pujo is a morning thing.",
+      "clock": "4 am",
+      "sigil": "A shiuli flower: five white petals, one orange stem (stem in light-mode Taxi #C98A1F)",
+      "cardGround": "blush",
+      "cardAccent": "ruby",
+      "prototype": {
+        "night": 0.1,
+        "dawn": 0.95,
+        "roam": 0.4,
+        "plan": 0.55,
+        "crowd": 0.1,
+        "squad": 0.2,
+        "roots": 0.5,
+        "heritage": 0.95,
+        "art": 0.5,
+        "feast": 0.4,
+        "shaaj": 0.45,
+        "spotlight": 0.1,
+        "romance": 0.4,
+        "rhythm": 0.35
+      },
+      "importance": {
+        "night": 1.25,
+        "dawn": 1.5,
+        "roam": 0.5,
+        "plan": 0.25,
+        "crowd": 1.0,
+        "squad": 0.75,
+        "roots": 0.5,
+        "heritage": 1.5,
+        "art": 0.25,
+        "feast": 0.25,
+        "shaaj": 0.25,
+        "spotlight": 0.75,
+        "romance": 0.25,
+        "rhythm": 0.25
+      }
+    }
+  ],
+  "pairs": {
+    "note": "Unordered. kin = the same Pujo; complement = different strengths that fit; spark = opposites that make a good story. Pairs not listed are 'crossover' and get generated copy from their dimension differences.",
+    "kin": [
+      [
+        "night_owl",
+        "addabaaz"
+      ],
+      [
+        "night_owl",
+        "pet_pujari"
+      ],
+      [
+        "pandal_hunter",
+        "art_kid"
+      ],
+      [
+        "para_kid",
+        "shiuli"
+      ],
+      [
+        "para_kid",
+        "dhunuchi"
+      ],
+      [
+        "pujo_romantic",
+        "shiuli"
+      ],
+      [
+        "addabaaz",
+        "dhunuchi"
+      ],
+      [
+        "pet_pujari",
+        "addabaaz"
+      ]
+    ],
+    "complement": [
+      [
+        "pandal_hunter",
+        "pet_pujari"
+      ],
+      [
+        "art_kid",
+        "dhunuchi"
+      ],
+      [
+        "night_owl",
+        "pandal_hunter"
+      ],
+      [
+        "para_kid",
+        "pet_pujari"
+      ],
+      [
+        "pujo_romantic",
+        "art_kid"
+      ],
+      [
+        "shiuli",
+        "art_kid"
+      ],
+      [
+        "pujo_romantic",
+        "night_owl"
+      ],
+      [
+        "addabaaz",
+        "para_kid"
+      ]
+    ],
+    "spark": [
+      [
+        "night_owl",
+        "shiuli"
+      ],
+      [
+        "pandal_hunter",
+        "addabaaz"
+      ],
+      [
+        "pet_pujari",
+        "art_kid"
+      ],
+      [
+        "dhunuchi",
+        "shiuli"
+      ],
+      [
+        "pujo_romantic",
+        "addabaaz"
+      ],
+      [
+        "para_kid",
+        "pandal_hunter"
+      ]
+    ]
+  },
+  "squadRoles": [
+    {
+      "id": "navigator",
+      "dim": "plan",
+      "name": "Navigator",
+      "line": "Holds the map. Holds the group together, barely."
+    },
+    {
+      "id": "night_shift",
+      "dim": "night",
+      "name": "Night Shift",
+      "line": "Still awake when everyone else isn't."
+    },
+    {
+      "id": "early_alarm",
+      "dim": "dawn",
+      "name": "Early Alarm",
+      "line": "Wakes the group for anjali. Never forgiven."
+    },
+    {
+      "id": "snack_minister",
+      "dim": "feast",
+      "name": "Snack Minister",
+      "line": "Knows where the next roll is."
+    },
+    {
+      "id": "lens",
+      "dim": "art",
+      "name": "Lens",
+      "line": "Took every photo of the group. Is in none of them."
+    },
+    {
+      "id": "hype",
+      "dim": "spotlight",
+      "name": "Hype",
+      "line": "Starts the dance. Ends up in the middle of it."
+    },
+    {
+      "id": "anchor",
+      "dim": "roots",
+      "name": "Anchor",
+      "line": "Knows the para, the aunties and the dhaaki."
+    },
+    {
+      "id": "glue",
+      "dim": "squad",
+      "name": "Glue",
+      "line": "Counts heads. Finds whoever is lost."
+    },
+    {
+      "id": "heart",
+      "dim": "romance",
+      "name": "Heart",
+      "line": "Makes everyone take the long way home."
+    },
+    {
+      "id": "stylist",
+      "dim": "shaaj",
+      "name": "Stylist",
+      "line": "Approves every outfit in the group chat."
+    },
+    {
+      "id": "wanderer",
+      "dim": "roam",
+      "name": "Wanderer",
+      "line": "Says 'one more pandal' at 3 am. Means it."
+    },
+    {
+      "id": "archivist",
+      "dim": "heritage",
+      "name": "Archivist",
+      "line": "Knows which bonedi bari started in 1757."
+    },
+    {
+      "id": "crowd_surfer",
+      "dim": "crowd",
+      "name": "Crowd Surfer",
+      "line": "Loves the queue. Loves the crush."
+    },
+    {
+      "id": "drummer",
+      "dim": "rhythm",
+      "name": "Drummer",
+      "line": "Hears the dhaak two streets before anyone else."
+    }
+  ]
+}

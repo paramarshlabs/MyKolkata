@@ -6,6 +6,7 @@ import { SectionHead } from '@/components/brand/SectionHead'
 import { CountdownScene, PujoDays } from '@/components/brand/Countdown'
 import { AlponaLoader, AlponaRule } from '@/components/brand/Alpona'
 import { CityIcon, UiIcon } from '@/components/brand/icons'
+import { PersonalityEntry } from '@/components/pujo-personality/PersonalityEntry'
 import styles from '@/styles/Pujo.module.css'
 
 const NEARBY_PANDALS = [
@@ -95,6 +96,8 @@ function Pujo() {
           <PujoDays className={styles.days} />
         </div>
       </section>
+
+      <PersonalityEntry />
 
       <AlponaRule className="mk-wrap" />
 

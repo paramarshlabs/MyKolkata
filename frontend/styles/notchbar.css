@@ -165,3 +165,16 @@
   .mk-notchbar .nn-brand-text { display: none; }
   .mk-notchbar .nn-trigger { font-size: 13px; }
 }
+
+/* the public island (components/layout/OpenHeader.tsx): the lockup and a way
+   in, at every width, for visitors who are not signed in */
+.mk-notchbar .nn-island--solo { display: flex; white-space: nowrap; }
+.mk-notchbar .nn-signin {
+  display: flex; align-items: center; height: 34px; padding: 0 14px; border-radius: 999px;
+  font-family: var(--mk-text); font-size: 14px; color: var(--nn-fg); text-decoration: none; white-space: nowrap;
+  background: var(--nn-bg-2); transition: background var(--mk-t-fast) var(--mk-ease-in-out);
+}
+.mk-notchbar .nn-signin:hover { background: #d9d6cf; }
+@media (max-width: 639px) {
+  .mk-notchbar .nn-brand-text--solo { display: flex; }
+}

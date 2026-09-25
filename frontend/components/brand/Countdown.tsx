@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, type ReactNode } from 'react'
-import { MAHALAYA, PUJO_DAYS, formatPujoDate } from '@/lib/pujo'
+import { MAHALAYA, PUJO_DAYS, formatPujoDate, formatPujoDateLong } from '@/lib/pujo'
 import { KaashPhoolScene } from '@/components/brand/KaashPhool'
 
 type Left = { d: number; h: number; m: number; s: number; done: boolean }
@@ -53,7 +53,7 @@ export function CountdownScene({ children }: { children?: ReactNode }) {
         <p className="mk-count-sub">
           {left?.done
             ? 'Mahalaya has come. The city is ready.'
-            : 'till Mahalaya, 11 October. The city has already started getting ready.'}
+            : `till Mahalaya, ${formatPujoDateLong(MAHALAYA)}. The city has already started getting ready.`}
         </p>
       </div>
       {children}
