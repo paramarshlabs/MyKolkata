@@ -16,7 +16,7 @@ const SECTIONS = [
   { label: 'Experiences', href: '/experience' },
   { label: 'Pujo', href: '/pujo' },
   { label: 'Transport', href: '/transport' },
-  { label: 'Contribute', href: '/contribute' },
+  { label: 'Community', href: '/community' },
 ]
 
 function isCurrent(pathname: string, section: (typeof SECTIONS)[number]) {

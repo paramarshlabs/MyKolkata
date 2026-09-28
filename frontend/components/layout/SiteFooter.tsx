@@ -14,7 +14,7 @@ export function SiteFooter() {
   return (
     <footer className="mk-footer">
       <div className="mk-wrap mk-footer-row">
-        <p className="mk-footer-owner">© {new Date().getFullYear()} {OPERATOR}</p>
+        <p className="mk-footer-owner">&copy; {new Date().getFullYear()} {OPERATOR}</p>
         <nav aria-label="Legal">
           <ul className="mk-footer-links">
             <li><Link href="/privacy">Privacy</Link></li>

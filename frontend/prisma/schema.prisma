@@ -342,7 +342,7 @@ model TinderProfile {
   @@map("tinder_profiles")
 }
 
-// Public stories on /contribute. Ephemeral: each expires 24 hours after it is
+// Public stories on /community. Ephemeral: each expires 24 hours after it is
 // posted. Only text and the original external URL are kept — never media.
 // Editing sets editedAt and never moves createdAt or expiresAt: the day is
 // counted from the first post.

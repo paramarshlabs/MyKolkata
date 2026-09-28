@@ -756,7 +756,7 @@ Placeholder in Ash. Used for search, filters, and anything inline.
 ─────────────────────────────────────
 ```
 
-**The field input** is the only boxed variant, and only for real forms — sign-up, contribute,
+**The field input** is the only boxed variant, and only for real forms — sign-up, community,
 profile. `rgba(242,241,237,0.05)` fill, 1px `rgba(242,241,237,0.14)` border, radius 8px,
 14px × 16px padding, Pearl text, Ash placeholder. Focus takes a Crimson border plus a 2px ring at
 20% opacity. No glow, no inner shadow.

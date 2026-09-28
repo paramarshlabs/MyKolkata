@@ -298,7 +298,7 @@ function Contribute() {
       <div className="mk-wrap">
         <SectionHead
           level={1}
-          title="Contribute"
+          title="Community"
           lede="The city is written by the people in it. Join a community, or tell a Kolkata story of your own."
         />
 

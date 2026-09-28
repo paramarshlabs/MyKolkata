@@ -1,4 +1,4 @@
--- Ephemeral public stories for /contribute: text and an external URL only.
+-- Ephemeral public stories for /community: text and an external URL only.
 CREATE TABLE "stories" (
   "id" TEXT NOT NULL,
   "title" TEXT NOT NULL,

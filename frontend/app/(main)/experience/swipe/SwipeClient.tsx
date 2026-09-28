@@ -2,6 +2,7 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
+import Link from 'next/link'
 import { Sprig } from '@/components/brand/kolka'
 import { AlponaLoader } from '@/components/brand/Alpona'
 import styles from '@/styles/Experiences.module.css'
@@ -12,7 +13,7 @@ const RATINGS = [1, 2, 3, 4, 5]
 /* the API keeps the first 1000 characters; say so before anyone types more */
 const FEEDBACK_MAX = 1000
 
-function Experience() {
+function Swipe() {
   const [profiles, setProfiles] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -209,7 +210,10 @@ function Experience() {
       <main className="mk-page mk-page-top mk-wrap">
         <div className="mk-panel mk-empty" style={{ maxWidth: 640 }}>
           <h1 className="mk-h3">That&apos;s every experience for now.</h1>
-          <button onClick={() => setCurrentIndex(0)} className="mk-btn mk-btn--secondary">Start again</button>
+          <div className="mk-banner-actions">
+            <button onClick={() => setCurrentIndex(0)} className="mk-btn mk-btn--secondary">Start again</button>
+            <Link href="/experience" className="mk-btn mk-btn--text">All experiences</Link>
+          </div>
         </div>
       </main>
     )
@@ -227,9 +231,12 @@ function Experience() {
   return (
     <main className={styles.stage}>
       <header className={styles.intro}>
+        <Link href="/experience" className={`mk-meta ${styles.back}`}>
+          <span aria-hidden="true">←</span> All experiences
+        </Link>
         <div className="mk-band-head">
           <Sprig size={38} />
-          <h1 className="mk-h2">Experiences</h1>
+          <h1 className="mk-h2">Swipe to find your Ashtami</h1>
         </div>
         <p className="mk-caption">Drag right if it&apos;s for you, left if it isn&apos;t. Then tell us how it was.</p>
         <p className="mk-caption" role="status" style={{ color: 'var(--mk-taxi)', marginTop: sendError ? 8 : 0 }}>{sendError}</p>
@@ -355,4 +362,4 @@ function Experience() {
   )
 }
 
-export default Experience
+export default Swipe

@@ -1,12 +1,19 @@
-/* Experiences — /experience. One card at a time, dragged left or right. */
+/* Experiences — /experience, a grid of ways into the city, and
+   /experience/swipe, one card at a time, dragged left or right. The grid's
+   cards are the swipe card at rest: same width, surface, photo and type. */
 
+/* In the page flow, not fixed: a fixed stage covered the page and pushed the
+   footer to the top. Full height, clipped so a card thrown off-screen adds
+   no scroll. */
 .stage {
-  position: fixed; inset: 0; z-index: 0; overflow: hidden;
+  position: relative; z-index: 0; overflow: hidden; min-height: 100svh;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--mk-5);
   padding: calc(var(--mk-nav) + 16px) var(--mk-edge) var(--mk-6);
 }
 
 .intro { width: min(380px, 100%); display: grid; gap: var(--mk-2); }
+.back { justify-self: start; display: inline-flex; align-items: center; gap: 6px; min-height: 32px; color: var(--mk-ash); text-decoration: none; }
+.back:hover, .back:focus-visible { color: var(--mk-white); }
 
 .card {
   position: relative; z-index: 50; width: min(380px, 100%); max-height: min(600px, calc(100svh - var(--mk-nav) - 150px));
@@ -52,4 +59,68 @@
 @media (max-width: 480px) {
   .intro p { display: none; }
   .cardTitle { font-size: 25px; }
+}
+
+/* ================================================================ grid == */
+.grid {
+  list-style: none; margin: var(--mk-7) 0 0; padding: 0;
+  display: grid; justify-content: center; gap: var(--mk-5);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 380px));
+}
+.grid > li { display: flex; }
+
+/* the swipe card, made a link: it lifts a little and its border warms */
+.feature {
+  position: relative; width: 100%; display: flex; flex-direction: column; overflow: hidden;
+  border: 1px solid rgba(242, 241, 237, 0.08); border-radius: var(--mk-r-lg);
+  background: var(--mk-ink); box-shadow: var(--mk-shadow-panel);
+  color: inherit; text-decoration: none;
+  transition: transform var(--mk-t-hover) var(--mk-ease-out), border-color var(--mk-t-hover) var(--mk-ease-out);
+}
+.feature:hover { transform: translateY(-4px); border-color: rgba(242, 241, 237, 0.22); }
+.feature:focus-visible { outline: 2px solid var(--mk-crimson); outline-offset: 3px; }
+.feature .cardMedia img { transition: transform var(--mk-t-reveal) var(--mk-ease-out); }
+.feature:hover .cardMedia img { transform: scale(1.04); }
+.feature .cardBody { flex: 1; display: flex; flex-direction: column; overflow: visible; }
+.feature .ratings { margin-top: auto; }
+.feature .cardBio { margin-bottom: var(--mk-5); }
+
+.go { margin-left: auto; color: var(--mk-white); transition: transform var(--mk-t-hover) var(--mk-ease-out); }
+.feature:hover .go { transform: translateX(3px); color: var(--mk-taxi); }
+
+/* not built yet: the same card, at rest, and quieter */
+.soon { cursor: default; }
+.soon:hover { transform: none; border-color: rgba(242, 241, 237, 0.08); }
+.soon:hover .cardMedia img { transform: none; }
+.soon .cardMedia img { filter: saturate(0.55) contrast(1.05) brightness(0.8); }
+
+/* the first card is a Pujo one: the tick of red the brand keeps for it */
+.badge {
+  position: absolute; top: var(--mk-4); left: var(--mk-4); z-index: 1;
+  padding: 4px 10px; border-radius: 999px; font-size: 12px; letter-spacing: 0.02em;
+  background: rgba(13, 16, 18, 0.78); color: var(--mk-white); border: 1px solid rgba(242, 241, 237, 0.18);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feature, .feature .cardMedia img, .go { transition: none; }
+  .feature:hover, .feature:hover .cardMedia img, .feature:hover .go { transform: none; }
+}
+
+/* Phones: two cards a row. Each is about 165px wide, so the card tightens:
+   smaller type, the description held to three lines, and the foot's facts
+   stacked, without the arrow. */
+@media (max-width: 640px) {
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--mk-3); margin-top: var(--mk-6); }
+  .feature { border-radius: var(--mk-r-md); }
+  .feature .cardBody { padding: var(--mk-1) var(--mk-3) var(--mk-3); }
+  .feature .cardTitle { font-size: 18px; line-height: 1.15; letter-spacing: -0.01em; }
+  .feature .cardAge { font-size: 12px; }
+  .feature .cardBio {
+    margin: var(--mk-2) 0 var(--mk-3); font-size: 13px; line-height: 1.45;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .feature .ratings { margin-top: auto; padding-top: var(--mk-2); flex-direction: column; gap: 2px; font-size: 12px; }
+  .feature .go { display: none; }
+  .badge { top: var(--mk-2); left: var(--mk-2); padding: 2px 8px; font-size: 11px; }
 }

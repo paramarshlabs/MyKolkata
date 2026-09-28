@@ -637,7 +637,7 @@ Explain traditions through modern visual storytelling.
 
 ### 08 — Community
 
-Volunteer, participate, contribute, or connect.
+Volunteer, participate, connect, or share a story.
 
 ### 09 — Final CTA
 

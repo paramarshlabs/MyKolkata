@@ -4,7 +4,7 @@ import { createRateLimiter } from '@/lib/rateLimit'
 import { HONEYPOT_FIELD, STORY_MAX, TITLE_MAX, URL_MAX } from './limits'
 
 /* ==========================================================================
-   Ephemeral stories for /contribute: validation, and the handlers for the
+   Ephemeral stories for /community: validation, and the handlers for the
    wall (GET/POST) and for one story (PATCH/DELETE, its author only).
    The handlers take their database and the signed-in user as arguments, so
    app/api/stories/route.ts stays a thin wiring layer and this stays testable.
@@ -109,7 +109,7 @@ const serverError = (err: unknown) => {
   return NextResponse.json({ message: 'Internal server error' }, { status: 500, headers: NO_STORE })
 }
 
-/* the honeypot (ContributeClient's hidden "website" input) */
+/* the honeypot (CommunityClient's hidden "website" input) */
 const trippedHoneypot = (body: unknown) => {
   const value = body && typeof body === 'object' ? (body as Record<string, unknown>)[HONEYPOT_FIELD] : null
   return typeof value === 'string' && value.trim() !== ''

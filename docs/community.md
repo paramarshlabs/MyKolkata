@@ -1,4 +1,4 @@
-Build the /contribute feature as an ephemeral public story wall with external-media support.
+Build the /community feature as an ephemeral public story wall with external-media support.
 
 CORE BEHAVIOR
 - Signed-in users can submit:
@@ -6,7 +6,7 @@ CORE BEHAVIOR
   - story
   - optional link
 - Persist only text + external URL + minimal metadata in Supabase/Postgres.
-- Stories are public and visible to everyone on /contribute.
+- Stories are public and visible to everyone on /community.
 - Stories expire 24 hours after creation.
 - Never upload or store user media on our servers.
 
@@ -89,7 +89,7 @@ EXPIRATION
 - Expired stories should not appear even if the frontend cache contains them.
 
 UI
-Keep the existing /contribute design.
+Keep the existing /community design.
 Below the submission form show the active public stories.
 
 For a story with supported external media:

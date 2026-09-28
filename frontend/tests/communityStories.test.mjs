@@ -1,4 +1,4 @@
-// Tests for the /contribute story wall: link handling, validation, expiry and auth.
+// Tests for the /community story wall: link handling, validation, expiry and auth.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
@@ -230,11 +230,11 @@ test('only the author can edit or delete, and only a live story is edited', asyn
 })
 
 test('submitted content is never rendered as HTML', async () => {
-  for (const file of ['../app/(main)/contribute/ContributeClient.tsx', '../app/(main)/contribute/StoryMedia.tsx']) {
+  for (const file of ['../app/(main)/community/CommunityClient.tsx', '../app/(main)/community/StoryMedia.tsx']) {
     const source = await readFile(new URL(file, import.meta.url), 'utf8')
     assert.doesNotMatch(source, /dangerouslySetInnerHTML/, file)
   }
-  const media = await readFile(new URL('../app/(main)/contribute/StoryMedia.tsx', import.meta.url), 'utf8')
+  const media = await readFile(new URL('../app/(main)/community/StoryMedia.tsx', import.meta.url), 'utf8')
   assert.match(media, /src=\{media\.embedUrl\}/, 'iframes load only resolver-built embed URLs')
   assert.doesNotMatch(media, /src=\{media\.url\}/)
 })
