@@ -2,18 +2,29 @@ import { NextResponse } from 'next/server'
 import { currentUserId } from '@/lib/auth'
 import { prisma } from '@/lib/db/prisma'
 import { toClient } from '@/lib/serialize'
+import { createRateLimiter } from '@/lib/rateLimit'
 
 const MAX_FEEDBACK_LEN = 1000
 const BASE_WEIGHT = 5
+/* a person swipes a card at a time; forty in ten minutes is a script, not a person */
+const feedbackLimit = createRateLimiter({ limit: 40, windowMs: 10 * 60 * 1000 })
 
 export async function POST(
   request: Request,
   context: { params: Promise<{ id: string }> },
 ) {
-  if (!(await currentUserId())) {
+  const userId = await currentUserId()
+  if (!userId) {
     return NextResponse.json(
       { message: 'Sign in to leave feedback' },
       { status: 401, headers: { 'Cache-Control': 'no-store' } },
+    )
+  }
+  const limited = feedbackLimit(userId)
+  if (!limited.ok) {
+    return NextResponse.json(
+      { message: 'That’s a lot of feedback at once. Try again in a few minutes.' },
+      { status: 429, headers: { 'Cache-Control': 'no-store', 'Retry-After': String(limited.retryAfterSeconds) } },
     )
   }
 

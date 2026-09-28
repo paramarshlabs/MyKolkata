@@ -121,7 +121,7 @@ const pandals = [
 
 const regions = [
   { name: 'North Kolkata', description: 'Traditional pujas with heritage touch', image: 'https://assets.telegraphindia.com/telegraph/2021/Nov/1636726963_img_8377-jpg.jpg' },
-  { name: 'South Kolkata', description: 'Contemporary art meets tradition', image: '/southkol.png' },
+  { name: 'South Kolkata', description: 'Contemporary art meets tradition', image: '/southkol.jpg' },
   { name: 'Central Kolkata', description: 'Modern themes with grand displays', image: 'https://www.shutterstock.com/shutterstock/videos/3485372951/thumb/1.jpg?ip=x480' },
   { name: 'New Kolkata', description: 'Skyline pujas across Rajarhat and Salt Lake', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Kolkata-Rajarhat_view_from_high_rise.jpg/1280px-Kolkata-Rajarhat_view_from_high_rise.jpg' },
 ]

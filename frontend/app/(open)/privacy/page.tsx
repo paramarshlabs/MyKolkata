@@ -80,7 +80,7 @@ export default function PrivacyPage() {
             <h3>Usage analytics, only with your consent</h3>
             <p>
               If you allow analytics cookies, we use Google Analytics and Vercel Web Analytics to count page views and
-              see which features people use. The Pujo Personality also sends events such as &ldquo;quiz started&rdquo; and
+              see which features people use, and Vercel Speed Insights to measure how quickly pages load. The Pujo Personality also sends events such as &ldquo;quiz started&rdquo; and
               &ldquo;result revealed&rdquo;. These events contain no names, no free text and no location, and share links are
               recorded by route, never by card. If you don&apos;t allow analytics, none of this loads.
             </p>
@@ -105,6 +105,7 @@ export default function PrivacyPage() {
                   <tr><td>mk.pujo.* (browser storage)</td><td>Functional</td><td>Keeps your Pujo quiz and result on your device. Never sent to us unless you save it to your account.</td></tr>
                   <tr><td>Google Analytics cookies (_ga, _ga_…)</td><td>Analytics, with consent</td><td>Count visits and repeat visits. Set only if you allow analytics.</td></tr>
                   <tr><td>Vercel Web Analytics</td><td>Analytics, with consent</td><td>Counts page views without cookies. Loaded only if you allow analytics.</td></tr>
+                  <tr><td>Vercel Speed Insights</td><td>Analytics, with consent</td><td>Measures how fast pages load for real visitors, without cookies. Loaded only if you allow analytics.</td></tr>
                 </tbody>
               </table>
             </div>

@@ -32,7 +32,7 @@ export function FriendCompare({ token, them }: { token: string; them: ShareCard 
           <SectionHead id="yours-title" title="What's yours?" lede="Thirteen questions, about two minutes. Then see how your Pujos fit." />
           <div className="mk-banner-actions">
             <Link href={`/pujo/personality?with=${token}`} className="mk-btn mk-btn--primary">
-              Discover my Pujo <span className="mk-btn-arrow" aria-hidden="true">→</span>
+              Take the quiz <span className="mk-btn-arrow" aria-hidden="true">→</span>
             </Link>
           </div>
         </div>

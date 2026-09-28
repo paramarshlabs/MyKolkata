@@ -1,12 +1,16 @@
 import type { ReactNode } from 'react'
 import { MedallionBloom } from '@/components/brand/MedallionBloom'
 import Link from 'next/link'
+import Image from 'next/image'
 import { AlponaLoader } from '@/components/brand/Alpona'
 import { CookieSettingsButton } from '@/components/layout/SiteFooter'
 
 /*  The auth screens. The medallion needs a flat ground, so the photograph gets
     its own half of the frame and the mark sits on Obsidian beside it. Below
     900px the photograph becomes a short band above the form.                 */
+
+/* shared with app/(auth)/layout.tsx, which preloads it */
+export const AUTH_PHOTO = { src: '/login-bg.jpg', sizes: '(max-width: 900px) 100vw, 50vw' }
 
 export function AuthStage({ children, lede, footer }: { children: ReactNode; lede: string; footer?: ReactNode }) {
   return (
@@ -37,10 +41,12 @@ export function AuthStage({ children, lede, footer }: { children: ReactNode; led
       </section>
 
       <figure className="mk-auth-photo">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/login-bg.jpg"
+        <Image
+          src={AUTH_PHOTO.src}
           alt="Kolkata from above under a monsoon sky, the Howrah Bridge crossing the Hooghly in the haze"
+          fill
+          sizes={AUTH_PHOTO.sizes}
+          preload
         />
         <div className="mk-auth-scrim" aria-hidden="true" />
         <figcaption className="mk-capdev mk-auth-caption">

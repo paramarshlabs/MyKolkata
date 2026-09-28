@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 import { safePublicUrl } from '@/lib/places/anakinImageProvider'
+import { createRateLimiter } from '@/lib/rateLimit'
+import { HONEYPOT_FIELD, STORY_MAX, TITLE_MAX, URL_MAX } from './limits'
 
 /* ==========================================================================
    Ephemeral stories for /contribute: validation, and the handlers for the
@@ -8,13 +10,17 @@ import { safePublicUrl } from '@/lib/places/anakinImageProvider'
    app/api/stories/route.ts stays a thin wiring layer and this stays testable.
    ========================================================================== */
 
-export const TITLE_MAX = 120
-export const STORY_MAX = 2000
-export const URL_MAX = 2048
+export { HONEYPOT_FIELD, STORY_MAX, TITLE_MAX, URL_MAX }
+
 /* a story lives for a day */
 export const STORY_TTL_MS = 24 * 60 * 60 * 1000
 /* the feed shows the newest stories; a day of posts rarely needs more */
 export const FEED_LIMIT = 100
+/* spam limits: new stories per author per hour (counted in the database, so
+   it holds across server instances), and edits per author per hour */
+export const POSTS_PER_HOUR = 5
+export const EDITS_PER_HOUR = 30
+const HOUR_MS = 60 * 60 * 1000
 
 export type StoryRecord = {
   id: string
@@ -44,6 +50,8 @@ export interface StoryRepository {
   /* only stories with expiresAt > now, newest first */
   listActive(now: Date, take: number): Promise<StoryRecord[]>
   create(data: Omit<StoryRecord, 'id'>): Promise<StoryRecord>
+  /* the author's stories posted since `since`, for the hourly cap and the repeat check */
+  recentByAuthor(authorId: string, since: Date): Promise<Pick<StoryRecord, 'title' | 'story' | 'createdAt'>[]>
   /* the author's own story, still live: null when there is no such story */
   updateOwn(id: string, authorId: string, now: Date, data: Input & { editedAt: Date }): Promise<StoryRecord | null>
   /* the author's own story: false when there is no such story */
@@ -101,7 +109,20 @@ const serverError = (err: unknown) => {
   return NextResponse.json({ message: 'Internal server error' }, { status: 500, headers: NO_STORE })
 }
 
+/* the honeypot (ContributeClient's hidden "website" input) */
+const trippedHoneypot = (body: unknown) => {
+  const value = body && typeof body === 'object' ? (body as Record<string, unknown>)[HONEYPOT_FIELD] : null
+  return typeof value === 'string' && value.trim() !== ''
+}
+
+const tooMany = (message: string, retryAfterSeconds: number) => NextResponse.json(
+  { message },
+  { status: 429, headers: { ...NO_STORE, 'Retry-After': String(retryAfterSeconds) } },
+)
+
 export function createStoryHandlers(repository: StoryRepository, clock: () => Date = () => new Date()) {
+  const editLimit = createRateLimiter({ limit: EDITS_PER_HOUR, windowMs: HOUR_MS })
+
   return {
     async GET(viewerId: string | null = null) {
       try {
@@ -118,11 +139,25 @@ export function createStoryHandlers(repository: StoryRepository, clock: () => Da
     async POST(request: Request, userId: string | null) {
       if (!userId) return NextResponse.json({ message: 'Sign in to share a story' }, { status: 401, headers: NO_STORE })
 
-      const checked = validateStoryInput(await request.json().catch(() => null))
+      const body = await request.json().catch(() => null)
+      if (trippedHoneypot(body)) return NextResponse.json({ message: 'Your story didn’t post. Try again.' }, { status: 400, headers: NO_STORE })
+      const checked = validateStoryInput(body)
       if (!checked.ok) return NextResponse.json({ message: checked.message }, { status: 400, headers: NO_STORE })
 
       try {
         const createdAt = clock()
+        const recent = await repository.recentByAuthor(userId, new Date(createdAt.getTime() - STORY_TTL_MS))
+        const lastHour = recent.filter((row) => createdAt.getTime() - new Date(row.createdAt).getTime() < HOUR_MS)
+        if (lastHour.length >= POSTS_PER_HOUR) {
+          const oldest = Math.min(...lastHour.map((row) => new Date(row.createdAt).getTime()))
+          return tooMany(
+            `That’s ${POSTS_PER_HOUR} stories in an hour. Give the wall a little time, then post again.`,
+            Math.max(1, Math.ceil((oldest + HOUR_MS - createdAt.getTime()) / 1000)),
+          )
+        }
+        if (recent.some((row) => row.title === checked.value.title && row.story === checked.value.story)) {
+          return NextResponse.json({ message: 'You’ve already posted this story today.' }, { status: 409, headers: NO_STORE })
+        }
         const row = await repository.create({
           ...checked.value,
           authorId: userId,
@@ -138,6 +173,8 @@ export function createStoryHandlers(repository: StoryRepository, clock: () => Da
     /* an edit replaces the words and the link; the story still leaves 24 hours after it was first posted */
     async PATCH(request: Request, userId: string | null, id: string) {
       if (!userId) return NextResponse.json({ message: 'Sign in to edit your story' }, { status: 401, headers: NO_STORE })
+      const limited = editLimit(userId, clock().getTime())
+      if (!limited.ok) return tooMany('That’s a lot of edits. Try again in a little while.', limited.retryAfterSeconds)
 
       const checked = validateStoryInput(await request.json().catch(() => null))
       if (!checked.ok) return NextResponse.json({ message: checked.message }, { status: 400, headers: NO_STORE })

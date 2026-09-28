@@ -52,3 +52,8 @@
   transition: color var(--mk-t-hover) var(--mk-ease-in-out);
 }
 .mediaLink:hover, .mediaLink:focus-visible { color: var(--mk-taxi); }
+
+/* the form's small print: room left in a field, and the honeypot no person sees */
+.counter { display: block; margin-top: 6px; }
+.counter[data-low] { color: var(--mk-taxi); }
+.trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }

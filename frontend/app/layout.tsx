@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { preload } from 'react-dom'
 import { AppProviders } from '@/components/providers/AppProviders'
 import { SiteAnalytics } from '@/components/providers/SiteAnalytics'
+import { CONSENT_BOOT } from '@/lib/consent'
 import { CookieBanner } from '@/components/layout/CookieBanner'
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/site/site'
 import './globals.css'
@@ -47,6 +48,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* before first paint: hides the cookie banner for anyone who has already answered it */}
+        <script dangerouslySetInnerHTML={{ __html: CONSENT_BOOT }} />
+      </head>
       <body>
         <AppProviders>{children}</AppProviders>
         <CookieBanner />

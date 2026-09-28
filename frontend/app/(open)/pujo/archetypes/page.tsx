@@ -22,7 +22,7 @@ export default function ArchetypesPage() {
         <ArchetypeGrid />
         <div className="mk-banner-actions">
           <Link href="/pujo/personality" className="mk-btn mk-btn--primary">
-            Find yours <span className="mk-btn-arrow" aria-hidden="true">→</span>
+            Take the quiz <span className="mk-btn-arrow" aria-hidden="true">→</span>
           </Link>
         </div>
         <p className="mk-caption" style={{ marginTop: 24 }}>A playful Pujo identity built from your answers. Not a psychological test.</p>

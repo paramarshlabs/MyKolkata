@@ -106,7 +106,7 @@ export default async function ArchetypePage({ params }: Params) {
           <SectionHead id="nine-title" title="The nine" lede="Which one leads for you?" />
           <ArchetypeGrid highlight={id} />
           <div className="mk-banner-actions">
-            <Link href="/pujo/personality" className="mk-btn mk-btn--secondary">Find yours</Link>
+            <Link href="/pujo/personality" className="mk-btn mk-btn--secondary">Take the quiz</Link>
           </div>
         </div>
       </section>

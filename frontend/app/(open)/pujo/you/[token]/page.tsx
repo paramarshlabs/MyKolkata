@@ -42,7 +42,7 @@ export default async function SharedCardPage({ params }: Params) {
           <div className="mk-panel mk-empty">
             <h1 className="mk-h3">This link doesn&apos;t open a Pujo.</h1>
             <p className="mk-body">It may have been cut short when it was copied. Want to find yours?</p>
-            <Link href="/pujo/personality" className="mk-btn mk-btn--primary">Discover my Pujo</Link>
+            <Link href="/pujo/personality" className="mk-btn mk-btn--primary">Take the quiz <span className="mk-btn-arrow" aria-hidden="true">→</span></Link>
           </div>
         </div>
       </main>

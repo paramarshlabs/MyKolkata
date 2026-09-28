@@ -10,6 +10,10 @@ const repository: StoryRepository = {
     take,
   }),
   create: (data) => prisma.story.create({ data }),
+  recentByAuthor: (authorId, since) => prisma.story.findMany({
+    where: { authorId, createdAt: { gt: since } },
+    select: { title: true, story: true, createdAt: true },
+  }),
   /* the owner and expiry checks sit in the same statement as the write, so there is no race */
   async updateOwn(id, authorId, now, data) {
     const { count } = await prisma.story.updateMany({ where: { id, authorId, expiresAt: { gt: now } }, data })

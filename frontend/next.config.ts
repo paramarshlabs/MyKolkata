@@ -34,15 +34,19 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: devOrigins(),
   images: {
     formats: ['image/avif', 'image/webp'],
-    /* nothing renders next/image, so the optimizer fetches from no remote host —
-       a wildcard here would let anyone use /_next/image as an open image proxy.
-       List exact hostnames if next/image is adopted. */
+    /* next/image serves the local hero photos only, so the optimizer fetches
+       from no remote host — a wildcard here would let anyone use /_next/image
+       as an open image proxy. localPatterns keeps it to files in /public with
+       no query string. */
     remotePatterns: [],
+    localPatterns: [{ pathname: '/**', search: '' }],
   },
   async redirects() {
     return [
       /* Experiences used to live at /tinder; keep old links and bookmarks working */
       { source: '/tinder', destination: '/experience', permanent: true },
+      /* re-encoded as JPEG (3 MB to 0.3 MB); rows seeded before that still say .png */
+      { source: '/southkol.png', destination: '/southkol.jpg', permanent: true },
     ]
   },
   async headers() {

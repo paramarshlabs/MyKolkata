@@ -4,8 +4,10 @@ import Link from 'next/link'
 import { useEffect, useState, useSyncExternalStore } from 'react'
 import { readConsent, subscribeConsent, subscribeOpenConsent, writeConsent, type Consent } from '@/lib/consent'
 
-/* 'pending' on the server and in the first client frame: storage is unread,
-   so nothing shows until the browser says whether a choice was made */
+/* 'pending' on the server and while hydrating. The banner is in the server
+   HTML, so a first visit paints it straight away rather than after the
+   JavaScript runs; a visitor who has already chosen never sees it, because
+   CONSENT_BOOT marks <html data-consent> before paint and CSS hides it. */
 const snapshot = () => readConsent() ?? 'unset'
 const serverSnapshot = () => 'pending' as const
 
@@ -16,7 +18,7 @@ export function CookieBanner() {
   const [reopened, setReopened] = useState(false)
   useEffect(() => subscribeOpenConsent(() => setReopened(true)), [])
 
-  if (state === 'pending' || (state !== 'unset' && !reopened)) return null
+  if (state !== 'pending' && state !== 'unset' && !reopened) return null
 
   const choose = (value: Consent) => {
     setReopened(false)
@@ -24,7 +26,7 @@ export function CookieBanner() {
   }
 
   return (
-    <section className="mk-consent" role="region" aria-labelledby="consent-title">
+    <section className={`mk-consent${reopened ? ' is-open' : ''}`} role="region" aria-labelledby="consent-title">
       <h2 id="consent-title" className="mk-consent-title">Cookies</h2>
       <p className="mk-consent-body">
         Necessary cookies keep you signed in. May we also use analytics (Google and Vercel) to see which
@@ -39,7 +41,7 @@ export function CookieBanner() {
           Allow analytics
         </button>
       </div>
-      {state !== 'unset' && (
+      {reopened && state !== 'pending' && state !== 'unset' && (
         <p className="mk-consent-now">
           Right now: {state === 'granted' ? 'analytics allowed' : 'necessary cookies only'}.
         </p>

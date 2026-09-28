@@ -4,8 +4,9 @@ import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 import { resolveStoryMedia } from '../lib/stories/media.ts'
 import {
-  createStoryHandlers, STORY_MAX, STORY_TTL_MS, TITLE_MAX, validateStoryInput,
+  createStoryHandlers, POSTS_PER_HOUR, STORY_MAX, STORY_TTL_MS, TITLE_MAX, validateStoryInput,
 } from '../lib/stories/stories.ts'
+import { createRateLimiter } from '../lib/rateLimit.ts'
 
 const NOW = new Date('2026-09-20T10:00:00+05:30')
 const HOUR = 3_600_000
@@ -22,6 +23,9 @@ function memoryRepository(rows = []) {
       const row = { id: `st${++id}`, ...data }
       rows.push(row)
       return row
+    },
+    async recentByAuthor(authorId, since) {
+      return rows.filter((r) => r.authorId === authorId && r.createdAt > since)
     },
     async updateOwn(storyId, authorId, now, data) {
       const row = rows.find((r) => r.id === storyId && r.authorId === authorId && r.expiresAt > now)
@@ -233,4 +237,51 @@ test('submitted content is never rendered as HTML', async () => {
   const media = await readFile(new URL('../app/(main)/contribute/StoryMedia.tsx', import.meta.url), 'utf8')
   assert.match(media, /src=\{media\.embedUrl\}/, 'iframes load only resolver-built embed URLs')
   assert.doesNotMatch(media, /src=\{media\.url\}/)
+})
+
+/* ---------- spam ------------------------------------------------------------ */
+
+test('a filled-in honeypot is refused, and nothing is stored', async () => {
+  const repository = memoryRepository()
+  const res = await createStoryHandlers(repository, () => NOW).POST(post({ title: 't', story: 's', website: 'http://spam.example' }), 'user-1')
+  assert.equal(res.status, 400)
+  assert.equal(repository.rows.length, 0)
+  const ok = await createStoryHandlers(repository, () => NOW).POST(post({ title: 't', story: 's', website: '' }), 'user-1')
+  assert.equal(ok.status, 201, 'an empty honeypot is what people send')
+})
+
+test('an author can post a few stories an hour, then waits', async () => {
+  let clock = NOW.getTime()
+  const repository = memoryRepository()
+  const handlers = createStoryHandlers(repository, () => new Date(clock))
+  for (let i = 0; i < POSTS_PER_HOUR; i++) {
+    clock += 60_000
+    assert.equal((await handlers.POST(post({ title: `t${i}`, story: 's' }), 'user-1')).status, 201)
+  }
+  const blocked = await handlers.POST(post({ title: 'one more', story: 's' }), 'user-1')
+  assert.equal(blocked.status, 429)
+  assert.ok(Number(blocked.headers.get('retry-after')) > 0)
+  assert.equal((await handlers.POST(post({ title: 'someone else', story: 's' }), 'user-2')).status, 201, 'the cap is per author')
+  clock += HOUR
+  assert.equal((await handlers.POST(post({ title: 'later', story: 's' }), 'user-1')).status, 201, 'an hour on, the cap has passed')
+})
+
+test('the same story twice in a day is refused', async () => {
+  let clock = NOW.getTime()
+  const handlers = createStoryHandlers(memoryRepository(), () => new Date(clock))
+  assert.equal((await handlers.POST(post({ title: 'Tram', story: 'Rode the 5.' }), 'user-1')).status, 201)
+  clock += 2 * HOUR
+  assert.equal((await handlers.POST(post({ title: 'Tram', story: 'Rode the 5.' }), 'user-1')).status, 409)
+  assert.equal((await handlers.POST(post({ title: 'Tram', story: 'Rode the 5.' }), 'user-2')).status, 201, 'someone else may say the same thing')
+})
+
+test('the in-memory limiter counts per key inside its window', () => {
+  const check = createRateLimiter({ limit: 2, windowMs: 1000 })
+  assert.equal(check('a', 0).ok, true)
+  assert.equal(check('a', 100).ok, true)
+  const third = check('a', 200)
+  assert.equal(third.ok, false)
+  assert.equal(third.retryAfterSeconds, 1)
+  assert.equal(check('b', 200).ok, true)
+  assert.equal(check('a', 1001).ok, true, 'the first hit has left the window')
 })

@@ -241,6 +241,8 @@ export function CloudShader({
 
     let frame = 0
     let running = true
+    /* off screen (the Pujo countdown scrolled away), nothing is drawn */
+    let visible = true
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
     const resize = () => {
@@ -257,7 +259,10 @@ export function CloudShader({
       gl.uniform2f(loc.res, w, h)
     }
 
-    const observer = new ResizeObserver(resize)
+    const observer = new ResizeObserver(() => {
+      resize()
+      if (reduceMotion && running) frame = requestAnimationFrame(draw)
+    })
     observer.observe(canvas)
     resize()
 
@@ -275,8 +280,16 @@ export function CloudShader({
       gl.uniform3f(loc.skyTop, skyTop[0], skyTop[1], skyTop[2])
       gl.uniform3f(loc.skyBottom, skyBottom[0], skyBottom[1], skyBottom[2])
       gl.drawArrays(gl.TRIANGLES, 0, 3)
-      frame = requestAnimationFrame(draw)
+      /* a still sky is drawn once; a moving one only while it can be seen */
+      if (!reduceMotion && visible) frame = requestAnimationFrame(draw)
     }
+
+    const seen = new IntersectionObserver(([entry]) => {
+      const was = visible
+      visible = entry.isIntersecting
+      if (visible && !was && !reduceMotion && running) frame = requestAnimationFrame(draw)
+    })
+    seen.observe(canvas)
 
     frame = requestAnimationFrame(draw)
 
@@ -284,6 +297,7 @@ export function CloudShader({
       running = false
       cancelAnimationFrame(frame)
       observer.disconnect()
+      seen.disconnect()
       gl.deleteBuffer(buffer)
       gl.deleteProgram(program)
       gl.deleteShader(vert)

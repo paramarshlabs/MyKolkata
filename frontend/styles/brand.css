@@ -542,6 +542,8 @@
     border: 1px solid rgba(242, 241, 237, 0.16); border-radius: var(--mk-r-md);
     box-shadow: var(--mk-shadow-panel);
   }
+  /* answered already (set in <head> before paint): hidden unless reopened */
+  html[data-consent] .mk-consent:not(.is-open) { display: none; }
   .mk-consent-title { margin: 0; font-family: var(--mk-display); font-weight: 400; font-size: 20px; line-height: 1.3; color: var(--mk-white); }
   .mk-consent-body { margin: 0; font-size: 15px; line-height: 1.5; }
   .mk-consent-body a, .mk-footer a, .mk-legal a { color: var(--mk-white); text-decoration: underline; text-underline-offset: 3px; }

@@ -7,6 +7,7 @@ import { AlponaLoader } from '@/components/brand/Alpona'
 import { UiIcon } from '@/components/brand/icons'
 import styles from '@/styles/Contribute.module.css'
 import { StoryMedia } from './StoryMedia'
+import { HONEYPOT_FIELD, STORY_MAX, TITLE_MAX } from '@/lib/stories/limits'
 import type { PublicStory } from '@/lib/stories/stories'
 
 type Community = {
@@ -33,6 +34,23 @@ function postedAt(iso: string) {
 
 type Draft = { title: string; content: string; link: string }
 
+/* how much room is left, said quietly and only when it starts to matter */
+function Counter({ id, value, max }: { id: string; value: string; max: number }) {
+  const left = max - value.length
+  return (
+    <span id={id} className={`mk-meta ${styles.counter}`} data-low={left <= max * 0.1 || undefined}>
+      {left <= max * 0.25 ? `${left} characters left` : `Up to ${max} characters`}
+    </span>
+  )
+}
+
+/* the browser's `required` lets a field of spaces through; the server would refuse it */
+function blankField(draft: Draft): { field: 'title' | 'content'; message: string } | null {
+  if (!draft.title.trim()) return { field: 'title', message: 'Give your story a title.' }
+  if (!draft.content.trim()) return { field: 'content', message: 'Write a few words of your story.' }
+  return null
+}
+
 /* One story on the wall. Its author can edit it in place or delete it; an edit
    never moves the 24 hours, which run from the first post. */
 function StoryCard({ story, onSaved, onDeleted }: {
@@ -54,6 +72,12 @@ function StoryCard({ story, onSaved, onDeleted }: {
 
   const save = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const blank = blankField(draft)
+    if (blank) {
+      setError(blank.message)
+      document.getElementById(`${idPrefix}-${blank.field}`)?.focus()
+      return
+    }
     setBusy(true)
     setError(null)
     try {
@@ -101,9 +125,11 @@ function StoryCard({ story, onSaved, onDeleted }: {
             value={draft.title}
             onChange={(e) => setDraft({ ...draft, title: e.target.value })}
             className="mk-field"
-            maxLength={120}
+            maxLength={TITLE_MAX}
+            aria-describedby={`${idPrefix}-title-count`}
             required
           />
+          <Counter id={`${idPrefix}-title-count`} value={draft.title} max={TITLE_MAX} />
         </div>
         <div>
           <label className="mk-label" htmlFor={`${idPrefix}-content`}>Your story</label>
@@ -112,9 +138,11 @@ function StoryCard({ story, onSaved, onDeleted }: {
             value={draft.content}
             onChange={(e) => setDraft({ ...draft, content: e.target.value })}
             className="mk-field"
-            maxLength={2000}
+            maxLength={STORY_MAX}
+            aria-describedby={`${idPrefix}-content-count`}
             required
           />
+          <Counter id={`${idPrefix}-content-count`} value={draft.content} max={STORY_MAX} />
         </div>
         <div>
           <label className="mk-label" htmlFor={`${idPrefix}-link`}>A link, if there is one</label>
@@ -154,7 +182,7 @@ function StoryCard({ story, onSaved, onDeleted }: {
           <p className="mk-caption">Delete this story? This can&apos;t be undone.</p>
           <div className={styles.storyActions}>
             <button type="button" className="mk-btn mk-btn--primary" onClick={remove} disabled={busy}>
-              {busy ? 'Deleting…' : 'Delete'}
+              {busy ? 'Deleting…' : 'Delete story'}
             </button>
             <button type="button" className="mk-btn mk-btn--text" onClick={() => switchTo('view')} disabled={busy}>Keep it</button>
           </div>
@@ -172,7 +200,9 @@ function StoryCard({ story, onSaved, onDeleted }: {
 
 function Contribute() {
   const [showForm, setShowForm] = useState(false)
-  const [newPost, setNewPost] = useState({ title: '', content: '', link: '' })
+  const [newPost, setNewPost] = useState<Draft>({ title: '', content: '', link: '' })
+  /* the honeypot: hidden from people, so only a bot fills it in */
+  const [trap, setTrap] = useState('')
   const [communities, setCommunities] = useState<Community[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -235,13 +265,19 @@ function Contribute() {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const blank = blankField(newPost)
+    if (blank) {
+      setSubmitError(blank.message)
+      document.getElementById(`story-${blank.field}`)?.focus()
+      return
+    }
     setSubmitting(true)
     setSubmitError(null)
     try {
       const res = await fetch('/api/stories', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: newPost.title, story: newPost.content, link: newPost.link }),
+        body: JSON.stringify({ title: newPost.title, story: newPost.content, link: newPost.link, [HONEYPOT_FIELD]: trap }),
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(data.message || 'Your story didn’t post. Try again.')
@@ -323,9 +359,11 @@ function Contribute() {
                   onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
                   className="mk-field"
                   placeholder="The tram that still stops at Shyambazar"
-                  maxLength={120}
+                  maxLength={TITLE_MAX}
+                  aria-describedby="story-title-count"
                   required
                 />
+                <Counter id="story-title-count" value={newPost.title} max={TITLE_MAX} />
               </div>
               <div>
                 <label className="mk-label" htmlFor="story-content">Your story</label>
@@ -334,9 +372,11 @@ function Contribute() {
                   value={newPost.content}
                   onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
                   className="mk-field"
-                  maxLength={2000}
+                  maxLength={STORY_MAX}
+                  aria-describedby="story-content-count"
                   required
                 />
+                <Counter id="story-content-count" value={newPost.content} max={STORY_MAX} />
               </div>
               <div>
                 <label className="mk-label" htmlFor="story-link">A link, if there is one</label>
@@ -349,6 +389,10 @@ function Contribute() {
                   placeholder="https://"
                   maxLength={2048}
                 />
+              </div>
+              <div className={styles.trap} aria-hidden="true">
+                <label htmlFor="story-website">Leave this empty</label>
+                <input id="story-website" type="text" name={HONEYPOT_FIELD} value={trap} onChange={(e) => setTrap(e.target.value)} tabIndex={-1} autoComplete="off" />
               </div>
               {submitError && <p className={`mk-caption ${styles.formError}`} role="alert">{submitError}</p>}
               <div>

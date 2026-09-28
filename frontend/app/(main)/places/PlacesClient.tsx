@@ -2,6 +2,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { KOLKATA, exploreCategories, exploreRequest, fetchLivePlaces, mapHref } from '@/lib/livePlaces'
 import { haversineDistanceKm } from '@/lib/places/geo'
@@ -248,12 +249,13 @@ function Explore() {
   return (
     <main className={`mk-page ${styles.root}`}>
       <section className="mk-banner" aria-labelledby="explore-title">
-        <img
+        <Image
           className="mk-banner-img"
           src="/explore-hero-v2.webp"
           alt="Kolkata at blue hour after rain, a yellow taxi on the wet street and the Howrah Bridge lit up beyond"
-          width="1942"
-          height="809"
+          fill
+          sizes="100vw"
+          preload
           style={{ objectPosition: '56% 58%' }}
         />
         <div className="mk-banner-scrim" aria-hidden="true" />

@@ -9,6 +9,9 @@ import styles from '@/styles/Experiences.module.css'
 const DESCRIPTION_LIMIT = 180;
 const RATINGS = [1, 2, 3, 4, 5]
 
+/* the API keeps the first 1000 characters; say so before anyone types more */
+const FEEDBACK_MAX = 1000
+
 function Experience() {
   const [profiles, setProfiles] = useState([])
   const [loading, setLoading] = useState(true)
@@ -18,6 +21,8 @@ function Experience() {
   const [showFeedback, setShowFeedback] = useState(false)
   const [showFeedbackInput, setShowFeedbackInput] = useState(false)
   const [feedbackText, setFeedbackText] = useState('')
+  /* feedback that didn't reach us: said once, then cleared by the next send */
+  const [sendError, setSendError] = useState<string | null>(null)
   const [pendingSwipe, setPendingSwipe] = useState(null)
   const [cardVisible, setCardVisible] = useState(true)
   const [showFullDescription, setShowFullDescription] = useState(false)
@@ -152,7 +157,7 @@ function Experience() {
     if (profiles[currentIndex]) {
       // Send feedback to backend
       try {
-        await fetch(`/api/tinder-profiles/${profiles[currentIndex]._id}/feedback`, {
+        const res = await fetch(`/api/tinder-profiles/${profiles[currentIndex]._id}/feedback`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -161,8 +166,10 @@ function Experience() {
             userStars: userStars
           })
         })
-      } catch (e) {
-        // Optionally handle error
+        const data = res.ok ? null : await res.json().catch(() => ({}))
+        setSendError(res.ok ? null : data?.message || 'Your feedback didn’t send. Try the next one again.')
+      } catch {
+        setSendError('Your feedback didn’t send. Check your connection.')
       }
     }
     setFeedbackText('')
@@ -225,6 +232,7 @@ function Experience() {
           <h1 className="mk-h2">Experiences</h1>
         </div>
         <p className="mk-caption">Drag right if it&apos;s for you, left if it isn&apos;t. Then tell us how it was.</p>
+        <p className="mk-caption" role="status" style={{ color: 'var(--mk-taxi)', marginTop: sendError ? 8 : 0 }}>{sendError}</p>
       </header>
 
       {showLeftGlow && !showFeedback && (
@@ -323,7 +331,12 @@ function Experience() {
               placeholder="The light at five, the queue for the phuchka…"
               value={feedbackText}
               onChange={e => setFeedbackText(e.target.value)}
+              maxLength={FEEDBACK_MAX}
+              aria-describedby="exp-feedback-count"
             />
+            <span id="exp-feedback-count" className="mk-meta" style={{ display: 'block', marginTop: 6 }}>
+              {FEEDBACK_MAX - feedbackText.length <= 200 ? `${FEEDBACK_MAX - feedbackText.length} characters left` : 'Optional. A line is plenty.'}
+            </span>
             <div className={styles.modalActions}>
               <button className="mk-btn mk-btn--primary" onClick={handleFeedbackDone}>
                 Send feedback <span className="mk-btn-arrow" aria-hidden="true">→</span>

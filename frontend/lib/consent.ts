@@ -9,7 +9,8 @@
 
 export type Consent = 'granted' | 'denied'
 
-const KEY = 'mk.consent.v1'
+export const CONSENT_KEY = 'mk.consent.v1'
+const KEY = CONSENT_KEY
 const CHANGE = 'mk-consent-change'
 const OPEN = 'mk-consent-open'
 
@@ -29,6 +30,7 @@ export function writeConsent(value: Consent) {
   } catch {
     /* remembered for this page view only */
   }
+  document.documentElement.dataset.consent = value
   window.dispatchEvent(new Event(CHANGE))
   /* a script already running can't be unloaded: drop its cookies and start clean */
   if (before === 'granted' && value === 'denied') {
@@ -51,6 +53,11 @@ export function subscribeConsent(onChange: () => void) {
 export const consentSnapshot = () => readConsent()
 /* the server can't know, so it renders as undecided and loads nothing */
 export const consentServerSnapshot = () => null
+
+/* Runs in <head> before first paint (app/layout.tsx): marks <html> with a
+   choice already made, so the server-rendered banner is hidden by CSS before
+   it can flash. Plain ES5, no imports: it is inlined as a string. */
+export const CONSENT_BOOT = `try{var c=localStorage.getItem(${JSON.stringify(CONSENT_KEY)});if(c==='granted'||c==='denied')document.documentElement.dataset.consent=c}catch(e){}`
 
 /* "Cookie settings" in the footer reopens the banner */
 export const openConsent = () => window.dispatchEvent(new Event(OPEN))

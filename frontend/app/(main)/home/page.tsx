@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import type { Metadata } from 'next'
 import { pageMetadata } from '@/lib/site/site'
 import { requireUser } from '@/lib/auth'
@@ -51,11 +52,14 @@ export default async function HomePage() {
       <HomeEntry />
       <main className="mk-page" style={{ paddingBottom: 0 }}>
       <section className="mk-banner" aria-labelledby="home-title">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        {/* the page's largest paint: resized per device, served as AVIF or WebP, and preloaded */}
+        <Image
           className="mk-banner-img"
           src="/hero-bg.jpg"
           alt="A yellow bus passing under the steel spans of the Howrah Bridge at sunset"
+          fill
+          sizes="100vw"
+          preload
           style={{ objectPosition: '50% 64%' }}
         />
         <div className="mk-banner-scrim" aria-hidden="true" />
