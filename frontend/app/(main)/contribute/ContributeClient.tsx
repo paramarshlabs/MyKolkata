@@ -148,7 +148,7 @@ function StoryCard({ story, onSaved, onDeleted }: {
         {story.editedAt && <span title={`Edited ${postedAt(story.editedAt)}`}>, edited</span>}
       </p>
       <p className={`mk-body ${styles.storyText}`}>{story.story}</p>
-      <StoryMedia url={story.externalUrl} />
+      <StoryMedia url={story.externalUrl} title={story.title} />
       {story.mine && (mode === 'confirm' ? (
         <div className={styles.storyConfirm} role="group" aria-label="Delete this story?">
           <p className="mk-caption">Delete this story? This can&apos;t be undone.</p>

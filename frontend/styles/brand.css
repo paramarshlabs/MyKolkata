@@ -285,7 +285,8 @@
                 border-color var(--mk-t-hover) var(--mk-ease-in-out), color var(--mk-t-hover) var(--mk-ease-in-out);
   }
   .mk-btn:disabled { cursor: progress; opacity: 0.6; }
-  .mk-btn--primary { background: var(--mk-crimson); color: var(--mk-pearl); }
+  /* Pop White, not Pearl: Pearl on Crimson is 4.39:1, under AA for 16px text; White is 4.81:1 */
+  .mk-btn--primary { background: var(--mk-crimson); color: var(--mk-white); }
   .mk-btn--primary:hover:not(:disabled) { background: var(--mk-ruby); }
   .mk-btn--secondary { background: transparent; border-color: rgba(242,241,237,0.22); color: var(--mk-pearl); }
   .mk-btn--secondary:hover:not(:disabled) { border-color: rgba(242,241,237,0.45); background: rgba(242,241,237,0.04); }
@@ -475,7 +476,7 @@
   .mk-entry-play {
     position: absolute; inset: 50% auto auto 50%; z-index: 3; transform: translate(-50%, -50%);
     padding: 12px 26px; border-radius: var(--mk-r-sm);
-    background: var(--mk-crimson); color: var(--mk-pearl);
+    background: var(--mk-crimson); color: var(--mk-white);
     font-family: var(--mk-text); font-size: 16px; letter-spacing: 0.01em;
   }
   /* quiet way out of the film — Ash on Obsidian, off the video, above the home indicator */
@@ -528,4 +529,48 @@
     display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--mk-4);
   }
   .mk-transport-mode { display: flex; gap: var(--mk-4); align-items: flex-start; padding: var(--mk-5); color: var(--mk-pearl); }
+}
+
+/* The small print: the cookie banner, the footer, and the legal pages */
+@layer components {
+  .mk-consent {
+    position: fixed; z-index: 60;
+    left: max(16px, env(safe-area-inset-left)); bottom: max(16px, env(safe-area-inset-bottom));
+    width: min(520px, calc(100vw - 32px)); max-height: calc(100svh - 32px); overflow-y: auto;
+    padding: var(--mk-4) var(--mk-5) var(--mk-5); display: grid; gap: var(--mk-3);
+    background: var(--mk-ink); color: var(--mk-pearl);
+    border: 1px solid rgba(242, 241, 237, 0.16); border-radius: var(--mk-r-md);
+    box-shadow: var(--mk-shadow-panel);
+  }
+  .mk-consent-title { margin: 0; font-family: var(--mk-display); font-weight: 400; font-size: 20px; line-height: 1.3; color: var(--mk-white); }
+  .mk-consent-body { margin: 0; font-size: 15px; line-height: 1.5; }
+  .mk-consent-body a, .mk-footer a, .mk-legal a { color: var(--mk-white); text-decoration: underline; text-underline-offset: 3px; }
+  .mk-consent-body a:hover, .mk-footer a:hover, .mk-legal a:hover { color: var(--mk-taxi); }
+  .mk-consent-actions { display: flex; flex-wrap: wrap; gap: var(--mk-3); }
+  .mk-consent-actions .mk-btn { flex: 1 1 0; min-width: 0; padding-inline: 12px; }
+  .mk-consent-now { margin: 0; font-size: 13px; color: var(--mk-ash); }
+
+  .mk-footer { margin-top: var(--mk-9); padding: var(--mk-6) 0 max(var(--mk-6), env(safe-area-inset-bottom)); border-top: 1px solid rgba(242, 241, 237, 0.1); }
+  .mk-footer-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--mk-3) var(--mk-6); }
+  .mk-footer-owner { margin: 0; font-size: 14px; color: var(--mk-ash); }
+  .mk-footer-links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--mk-2) var(--mk-5); font-size: 14px; }
+  .mk-footer-links a, .mk-footer-links button {
+    display: inline-flex; align-items: center; min-height: 44px;
+    padding: 0; border: 0; background: none; font: inherit; color: var(--mk-pearl); cursor: pointer;
+  }
+  .mk-footer-links a { text-decoration: none; }
+  .mk-footer-links a:hover, .mk-footer-links button:hover { color: var(--mk-taxi); }
+  .mk-footer-links button { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(242, 241, 237, 0.35); }
+
+  .mk-legal { max-width: 72ch; margin-top: var(--mk-7); display: grid; gap: var(--mk-7); }
+  .mk-legal section { display: grid; gap: var(--mk-3); scroll-margin-top: calc(var(--mk-nav) + 24px); }
+  .mk-legal h2 { margin: 0; }
+  .mk-legal h3 { margin: var(--mk-3) 0 0; font-family: var(--mk-display); font-weight: 400; font-size: 19px; color: var(--mk-white); }
+  .mk-legal p, .mk-legal li { margin: 0; font-size: 16px; line-height: 1.65; color: var(--mk-pearl); }
+  .mk-legal ul { margin: 0; padding-left: 1.2em; display: grid; gap: var(--mk-2); }
+  .mk-legal-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  .mk-legal-table th, .mk-legal-table td { padding: 10px 12px 10px 0; text-align: left; vertical-align: top; border-bottom: 1px solid rgba(242, 241, 237, 0.1); color: var(--mk-pearl); line-height: 1.5; }
+  .mk-legal-table th { font-weight: 400; color: var(--mk-white); }
+  .mk-legal-scroll { overflow-x: auto; }
+  .mk-legal-toc { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: var(--mk-2) var(--mk-5); }
 }

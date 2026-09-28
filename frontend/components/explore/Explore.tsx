@@ -64,7 +64,7 @@ function Explore() {
           <Card
             key={pandal._id}
             image={pandal.image}
-            imageAlt=""
+            imageAlt={`Photo of ${pandal.name}`}
             icon="balcony"
             title={pandal.name}
             sub={[pandal.location, pandal.distance].filter(Boolean).join(', ')}

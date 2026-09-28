@@ -1,9 +1,13 @@
 import type { Metadata } from 'next'
+import { pageMetadata } from '@/lib/site/site'
 import { SectionHead } from '@/components/brand/SectionHead'
 import { CityIcon } from '@/components/brand/icons'
 import { requireUser } from '@/lib/auth'
 
-export const metadata: Metadata = { title: 'Transport' }
+export const metadata: Metadata = pageMetadata({
+  title: 'Transport',
+  description: 'Getting around Kolkata by metro, train, bus, auto and taxi. Live times are on the way.',
+})
 
 const MODES = [
   { icon: 'tram', name: 'Metro and trams', note: 'Next trains on the Blue and Green lines' },

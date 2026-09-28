@@ -1,16 +1,33 @@
 import type { Metadata, Viewport } from 'next'
 import { preload } from 'react-dom'
-import { GoogleAnalytics } from '@next/third-parties/google'
 import { AppProviders } from '@/components/providers/AppProviders'
 import { SiteAnalytics } from '@/components/providers/SiteAnalytics'
+import { CookieBanner } from '@/components/layout/CookieBanner'
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/site/site'
 import './globals.css'
 
+/* Every page inherits these; a page sets its own title and description, and
+   app/opengraph-image.tsx is the preview for any page without its own. */
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  applicationName: SITE_NAME,
   title: {
-    default: 'My Kolkata',
+    default: SITE_NAME,
     template: '%s — My Kolkata',
   },
-  description: 'A city, shot like a film. Paras, pandals, food and the long way home.',
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    type: 'website',
+    siteName: SITE_NAME,
+    locale: 'en_IN',
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+  },
   icons: {
     icon: [{ url: '/micon.png', type: 'image/png' }],
     apple: '/micon.png',
@@ -32,10 +49,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <body>
         <AppProviders>{children}</AppProviders>
+        <CookieBanner />
+        {/* analytics load only after consent: see lib/consent.ts */}
         <SiteAnalytics />
       </body>
-      {/* loads after hydration and records client-side navigations too */}
-      {process.env.NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />}
     </html>
   )
 }

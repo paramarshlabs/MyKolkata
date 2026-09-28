@@ -1,13 +1,14 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { pageMetadata } from '@/lib/site/site'
 import { SectionHead } from '@/components/brand/SectionHead'
 import { ArchetypeGrid } from '@/components/pujo-personality/ArchetypeGrid'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'The nine Pujo personalities',
   description: 'Night Owl, Pandal Hunter, Para Kid, Pujo Romantic, Pet Pujari, Art Kid, Addabaaz, Dhunuchi and Shiuli: nine ways to do Pujo in Kolkata.',
-  alternates: { canonical: '/pujo/archetypes' },
-}
+  path: '/pujo/archetypes',
+})
 
 export default function ArchetypesPage() {
   return (

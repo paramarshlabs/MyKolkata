@@ -1,8 +1,12 @@
 import type { Metadata } from 'next'
+import { pageMetadata } from '@/lib/site/site'
 import { SectionHead } from '@/components/brand/SectionHead'
 import { requireUser } from '@/lib/auth'
 
-export const metadata: Metadata = { title: 'About the creator' }
+export const metadata: Metadata = pageMetadata({
+  title: 'About the creator',
+  description: 'My Kolkata is a community-built guide to the city, made by Paramarsh Labs and its contributors.',
+})
 
 const REPO = 'https://github.com/paramarshlabs/MyKolkata'
 

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { pageMetadata } from '@/lib/site/site'
 import { SectionHead } from '@/components/brand/SectionHead'
 import { ArchetypeGrid } from '@/components/pujo-personality/ArchetypeGrid'
 import { ArchetypeHero } from '@/components/pujo-personality/ArchetypeHero'
@@ -18,10 +19,13 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const card = decodeCard(token)
   /* a card carries no personal data, but there is one per person: keep them out of search */
   const robots = { index: false, follow: true }
-  if (!card) return { title: 'A Pujo', robots }
+  if (!card) return { ...pageMetadata({ title: 'A Pujo', description: 'Nine ways to do Pujo in Kolkata. Which Pujo are you?', ownImage: true }), robots }
   return {
-    title: `${capitalise(aName(card.primary))}'s Pujo`,
-    description: `${CONTENT[card.primary].tagline} Which Pujo are you?`,
+    ...pageMetadata({
+      title: `${capitalise(aName(card.primary))}'s Pujo`,
+      description: `${CONTENT[card.primary].tagline} Which Pujo are you?`,
+      ownImage: true,
+    }),
     robots,
   }
 }

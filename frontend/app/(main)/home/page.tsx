@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { pageMetadata } from '@/lib/site/site'
 import { requireUser } from '@/lib/auth'
 import { prisma } from '@/lib/db/prisma'
 import { listCatalogue } from '@/lib/catalogue/list'
@@ -14,7 +15,10 @@ import { PersonalityEntry } from '@/components/pujo-personality/PersonalityEntry
 
 export const dynamic = 'force-dynamic'
 
-export const metadata: Metadata = { title: 'Home' }
+export const metadata: Metadata = pageMetadata({
+  title: 'Home',
+  description: 'The city, this week: news, fairs, fixtures and the countdown to Pujo.',
+})
 
 type MarketItem = {
   id: string

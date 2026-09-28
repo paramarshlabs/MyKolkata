@@ -1,10 +1,13 @@
 import { track } from '@vercel/analytics'
+import { analyticsAllowed } from '@/lib/consent'
 
 /*
  * The Pujo Personality's analytics events (13-product-spec.md §24). Pseudonymous:
  * no names, no free text, no location, no share tokens. Everything stops once
  * someone says they are under 18; page views stay, as aggregate counts only.
  * Vercel records the event; Google Analytics does too, when it is configured.
+ * Nothing is sent until the visitor accepts analytics cookies (lib/consent.ts):
+ * before that, track() would only queue events for a script that is not loaded.
  */
 
 export type PujoEvent =
@@ -26,7 +29,7 @@ export function silencePujoAnalytics(on: boolean) {
 }
 
 export function trackPujo(event: PujoEvent, props: Record<string, Value> = {}) {
-  if (silenced || typeof window === 'undefined') return
+  if (silenced || !analyticsAllowed()) return
   try {
     track(event, props)
   } catch {

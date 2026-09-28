@@ -1,13 +1,13 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { pageMetadata } from '@/lib/site/site'
 import { GuessGame } from '@/components/pujo-personality/GuessGame'
 import { decodeCard } from '@/lib/pujo-personality/token'
 
 type Params = { params: Promise<{ token: string }> }
 
 export const metadata: Metadata = {
-  title: 'Guess my Pujo',
-  description: 'Nine ways to do Pujo in Kolkata. Which one is mine?',
+  ...pageMetadata({ title: 'Guess my Pujo', description: 'Nine ways to do Pujo in Kolkata. Which one is mine?', ownImage: true }),
   robots: { index: false, follow: true },
 }
 

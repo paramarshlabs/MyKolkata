@@ -25,7 +25,7 @@ function isCurrent(pathname: string, section: (typeof SECTIONS)[number]) {
 
 function Lockup() {
   return (
-    <Link className="nn-brand" href="/home" aria-label="My Kolkata — home">
+    <Link className="nn-brand" href="/home">
       <span className="nn-brand-box">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/micon.png" alt="" width={28} height={28} />

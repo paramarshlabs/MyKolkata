@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react'
 import { MedallionBloom } from '@/components/brand/MedallionBloom'
+import Link from 'next/link'
 import { AlponaLoader } from '@/components/brand/Alpona'
+import { CookieSettingsButton } from '@/components/layout/SiteFooter'
 
 /*  The auth screens. The medallion needs a flat ground, so the photograph gets
     its own half of the frame and the mark sits on Obsidian beside it. Below
@@ -20,8 +22,18 @@ export function AuthStage({ children, lede, footer }: { children: ReactNode; led
           </div>
           <p className="mk-body-lg mk-auth-lede">{lede}</p>
           {children}
+          <p className="mk-caption mk-auth-legal">
+            By continuing, you agree to our <Link href="/terms">Terms of Use</Link> and <Link href="/privacy">Privacy Policy</Link>.
+          </p>
         </div>
-        {footer && <footer className="mk-meta mk-auth-credit">{footer}</footer>}
+        <footer className="mk-meta mk-auth-credit">
+          {footer && <span>{footer}</span>}
+          <span className="mk-footer-links mk-auth-links">
+            <Link href="/privacy">Privacy</Link>
+            <Link href="/terms">Terms</Link>
+            <CookieSettingsButton />
+          </span>
+        </footer>
       </section>
 
       <figure className="mk-auth-photo">

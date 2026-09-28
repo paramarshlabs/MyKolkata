@@ -19,7 +19,7 @@ export function OpenHeader() {
         <NotchWing side="left" />
         <NotchWing side="right" />
         <div className="nn-island-row">
-          <Link className="nn-brand" href="/" aria-label="My Kolkata">
+          <Link className="nn-brand" href="/">
             <span className="nn-brand-box">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/micon.png" alt="" width={28} height={28} />

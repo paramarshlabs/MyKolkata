@@ -8,7 +8,7 @@ import styles from '@/styles/Contribute.module.css'
     original host (never stored or proxied here); Instagram and X use their own
     embed pages, on hardcoded domains, sized to the post they report. Anything
     that fails, or that we do not know how to show, is an ordinary link.     */
-export function StoryMedia({ url }: { url: string | null }) {
+export function StoryMedia({ url, title }: { url: string | null; title: string }) {
   const [failed, setFailed] = useState(false)
   const [height, setHeight] = useState<number | null>(null)
   const frame = useRef<HTMLIFrameElement>(null)
@@ -44,7 +44,7 @@ export function StoryMedia({ url }: { url: string | null }) {
         <img
           className={styles.mediaImg}
           src={media.src}
-          alt=""
+          alt={`Photo shared with the story “${title}”`}
           loading="lazy"
           decoding="async"
           referrerPolicy="no-referrer"

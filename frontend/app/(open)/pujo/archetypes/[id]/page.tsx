@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { pageMetadata } from '@/lib/site/site'
 import { notFound } from 'next/navigation'
 import { SectionHead } from '@/components/brand/SectionHead'
 import { ArchetypeGrid } from '@/components/pujo-personality/ArchetypeGrid'
@@ -22,11 +23,12 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { id } = await params
   if (!isArchetypeId(id)) return {}
   const content = CONTENT[id]
-  return {
+  return pageMetadata({
     title: `The ${content.name}`,
     description: `${content.tagline} ${content.oneLine}`,
-    alternates: { canonical: `/pujo/archetypes/${id}` },
-  }
+    path: `/pujo/archetypes/${id}`,
+    ownImage: true,
+  })
 }
 
 const KINDS = [['kin', 'The same Pujo'], ['complement', 'A good fit'], ['spark', 'The fun kind of opposite']] as const

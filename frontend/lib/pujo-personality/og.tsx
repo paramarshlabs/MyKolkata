@@ -133,3 +133,26 @@ export function guessImage() {
   svg += nine(452, 88)
   return render(svg)
 }
+
+/* The site's own preview, for every page without one: a photograph of the
+   city with the lockup over its dark side. The photo is passed in as a data
+   URL so this file stays free of filesystem reads. */
+export function siteImage(photo: string) {
+  const lockupSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">`
+    + type('display', OG_TEXT.lockup, M, 318, 84, HEX.white).svg
+    + type('bengali', OG_TEXT.lockupBn, M, 420, 64, HEX.blush).svg
+    + '</svg>'
+  const lockupSrc = `data:image/svg+xml;base64,${Buffer.from(lockupSvg).toString('base64')}`
+  return new ImageResponse(
+    (
+      <div style={{ display: 'flex', position: 'relative', width: W, height: H, background: HEX.obsidian }}>
+        {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
+        <img src={photo} width={W} height={H} style={{ position: 'absolute', top: 0, left: 0 }} />
+        <div style={{ position: 'absolute', top: 0, left: 0, width: W, height: H, background: `linear-gradient(90deg, ${HEX.obsidian} 0%, rgba(13,16,18,0.82) 34%, rgba(13,16,18,0) 70%)` }} />
+        {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
+        <img src={lockupSrc} width={W} height={H} style={{ position: 'absolute', top: 0, left: 0 }} />
+      </div>
+    ),
+    { ...OG_SIZE, headers: { 'Cache-Control': 'public, max-age=86400, immutable' } },
+  )
+}

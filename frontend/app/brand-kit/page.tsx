@@ -34,7 +34,7 @@ const CONTRAST = [
   { pair: 'Taxi Yellow on Obsidian', ratio: '10.3', grade: 'AAA', note: 'The accent that may carry small text' },
   { pair: 'Obsidian on Taxi Yellow', ratio: '10.3', grade: 'AAA', note: 'Yellow buttons, badges' },
   { pair: 'Ash on Obsidian', ratio: '7.2', grade: 'AA', note: 'Captions, metadata' },
-  { pair: 'Soft Pearl on Crimson Silk', ratio: '4.4', grade: 'AA', note: 'Button labels, 16px and up' },
+  { pair: 'Pop White on Crimson Silk', ratio: '4.8', grade: 'AA', note: 'Button labels. Pearl on Crimson is 4.39, under AA for text below 24px' },
   { pair: 'Crimson Silk on Obsidian', ratio: '3.8', grade: 'Large only', note: 'Never body text — use Taxi instead' },
 ]
 
