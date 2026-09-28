@@ -7,6 +7,7 @@ import { CountdownScene, PujoDays } from '@/components/brand/Countdown'
 import { AlponaLoader, AlponaRule } from '@/components/brand/Alpona'
 import { CityIcon, UiIcon } from '@/components/brand/icons'
 import styles from '@/styles/Pujo.module.css'
+import { RouteSearch } from './RouteSearch'
 
 const NEARBY_PANDALS = [
   { name: 'Bagbazar Sarbojanin', distance: '1.2 km' },
@@ -104,42 +105,7 @@ function Pujo() {
 
       <AlponaRule className="mk-wrap" />
 
-      <section className="mk-band" aria-labelledby="regions-title">
-        <div className="mk-wrap">
-          <SectionHead
-            id="regions-title"
-            title="Where to go"
-            lede="North keeps the old rituals, the south builds the art, and the centre goes big. Pick a side of the city."
-          />
-          {loading ? (
-            <AlponaLoader label="Finding the paras" className={styles.state} />
-          ) : failed ? (
-            <div className={`mk-panel mk-empty ${styles.state}`} role="status">
-              <h3 className="mk-h3">The paras didn&apos;t load.</h3>
-              <p className="mk-body">Check your connection, then refresh the page.</p>
-            </div>
-          ) : regions.length ? (
-            <div className={styles.regions}>
-              {orderRegions(regions).map((region) => (
-                <Card
-                  key={region._id}
-                  href={`/near-you?${new URLSearchParams({ view: 'grid', q: region.name })}`}
-                  ariaLabel={`Explore ${region.name}`}
-                  image={region.name === 'South Kolkata' ? '/southkol.jpg' : region.image}
-                  icon="balcony"
-                  title={region.name}
-                  sub="Explore the para"
-                  desc={region.description}
-                />
-              ))}
-            </div>
-          ) : (
-            <p className={`mk-caption ${styles.state}`}>No regions listed yet. The pandals are still going up.</p>
-          )}
-        </div>
-      </section>
-
-      <section className={`mk-band ${styles.nearSection}`} aria-labelledby="near-title">
+      <section className="mk-band" aria-labelledby="near-title">
         <div className="mk-wrap">
           <div className={styles.nearGrid}>
             <div>
@@ -169,6 +135,42 @@ function Pujo() {
               ></iframe>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className={`mk-band ${styles.followOn}`} aria-labelledby="regions-title">
+        <div className="mk-wrap">
+          <SectionHead
+            id="regions-title"
+            title="Where to go"
+            lede="North keeps the old rituals, the south builds the art, and the centre goes big. Pick a side of the city."
+          />
+          <RouteSearch />
+          {loading ? (
+            <AlponaLoader label="Finding the paras" className={styles.state} />
+          ) : failed ? (
+            <div className={`mk-panel mk-empty ${styles.state}`} role="status">
+              <h3 className="mk-h3">The paras didn&apos;t load.</h3>
+              <p className="mk-body">Check your connection, then refresh the page.</p>
+            </div>
+          ) : regions.length ? (
+            <div className={styles.regions}>
+              {orderRegions(regions).map((region) => (
+                <Card
+                  key={region._id}
+                  href={`/near-you?${new URLSearchParams({ view: 'grid', q: region.name })}`}
+                  ariaLabel={`Explore ${region.name}`}
+                  image={region.name === 'South Kolkata' ? '/southkol.jpg' : region.image}
+                  icon="balcony"
+                  title={region.name}
+                  sub="Explore the para"
+                  desc={region.description}
+                />
+              ))}
+            </div>
+          ) : (
+            <p className={`mk-caption ${styles.state}`}>No regions listed yet. The pandals are still going up.</p>
+          )}
         </div>
       </section>
     </main>

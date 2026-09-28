@@ -19,7 +19,8 @@
 }
 
 .nearGrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(32px, 5vw, 64px); align-items: start; }
-.nearSection { padding-top: 0; }
+/* the second of two bands in a row sits close under the first */
+.followOn { padding-top: 0; }
 .nearList { list-style: none; margin: var(--mk-6) 0 0; padding: 0; display: grid; gap: 0; }
 .nearItem {
   display: flex; align-items: center; justify-content: space-between; gap: var(--mk-4);
@@ -108,3 +109,21 @@
 @media (max-width: 900px) {
   .nearGrid { grid-template-columns: 1fr; }
 }
+
+/* Where to go: search the routes by pandal, para, day or hour */
+.routeSearch { margin-top: var(--mk-6); max-width: 720px; display: grid; gap: var(--mk-2); }
+.routeLine { max-width: 640px; }
+.routeHint { margin: 0; }
+.routeHint code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--mk-pearl); }
+.routeResults { margin-top: var(--mk-4); display: grid; gap: var(--mk-4); }
+.routeList { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--mk-4); }
+.route { display: grid; gap: var(--mk-2); padding: var(--mk-5); }
+.routeTitle { margin: 0; font-family: var(--mk-display); font-weight: 400; font-size: 22px; line-height: 1.2; letter-spacing: -0.01em; color: var(--mk-white); }
+.routeWhy { margin: 0; font-size: 15px; line-height: 1.55; color: var(--mk-pearl); }
+.routeStops { margin: var(--mk-2) 0 0; padding-left: 1.4em; display: grid; gap: 6px; font-size: 15px; line-height: 1.45; color: var(--mk-ash); }
+.routeStops a { color: var(--mk-pearl); text-decoration: underline; text-decoration-color: rgba(242, 241, 237, 0.3); text-underline-offset: 3px; }
+.routeStops a:hover { color: var(--mk-white); text-decoration-color: var(--mk-crimson); }
+/* a stop the search matched: Taxi Yellow, the brand's one highlight */
+.routeStopHit::marker { color: var(--mk-taxi); }
+.routeStopHit a { color: var(--mk-taxi); text-decoration-color: rgba(242, 179, 61, 0.5); }
+.routeFor { margin-top: var(--mk-1); }
