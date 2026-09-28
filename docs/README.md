@@ -2,6 +2,8 @@
 
 MyKolkata is a production-ready application for exploring Kolkata, sponsored by <img src="../frontend/public/anakin.png" alt="Anakin" height="20" align="absmiddle" />.
 
+<img width="1920" height="1080" alt="Coordination of agents" src="https://github.com/user-attachments/assets/1774a71c-ffcc-4927-a2dd-af6308bde718" />
+
 
 ## Technical docs:
 
