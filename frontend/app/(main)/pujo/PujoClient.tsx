@@ -53,7 +53,13 @@ function MahalayaPlayer() {
         aria-pressed={playing}
         onClick={() => setPlaying((current) => !current)}
       >
-        {playing ? <UiIcon name="volume" size={19} /> : null}
+        {playing ? (
+          <UiIcon name="volume" size={19} />
+        ) : (
+          <svg className={styles.playIcon} viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+            <path d="M8 4.8c0-1.2 1.3-1.9 2.3-1.3l10.2 6.2c1 .6 1 2 0 2.6l-10.2 6.2c-1 .6-2.3-.1-2.3-1.3Z" fill="currentColor" />
+          </svg>
+        )}
         <span>{playing ? 'Mahalaya Playing' : 'Play Mahalaya'}</span>
       </button>
     </div>

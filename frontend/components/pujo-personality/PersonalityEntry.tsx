@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { ARCHETYPE_IDS } from '@/lib/pujo-personality/config'
+import { PersonalityCta } from './PersonalityCta'
 import { Sigil } from './Sigil'
 import styles from '@/styles/PujoPersonality.module.css'
 
@@ -17,9 +18,7 @@ export function PersonalityEntry() {
             pandals and plates to match.
           </p>
           <div className="mk-banner-actions">
-            <Link href="/pujo/personality" className="mk-btn mk-btn--primary">
-              Discover my Pujo <span className="mk-btn-arrow" aria-hidden="true">→</span>
-            </Link>
+            <PersonalityCta />
             <Link href="/pujo/archetypes" className="mk-btn mk-btn--text">Meet the nine</Link>
           </div>
         </div>

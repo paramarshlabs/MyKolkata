@@ -1,4 +1,4 @@
-/* The Pujo Personality: landing, quiz, reveal, result, and the public pages.
+/* The Pujo Personality: quiz, reveal, result, and the public pages.
    Spec: product-design/pujo-personality/08-visual-bible.md, on DESIGN.md v1.4.
    An archetype's band takes its palette through --pp-* custom properties
    (components/pujo-personality/ArchetypeHero.tsx). */
@@ -11,31 +11,6 @@
   animation-delay: calc(1020ms + var(--i) * 60ms);
 }
 @keyframes pp-bloom { from { opacity: 0; transform: scale(0.2); } to { opacity: 1; transform: none; } }
-
-/* ============================================================ landing == */
-.landing {
-  position: relative; display: flex; align-items: flex-end;
-  min-height: min(100svh, 860px);
-  padding: calc(var(--mk-nav) + 72px) 0 clamp(48px, 8vw, 96px);
-  background:
-    radial-gradient(1000px 520px at 82% 8%, rgba(152, 17, 30, 0.2), transparent 62%),
-    radial-gradient(900px 520px at 0% 100%, rgba(19, 42, 46, 0.55), transparent 62%);
-}
-.landingInner { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: clamp(40px, 6vw, 120px); align-items: end; }
-.landingCopy { display: flex; flex-direction: column; align-items: flex-start; }
-/* the nine, as a set: the title card's picture until the photography lands */
-.landingSigils {
-  list-style: none; margin: 0 0 var(--mk-2); padding: 0;
-  display: grid; grid-template-columns: repeat(3, 76px); gap: clamp(24px, 3vw, 44px);
-}
-.friendLine { margin: 0 0 var(--mk-4); font-size: 15px; letter-spacing: 0.01em; color: var(--mk-taxi); }
-.landingBn {
-  margin: 0; font-family: var(--mk-bengali); font-variation-settings: 'wght' 700;
-  font-size: clamp(40px, 7vw, 76px); line-height: 1.5; letter-spacing: 0; color: var(--mk-blush);
-}
-.landingTitle { max-width: 15ch; }
-.landingNote { max-width: 52ch; margin-top: var(--mk-4); }
-.landingGrid { margin-top: var(--mk-7); }
 
 /* =============================================================== quiz == */
 .stage { padding-top: calc(var(--mk-nav) + clamp(24px, 5vw, 56px)); }
@@ -387,17 +362,11 @@ a.pick:hover .pickArea { color: var(--mk-taxi); }
 .grid9Item:hover .grid9Line, .guessItem:hover .grid9Line { color: var(--mk-taxi); }
 
 /* ========================================================= responsive == */
-@media (max-width: 899px) {
-  .landingInner { grid-template-columns: 1fr; }
-  .landingSigils { display: none; }
-}
 @media (max-width: 900px) {
   .grid9, .guessGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .dna { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {
-  /* no photograph yet, so on a phone the title card does not hold the whole screen */
-  .landing { min-height: 0; padding-top: calc(var(--mk-nav) + 56px); }
   .preview { height: min(40svh, 400px); }
   .previewFeed { height: min(32svh, 320px); }
 }

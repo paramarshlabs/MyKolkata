@@ -1,12 +1,11 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/components/providers/AuthProvider'
-import { SectionHead } from '@/components/brand/SectionHead'
 import { createClient } from '@/lib/supabase/client'
 import { silencePujoAnalytics, trackPujo } from '@/lib/pujo-personality/analytics'
-import { ARCHETYPE_IDS, CORE_FLOW, MODEL_VERSION } from '@/lib/pujo-personality/config'
-import { aName } from '@/lib/pujo-personality/content'
+import { CORE_FLOW, MODEL_VERSION } from '@/lib/pujo-personality/config'
 import {
   clearProgress, isMinor, loadFriend, loadProgress, loadSaved, persistSaved, saveFriend, saveProgress, scoreAnswers,
   type Feedback, type Progress, type Saved,
@@ -14,27 +13,24 @@ import {
 import { clearAllStored } from '@/lib/pujo-personality/storage'
 import { decodeCard, type ShareCard } from '@/lib/pujo-personality/token'
 import type { Question } from '@/lib/pujo-personality/types'
-import { ArchetypeGrid } from './ArchetypeGrid'
 import { QuestionScreen, RapidFire, Reading, Tiebreaker } from './Quiz'
 import { ResultView } from './ResultView'
-import { Sigil } from './Sigil'
 import styles from '@/styles/PujoPersonality.module.css'
 
-type Phase = 'landing' | 'quiz' | 'rapid' | 'tiebreak' | 'reading' | 'result'
+type Phase = 'arriving' | 'quiz' | 'rapid' | 'tiebreak' | 'reading' | 'result'
 
 /* the drumroll: at most two seconds, because the scoring takes milliseconds */
 const READING_MS = 1950
 
-const capitalise = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
-
 /*
- * The Pujo Personality: landing, thirteen questions, the rapid round, the
+ * The Pujo Personality: thirteen questions, the rapid round, the
  * tie-breaker when it is close, the reveal, and everything after it.
  * Everything is scored on the phone, and kept there (lib/pujo-personality/session.ts).
  */
 export default function PujoPersonality() {
   const { user } = useAuth()
-  const [phase, setPhase] = useState<Phase>('landing')
+  const router = useRouter()
+  const [phase, setPhase] = useState<Phase>('arriving')
   const [progress, setProgress] = useState<Progress | null>(null)
   const [saved, setSaved] = useState<Saved | null>(null)
   const [fresh, setFresh] = useState(false)
@@ -64,9 +60,10 @@ export default function PujoPersonality() {
     window.scrollTo({ top: 0 })
   }
 
-  /* arrival: a friend's card, a saved Pujo, a quiz in progress, or the landing.
-     The server renders the landing; the phone's storage is read once, after
-     hydration, and the state machine starts from what it holds. */
+  /* arrival: a friend's card, then a saved Pujo, a quiz in progress, or a
+     fresh quiz. There is no landing here (the nine live at /pujo/archetypes):
+     the phone's storage is read once, after hydration, and the state machine
+     starts from what it holds. */
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const withToken = params.get('with')
@@ -88,18 +85,23 @@ export default function PujoPersonality() {
       setPhase(inProgress.stage)
     } else {
       trackPujo('pujo_landing_viewed', { source: params.get('src'), ref: params.get('ref'), invite: friendCard ? 'compare' : null })
+      start()
     }
     setReady(true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- arrival runs once; start() only touches state setters and refs
   }, [])
 
-  /* signed in with a Pujo kept on the account, and nothing on this phone: bring it back */
+  /* signed in with a Pujo kept on the account, and nothing on this phone:
+     bring it back, as long as the fresh quiz has not been started on */
+  const untouched = () => Object.keys(progressRef.current?.answers ?? {}).length === 0
   useEffect(() => {
-    if (!ready || !user || savedRef.current || phase !== 'landing') return
+    if (!ready || !user || savedRef.current || phase !== 'quiz' || !untouched()) return
     let active = true
     createClient().auth.getUser().then(({ data }) => {
       const kept = data.user?.user_metadata?.pujo
-      if (!active || savedRef.current || !kept?.answers) return
+      if (!active || savedRef.current || !untouched() || !kept?.answers) return
       keep({ v: 1, answers: kept.answers, prefs: {}, revealedAt: Date.parse(kept.savedAt) || Date.now() })
+      commit(null)
       setPhase('result')
     }).catch(() => {})
     return () => { active = false }
@@ -147,7 +149,10 @@ export default function PujoPersonality() {
     const p = progressRef.current
     if (!p) return
     trackPujo('pujo_question_back', { question: CORE_FLOW[p.index].id })
-    if (p.index === 0) go(savedRef.current ? 'result' : 'landing')
+    if (p.index === 0) {
+      if (savedRef.current) go('result')
+      else router.push('/pujo')
+    }
     else commit({ ...p, index: p.index - 1 })
   }
 
@@ -232,7 +237,7 @@ export default function PujoPersonality() {
         /* the phone copy is gone either way; the account copy can be removed from here again */
       }
     }
-    go('landing')
+    router.push('/pujo')
   }
 
   if (phase === 'result' && saved && result) {
@@ -264,37 +269,6 @@ export default function PujoPersonality() {
     )
   }
 
-  return (
-    <main className="mk-page">
-      <section className={styles.landing} aria-labelledby="landing-title">
-        <div className={`mk-wrap ${styles.landingInner}`}>
-          <div className={styles.landingCopy}>
-            {friend && <p className={styles.friendLine}>{capitalise(aName(friend.primary))} sent you their Pujo. What&apos;s yours?</p>}
-            <p className={styles.landingBn} lang="bn">তুমি কোন পুজো?</p>
-            <h1 id="landing-title" className={`mk-display ${styles.landingTitle}`}>What kind of Pujo are you?</h1>
-            <p className="mk-lede">Your playlists know your music. We want to know your Kolkata.</p>
-            <div className="mk-banner-actions">
-              <button type="button" className="mk-btn mk-btn--primary" onClick={start}>
-                Discover my Pujo <span className="mk-btn-arrow" aria-hidden="true">→</span>
-              </button>
-            </div>
-            <p className={`mk-caption ${styles.landingNote}`}>
-              Thirteen questions, about two minutes. No sign-up. Your answers stay on your phone until you choose to save or share.
-            </p>
-          </div>
-          <ul className={styles.landingSigils} aria-hidden="true">
-            {ARCHETYPE_IDS.map((id) => <li key={id}><Sigil id={id} size={76} /></li>)}
-          </ul>
-        </div>
-      </section>
-
-      <section className="mk-band" aria-labelledby="nine-title">
-        <div className="mk-wrap">
-          <SectionHead id="nine-title" title="The nine" lede="Nine ways to do Pujo in this city. Tap one to read its story." />
-          <ArchetypeGrid className={styles.landingGrid} />
-          <p className="mk-caption" style={{ marginTop: 32 }}>A playful Pujo identity built from your answers. Not a psychological test.</p>
-        </div>
-      </section>
-    </main>
-  )
+  /* the server render and the first client frame, before storage is read */
+  return <main className={`mk-page ${styles.stage}`} aria-busy="true" />
 }
