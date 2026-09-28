@@ -69,29 +69,22 @@
 }
 .grid > li { display: flex; }
 
-/* the swipe card, made a link: it lifts a little and its border warms */
+/* the swipe card, made a link: no hover effect, a focus ring for keyboards */
 .feature {
   position: relative; width: 100%; display: flex; flex-direction: column; overflow: hidden;
   border: 1px solid rgba(242, 241, 237, 0.08); border-radius: var(--mk-r-lg);
   background: var(--mk-ink); box-shadow: var(--mk-shadow-panel);
   color: inherit; text-decoration: none;
-  transition: transform var(--mk-t-hover) var(--mk-ease-out), border-color var(--mk-t-hover) var(--mk-ease-out);
 }
-.feature:hover { transform: translateY(-4px); border-color: rgba(242, 241, 237, 0.22); }
 .feature:focus-visible { outline: 2px solid var(--mk-crimson); outline-offset: 3px; }
-.feature .cardMedia img { transition: transform var(--mk-t-reveal) var(--mk-ease-out); }
-.feature:hover .cardMedia img { transform: scale(1.04); }
 .feature .cardBody { flex: 1; display: flex; flex-direction: column; overflow: visible; }
 .feature .ratings { margin-top: auto; }
 .feature .cardBio { margin-bottom: var(--mk-5); }
 
-.go { margin-left: auto; color: var(--mk-white); transition: transform var(--mk-t-hover) var(--mk-ease-out); }
-.feature:hover .go { transform: translateX(3px); color: var(--mk-taxi); }
+.go { margin-left: auto; color: var(--mk-white); }
 
 /* not built yet: the same card, at rest, and quieter */
 .soon { cursor: default; }
-.soon:hover { transform: none; border-color: rgba(242, 241, 237, 0.08); }
-.soon:hover .cardMedia img { transform: none; }
 .soon .cardMedia img { filter: saturate(0.55) contrast(1.05) brightness(0.8); }
 
 /* the first card is a Pujo one: the tick of red the brand keeps for it */
@@ -100,11 +93,6 @@
   padding: 4px 10px; border-radius: 999px; font-size: 12px; letter-spacing: 0.02em;
   background: rgba(13, 16, 18, 0.78); color: var(--mk-white); border: 1px solid rgba(242, 241, 237, 0.18);
   -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .feature, .feature .cardMedia img, .go { transition: none; }
-  .feature:hover, .feature:hover .cardMedia img, .feature:hover .go { transform: none; }
 }
 
 /* Phones: two cards a row. Each is about 165px wide, so the card tightens:

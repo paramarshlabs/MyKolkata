@@ -4,8 +4,6 @@ import Link from 'next/link'
 import { pageMetadata } from '@/lib/site/site'
 import { requireUser } from '@/lib/auth'
 import { Sprig } from '@/components/brand/kolka'
-import { AlponaRule } from '@/components/brand/Alpona'
-import { PersonalityEntry } from '@/components/pujo-personality/PersonalityEntry'
 import styles from '@/styles/Experiences.module.css'
 
 export const metadata: Metadata = pageMetadata({
@@ -137,12 +135,6 @@ export default async function ExperiencePage() {
           })}
         </ul>
       </div>
-
-      {/* the Pujo Personality's way in: the quiz and The nine live under /experience */}
-      <div style={{ marginTop: 'clamp(64px, 10vw, 128px)' }}>
-        <PersonalityEntry />
-      </div>
-      <AlponaRule className="mk-wrap" />
     </main>
   )
 }
