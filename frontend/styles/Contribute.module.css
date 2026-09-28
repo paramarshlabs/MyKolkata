@@ -28,6 +28,10 @@
 .stories { list-style: none; margin: var(--mk-6) 0 0; padding: 0; display: grid; gap: var(--mk-4); max-width: 720px; }
 .story { display: grid; gap: var(--mk-3); }
 .storyText { white-space: pre-line; overflow-wrap: anywhere; }
+/* the author's own story: edit and delete, then a confirm before it goes */
+.storyActions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--mk-3); }
+.storyConfirm { display: grid; gap: var(--mk-3); padding-top: var(--mk-3); border-top: 1px solid rgba(242, 241, 237, 0.12); }
+.storyConfirm p { margin: 0; }
 .media { display: grid; gap: var(--mk-2); justify-items: start; }
 .mediaImg {
   display: block; width: 100%; max-height: 520px; object-fit: contain;

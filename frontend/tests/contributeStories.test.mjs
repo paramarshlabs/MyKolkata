@@ -23,14 +23,25 @@ function memoryRepository(rows = []) {
       rows.push(row)
       return row
     },
+    async updateOwn(storyId, authorId, now, data) {
+      const row = rows.find((r) => r.id === storyId && r.authorId === authorId && r.expiresAt > now)
+      return row ? Object.assign(row, data) : null
+    },
+    async deleteOwn(storyId, authorId) {
+      const index = rows.findIndex((r) => r.id === storyId && r.authorId === authorId)
+      if (index < 0) return false
+      rows.splice(index, 1)
+      return true
+    },
   }
 }
 
-const post = (body) => new Request('http://localhost/api/stories', {
-  method: 'POST',
+const post = (body, method = 'POST') => new Request('http://localhost/api/stories', {
+  method,
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify(body),
 })
+const patch = (body) => post(body, 'PATCH')
 
 /* ---------- media resolver ------------------------------------------------ */
 
@@ -158,11 +169,60 @@ test('expired stories are excluded server-side, newest first', async () => {
   assert.deepEqual(stories.map((story) => story.id), ['b', 'a'])
 })
 
-test('the route checks the session before writing and queries only unexpired rows', async () => {
+test('the routes check the session before writing and query only unexpired rows', async () => {
   const route = await readFile(new URL('../app/api/stories/route.ts', import.meta.url), 'utf8')
-  assert.match(route, /handlers\.POST\(request, await currentUserId\(\)\)/)
-  assert.match(route, /expiresAt: \{ gt: now \}/)
-  assert.match(route, /orderBy: \{ createdAt: 'desc' \}/)
+  const one = await readFile(new URL('../app/api/stories/[id]/route.ts', import.meta.url), 'utf8')
+  const repository = await readFile(new URL('../lib/stories/repository.ts', import.meta.url), 'utf8')
+  assert.match(route, /storyHandlers\.POST\(request, await currentUserId\(\)\)/)
+  assert.match(one, /storyHandlers\.PATCH\(request, await currentUserId\(\), id\)/)
+  assert.match(one, /storyHandlers\.DELETE\(await currentUserId\(\), id\)/)
+  assert.match(repository, /expiresAt: \{ gt: now \}/)
+  assert.match(repository, /orderBy: \{ createdAt: 'desc' \}/)
+  assert.match(repository, /where: \{ id, authorId, expiresAt: \{ gt: now \} \}/, 'edits are scoped to the author and a live story')
+  assert.match(repository, /deleteMany\(\{ where: \{ id, authorId \} \}\)/, 'deletes are scoped to the author')
+})
+
+/* ---------- edit and delete ------------------------------------------------- */
+
+const own = () => memoryRepository([
+  { id: 'mine', title: 'First draft', story: 'The tram.', externalUrl: null, authorId: 'user-1', createdAt: new Date(NOW - 5 * HOUR), expiresAt: new Date(NOW.getTime() + 19 * HOUR) },
+  { id: 'theirs', title: 'Not mine', story: 's', externalUrl: null, authorId: 'user-2', createdAt: new Date(NOW - HOUR), expiresAt: new Date(NOW.getTime() + 23 * HOUR) },
+  { id: 'gone', title: 'Old', story: 's', externalUrl: null, authorId: 'user-1', createdAt: new Date(NOW - 25 * HOUR), expiresAt: new Date(NOW - HOUR) },
+])
+
+test('the wall tells a reader which stories are theirs, and nothing more', async () => {
+  const { stories } = await (await createStoryHandlers(own(), () => NOW).GET('user-1')).json()
+  assert.deepEqual(stories.map((story) => [story.id, story.mine]), [['theirs', false], ['mine', true]])
+  assert.ok(stories.every((story) => story.authorId === undefined))
+  const signedOut = await (await createStoryHandlers(own(), () => NOW).GET()).json()
+  assert.ok(signedOut.stories.every((story) => story.mine === false))
+})
+
+test('an edit changes the words but keeps the first post’s 24 hours', async () => {
+  const repository = own()
+  const before = { ...repository.rows[0] }
+  const res = await createStoryHandlers(repository, () => NOW).PATCH(patch({ title: 'Second draft', story: 'The tram, again.', link: '' }), 'user-1', 'mine')
+  assert.equal(res.status, 200)
+  const { story } = await res.json()
+  assert.equal(story.title, 'Second draft')
+  assert.equal(story.editedAt, NOW.toISOString())
+  assert.equal(story.createdAt, before.createdAt.toISOString(), 'createdAt does not move')
+  assert.equal(story.expiresAt, before.expiresAt.toISOString(), 'expiresAt does not move')
+})
+
+test('only the author can edit or delete, and only a live story is edited', async () => {
+  const repository = own()
+  const handlers = createStoryHandlers(repository, () => NOW)
+  const body = { title: 't', story: 's' }
+  assert.equal((await handlers.PATCH(patch(body), null, 'mine')).status, 401)
+  assert.equal((await handlers.PATCH(patch(body), 'user-1', 'theirs')).status, 404)
+  assert.equal((await handlers.PATCH(patch(body), 'user-1', 'gone')).status, 404)
+  assert.equal((await handlers.PATCH(patch({ title: '', story: 's' }), 'user-1', 'mine')).status, 400)
+  assert.equal((await handlers.DELETE(null, 'mine')).status, 401)
+  assert.equal((await handlers.DELETE('user-1', 'theirs')).status, 404)
+  assert.equal(repository.rows.find((r) => r.id === 'theirs').title, 'Not mine')
+  assert.equal((await handlers.DELETE('user-1', 'mine')).status, 204)
+  assert.equal(repository.rows.some((r) => r.id === 'mine'), false)
 })
 
 test('submitted content is never rendered as HTML', async () => {

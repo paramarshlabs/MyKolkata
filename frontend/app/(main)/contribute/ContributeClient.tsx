@@ -31,6 +31,145 @@ function postedAt(iso: string) {
   })
 }
 
+type Draft = { title: string; content: string; link: string }
+
+/* One story on the wall. Its author can edit it in place or delete it; an edit
+   never moves the 24 hours, which run from the first post. */
+function StoryCard({ story, onSaved, onDeleted }: {
+  story: PublicStory
+  onSaved: (story: PublicStory) => void
+  onDeleted: (id: string) => void
+}) {
+  const [mode, setMode] = useState<'view' | 'edit' | 'confirm'>('view')
+  const [draft, setDraft] = useState<Draft>({ title: story.title, content: story.story, link: story.externalUrl ?? '' })
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const idPrefix = `story-${story.id}`
+
+  const switchTo = (next: typeof mode) => {
+    if (next === 'edit') setDraft({ title: story.title, content: story.story, link: story.externalUrl ?? '' })
+    setError(null)
+    setMode(next)
+  }
+
+  const save = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setBusy(true)
+    setError(null)
+    try {
+      const res = await fetch(`/api/stories/${encodeURIComponent(story.id)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: draft.title, story: draft.content, link: draft.link }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.message || 'Your changes didn’t save. Try again.')
+      onSaved(data.story)
+      setMode('view')
+    } catch (err) {
+      setError((err as Error).message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const remove = async () => {
+    setBusy(true)
+    setError(null)
+    try {
+      const res = await fetch(`/api/stories/${encodeURIComponent(story.id)}`, { method: 'DELETE' })
+      /* already gone is as good as deleted */
+      if (!res.ok && res.status !== 404) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.message || 'Your story wasn’t deleted. Try again.')
+      }
+      onDeleted(story.id)
+    } catch (err) {
+      setError((err as Error).message)
+      setBusy(false)
+    }
+  }
+
+  if (mode === 'edit') {
+    return (
+      <form onSubmit={save} className={`mk-panel ${styles.story}`} aria-label={`Edit “${story.title}”`}>
+        <div>
+          <label className="mk-label" htmlFor={`${idPrefix}-title`}>Title</label>
+          <input
+            id={`${idPrefix}-title`}
+            type="text"
+            value={draft.title}
+            onChange={(e) => setDraft({ ...draft, title: e.target.value })}
+            className="mk-field"
+            maxLength={120}
+            required
+          />
+        </div>
+        <div>
+          <label className="mk-label" htmlFor={`${idPrefix}-content`}>Your story</label>
+          <textarea
+            id={`${idPrefix}-content`}
+            value={draft.content}
+            onChange={(e) => setDraft({ ...draft, content: e.target.value })}
+            className="mk-field"
+            maxLength={2000}
+            required
+          />
+        </div>
+        <div>
+          <label className="mk-label" htmlFor={`${idPrefix}-link`}>A link, if there is one</label>
+          <input
+            id={`${idPrefix}-link`}
+            type="url"
+            value={draft.link}
+            onChange={(e) => setDraft({ ...draft, link: e.target.value })}
+            className="mk-field"
+            placeholder="https://"
+            maxLength={2048}
+          />
+        </div>
+        <p className="mk-caption">Editing doesn&apos;t add time: this story still leaves 24 hours after you first posted it.</p>
+        {error && <p className={`mk-caption ${styles.formError}`} role="alert">{error}</p>}
+        <div className={styles.storyActions}>
+          <button type="submit" className="mk-btn mk-btn--primary" disabled={busy}>
+            {busy ? 'Saving…' : 'Save changes'}
+          </button>
+          <button type="button" className="mk-btn mk-btn--text" onClick={() => switchTo('view')} disabled={busy}>Cancel</button>
+        </div>
+      </form>
+    )
+  }
+
+  return (
+    <article className={`mk-panel ${styles.story}`}>
+      <h3 className="mk-h3">{story.title}</h3>
+      <p className="mk-meta">
+        <time dateTime={story.createdAt}>{postedAt(story.createdAt)}</time>
+        {story.editedAt && <span title={`Edited ${postedAt(story.editedAt)}`}>, edited</span>}
+      </p>
+      <p className={`mk-body ${styles.storyText}`}>{story.story}</p>
+      <StoryMedia url={story.externalUrl} />
+      {story.mine && (mode === 'confirm' ? (
+        <div className={styles.storyConfirm} role="group" aria-label="Delete this story?">
+          <p className="mk-caption">Delete this story? This can&apos;t be undone.</p>
+          <div className={styles.storyActions}>
+            <button type="button" className="mk-btn mk-btn--primary" onClick={remove} disabled={busy}>
+              {busy ? 'Deleting…' : 'Delete'}
+            </button>
+            <button type="button" className="mk-btn mk-btn--text" onClick={() => switchTo('view')} disabled={busy}>Keep it</button>
+          </div>
+        </div>
+      ) : (
+        <div className={styles.storyActions}>
+          <button type="button" className="mk-btn mk-btn--text" onClick={() => switchTo('edit')}>Edit</button>
+          <button type="button" className="mk-btn mk-btn--text" onClick={() => switchTo('confirm')}>Delete</button>
+        </div>
+      ))}
+      {error && <p className={`mk-caption ${styles.formError}`} role="alert">{error}</p>}
+    </article>
+  )
+}
+
 function Contribute() {
   const [showForm, setShowForm] = useState(false)
   const [newPost, setNewPost] = useState({ title: '', content: '', link: '' })
@@ -226,12 +365,11 @@ function Contribute() {
             <ul className={styles.stories} aria-label="Stories from the last 24 hours">
               {activeStories.map((story) => (
                 <li key={story.id}>
-                  <article className={`mk-panel ${styles.story}`}>
-                    <h3 className="mk-h3">{story.title}</h3>
-                    <time className="mk-meta" dateTime={story.createdAt}>{postedAt(story.createdAt)}</time>
-                    <p className={`mk-body ${styles.storyText}`}>{story.story}</p>
-                    <StoryMedia url={story.externalUrl} />
-                  </article>
+                  <StoryCard
+                    story={story}
+                    onSaved={(saved) => setStories((current) => current.map((s) => (s.id === saved.id ? saved : s)))}
+                    onDeleted={(id) => setStories((current) => current.filter((s) => s.id !== id))}
+                  />
                 </li>
               ))}
             </ul>

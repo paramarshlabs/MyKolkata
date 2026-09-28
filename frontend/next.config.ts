@@ -39,6 +39,12 @@ const nextConfig: NextConfig = {
        List exact hostnames if next/image is adopted. */
     remotePatterns: [],
   },
+  async redirects() {
+    return [
+      /* Experiences used to live at /tinder; keep old links and bookmarks working */
+      { source: '/tinder', destination: '/experience', permanent: true },
+    ]
+  },
   async headers() {
     return [
       {

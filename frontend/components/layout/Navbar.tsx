@@ -13,7 +13,7 @@ import UserMenu from '@/components/layout/UserMenu'
 const SECTIONS = [
   { label: 'Home', href: '/home' },
   { label: 'Explore', href: '/places', also: ['/near-you'] },
-  { label: 'Experiences', href: '/tinder' },
+  { label: 'Experiences', href: '/experience' },
   { label: 'Pujo', href: '/pujo' },
   { label: 'Transport', href: '/transport' },
   { label: 'Contribute', href: '/contribute' },

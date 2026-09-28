@@ -9,7 +9,7 @@ import styles from '@/styles/Experiences.module.css'
 const DESCRIPTION_LIMIT = 180;
 const RATINGS = [1, 2, 3, 4, 5]
 
-function Tinder() {
+function Experience() {
   const [profiles, setProfiles] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -342,4 +342,4 @@ function Tinder() {
   )
 }
 
-export default Tinder
+export default Experience

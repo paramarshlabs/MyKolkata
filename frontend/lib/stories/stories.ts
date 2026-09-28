@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server'
 import { safePublicUrl } from '@/lib/places/anakinImageProvider'
 
 /* ==========================================================================
-   Ephemeral stories for /contribute: validation, and the GET/POST handlers.
+   Ephemeral stories for /contribute: validation, and the handlers for the
+   wall (GET/POST) and for one story (PATCH/DELETE, its author only).
    The handlers take their database and the signed-in user as arguments, so
    app/api/stories/route.ts stays a thin wiring layer and this stays testable.
    ========================================================================== */
@@ -23,6 +24,8 @@ export type StoryRecord = {
   authorId: string | null
   createdAt: Date
   expiresAt: Date
+  /* set by an edit; createdAt and expiresAt never move, so the day runs from the first post */
+  editedAt?: Date | null
 }
 
 export type PublicStory = {
@@ -32,15 +35,22 @@ export type PublicStory = {
   externalUrl: string | null
   createdAt: string
   expiresAt: string
+  editedAt: string | null
+  /* the viewer wrote it, so the page offers edit and delete */
+  mine: boolean
 }
 
 export interface StoryRepository {
   /* only stories with expiresAt > now, newest first */
   listActive(now: Date, take: number): Promise<StoryRecord[]>
   create(data: Omit<StoryRecord, 'id'>): Promise<StoryRecord>
+  /* the author's own story, still live: null when there is no such story */
+  updateOwn(id: string, authorId: string, now: Date, data: Input & { editedAt: Date }): Promise<StoryRecord | null>
+  /* the author's own story: false when there is no such story */
+  deleteOwn(id: string, authorId: string): Promise<boolean>
 }
 
-type Input = { title: string; story: string; externalUrl: string | null }
+export type Input = { title: string; story: string; externalUrl: string | null }
 
 /* collapse runs of spaces, keep paragraph breaks, trim */
 function cleanText(value: unknown) {
@@ -70,8 +80,8 @@ export function validateStoryInput(body: unknown): { ok: true; value: Input } | 
   return { ok: true, value: { title, story, externalUrl } }
 }
 
-/* what the page may see: never the author's id */
-export function toPublicStory(row: StoryRecord): PublicStory {
+/* what the page may see: never the author's id, only whether the viewer is the author */
+export function toPublicStory(row: StoryRecord, viewerId: string | null = null): PublicStory {
   return {
     id: row.id,
     title: row.title,
@@ -79,23 +89,29 @@ export function toPublicStory(row: StoryRecord): PublicStory {
     externalUrl: row.externalUrl,
     createdAt: new Date(row.createdAt).toISOString(),
     expiresAt: new Date(row.expiresAt).toISOString(),
+    editedAt: row.editedAt ? new Date(row.editedAt).toISOString() : null,
+    mine: Boolean(viewerId && row.authorId === viewerId),
   }
 }
 
 const NO_STORE = { 'Cache-Control': 'no-store' }
 
+const serverError = (err: unknown) => {
+  console.error(err)
+  return NextResponse.json({ message: 'Internal server error' }, { status: 500, headers: NO_STORE })
+}
+
 export function createStoryHandlers(repository: StoryRepository, clock: () => Date = () => new Date()) {
   return {
-    async GET() {
+    async GET(viewerId: string | null = null) {
       try {
         const now = clock()
         const rows = await repository.listActive(now, FEED_LIMIT)
         /* the query already excludes expired stories; this makes sure of it */
-        const stories = rows.filter((row) => new Date(row.expiresAt) > now).map(toPublicStory)
+        const stories = rows.filter((row) => new Date(row.expiresAt) > now).map((row) => toPublicStory(row, viewerId))
         return NextResponse.json({ stories }, { headers: NO_STORE })
       } catch (err) {
-        console.error(err)
-        return NextResponse.json({ message: 'Internal server error' }, { status: 500, headers: NO_STORE })
+        return serverError(err)
       }
     },
 
@@ -113,10 +129,39 @@ export function createStoryHandlers(repository: StoryRepository, clock: () => Da
           createdAt,
           expiresAt: new Date(createdAt.getTime() + STORY_TTL_MS),
         })
-        return NextResponse.json({ story: toPublicStory(row) }, { status: 201, headers: NO_STORE })
+        return NextResponse.json({ story: toPublicStory(row, userId) }, { status: 201, headers: NO_STORE })
       } catch (err) {
-        console.error(err)
-        return NextResponse.json({ message: 'Internal server error' }, { status: 500, headers: NO_STORE })
+        return serverError(err)
+      }
+    },
+
+    /* an edit replaces the words and the link; the story still leaves 24 hours after it was first posted */
+    async PATCH(request: Request, userId: string | null, id: string) {
+      if (!userId) return NextResponse.json({ message: 'Sign in to edit your story' }, { status: 401, headers: NO_STORE })
+
+      const checked = validateStoryInput(await request.json().catch(() => null))
+      if (!checked.ok) return NextResponse.json({ message: checked.message }, { status: 400, headers: NO_STORE })
+
+      try {
+        const now = clock()
+        const row = await repository.updateOwn(id, userId, now, { ...checked.value, editedAt: now })
+        /* someone else's story, a gone one and an expired one all look the same from outside */
+        if (!row) return NextResponse.json({ message: 'That story is gone, or it isn’t yours to edit.' }, { status: 404, headers: NO_STORE })
+        return NextResponse.json({ story: toPublicStory(row, userId) }, { headers: NO_STORE })
+      } catch (err) {
+        return serverError(err)
+      }
+    },
+
+    async DELETE(userId: string | null, id: string) {
+      if (!userId) return NextResponse.json({ message: 'Sign in to delete your story' }, { status: 401, headers: NO_STORE })
+
+      try {
+        const deleted = await repository.deleteOwn(id, userId)
+        if (!deleted) return NextResponse.json({ message: 'That story is gone, or it isn’t yours to delete.' }, { status: 404, headers: NO_STORE })
+        return new NextResponse(null, { status: 204, headers: NO_STORE })
+      } catch (err) {
+        return serverError(err)
       }
     },
   }

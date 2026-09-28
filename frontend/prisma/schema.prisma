@@ -344,6 +344,8 @@ model TinderProfile {
 
 // Public stories on /contribute. Ephemeral: each expires 24 hours after it is
 // posted. Only text and the original external URL are kept — never media.
+// Editing sets editedAt and never moves createdAt or expiresAt: the day is
+// counted from the first post.
 model Story {
   id          String   @id @default(cuid())
   title       String
@@ -352,6 +354,7 @@ model Story {
   authorId    String?
   createdAt   DateTime @default(now())
   expiresAt   DateTime
+  editedAt    DateTime?
 
   @@index([expiresAt, createdAt(sort: Desc)])
   @@map("stories")
