@@ -31,7 +31,7 @@ export function FriendCompare({ token, them }: { token: string; them: ShareCard 
         <div className="mk-wrap">
           <SectionHead id="yours-title" title="What's yours?" lede="Thirteen questions, about two minutes. Then see how your Pujos fit." />
           <div className="mk-banner-actions">
-            <Link href={`/pujo/personality?with=${token}`} className="mk-btn mk-btn--primary">
+            <Link href={`/experience/personality?with=${token}`} className="mk-btn mk-btn--primary">
               Take the quiz <span className="mk-btn-arrow" aria-hidden="true">→</span>
             </Link>
           </div>
@@ -48,7 +48,7 @@ export function FriendCompare({ token, them }: { token: string; them: ShareCard 
           <Compare you={you} them={them} themLabel="Them" />
         </div>
         <div className="mk-banner-actions">
-          <Link href="/pujo/personality" className="mk-btn mk-btn--secondary">See your Pujo</Link>
+          <Link href="/experience/personality" className="mk-btn mk-btn--secondary">See your Pujo</Link>
         </div>
       </div>
     </section>

@@ -44,7 +44,7 @@ export function ShareSheet({ mode, card, because, age, onAge, onClose }: ShareSh
   const cleanName = name.trim() ? sanitizeName(name) : null
   const nameRejected = name.trim() !== '' && !cleanName
 
-  const link = mode === 'guess' ? `${origin}/pujo/guess/${token}` : `${origin}/pujo/you/${token}`
+  const link = mode === 'guess' ? `${origin}/experience/guess/${token}` : `${origin}/experience/you/${token}`
   const defaultText = mode === 'guess'
     ? 'Guess my Pujo. Nine ways to do it. Which one is mine?'
     : mode === 'compare'

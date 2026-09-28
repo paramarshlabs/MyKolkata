@@ -11,9 +11,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     page('/', 1, 'weekly'),
-    page('/pujo/personality', 0.9, 'weekly'),
-    page('/pujo/archetypes', 0.8, 'monthly'),
-    ...ARCHETYPE_IDS.map((id) => page(`/pujo/archetypes/${id}`, 0.7, 'monthly')),
+    page('/experience/personality', 0.9, 'weekly'),
+    page('/experience/archetypes', 0.8, 'monthly'),
+    ...ARCHETYPE_IDS.map((id) => page(`/experience/archetypes/${id}`, 0.7, 'monthly')),
     page('/kaash-phool', 0.5, 'yearly'),
     page('/privacy', 0.3, 'yearly', new Date(LEGAL_UPDATED)),
     page('/terms', 0.3, 'yearly', new Date(LEGAL_UPDATED)),

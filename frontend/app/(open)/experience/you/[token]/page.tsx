@@ -42,7 +42,7 @@ export default async function SharedCardPage({ params }: Params) {
           <div className="mk-panel mk-empty">
             <h1 className="mk-h3">This link doesn&apos;t open a Pujo.</h1>
             <p className="mk-body">It may have been cut short when it was copied. Want to find yours?</p>
-            <Link href="/pujo/personality" className="mk-btn mk-btn--primary">Take the quiz <span className="mk-btn-arrow" aria-hidden="true">→</span></Link>
+            <Link href="/experience/personality" className="mk-btn mk-btn--primary">Take the quiz <span className="mk-btn-arrow" aria-hidden="true">→</span></Link>
           </div>
         </div>
       </main>
@@ -52,10 +52,10 @@ export default async function SharedCardPage({ params }: Params) {
   return (
     <main className="mk-page">
       <ArchetypeHero id={card.primary} voice="they" note="Someone sent you their Pujo." card={{ secondary: card.secondary, status: card.status, badges: card.badges }}>
-        <Link href={`/pujo/personality?with=${token}`} className="mk-btn mk-btn--primary">
+        <Link href={`/experience/personality?with=${token}`} className="mk-btn mk-btn--primary">
           What&apos;s yours? <span className="mk-btn-arrow" aria-hidden="true">→</span>
         </Link>
-        <Link href={`/pujo/archetypes/${card.primary}`} className={`mk-btn mk-btn--text ${styles.onGround}`}>
+        <Link href={`/experience/archetypes/${card.primary}`} className={`mk-btn mk-btn--text ${styles.onGround}`}>
           Read about the {CONTENT[card.primary].name}
         </Link>
       </ArchetypeHero>

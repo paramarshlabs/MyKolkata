@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { pageMetadata } from '@/lib/site/site'
 import { requireUser } from '@/lib/auth'
 import { Sprig } from '@/components/brand/kolka'
+import { AlponaRule } from '@/components/brand/Alpona'
+import { PersonalityEntry } from '@/components/pujo-personality/PersonalityEntry'
 import styles from '@/styles/Experiences.module.css'
 
 export const metadata: Metadata = pageMetadata({
@@ -18,6 +20,8 @@ type Feature = {
   /* no href: the feature isn't built yet, and the card says so instead of linking */
   href?: string
   image: string
+  /* where the 16:10 crop sits, for artwork that isn't centred */
+  imagePosition?: string
   alt: string
   /* the two facts in the card's foot, as the swipe card shows its ratings */
   facts: [label: string, value: string][]
@@ -30,7 +34,7 @@ const FEATURES: Feature[] = [
     title: 'Pujo Personality Map',
     kicker: 'Thirteen questions',
     description: 'Discover your Pujo personality, see your personalized map, and share it with friends.',
-    href: '/pujo/personality',
+    href: '/experience/personality',
     image: '/durgaeyes.png',
     alt: 'The eyes of Durga, drawn in red, white and black',
     facts: [['How', 'Quiz'], ['Then', 'Your map']],
@@ -46,12 +50,13 @@ const FEATURES: Feature[] = [
     facts: [['How', 'Swipe'], ['Takes', '2 minutes']],
   },
   {
-    title: 'Find Your Pujo',
-    kicker: 'Spotify or your personality',
-    description: 'Discover your ideal Pujo date using Spotify or your Pujo personality.',
-    image: '/sare.jpg',
-    alt: 'A folded blue and grey saree with a block-printed blouse piece',
-    facts: [['With', 'Spotify'], ['Or', 'Your personality']],
+    title: 'Tune Into Pujo',
+    kicker: 'Your music, your night',
+    description: 'Find the Pujo night that matches your sound.',
+    image: '/spotify.png',
+    imagePosition: '50% 74%',
+    alt: 'A phone playing Agomoni by Chandrabindoo in front of a lit pandal, with tags for an energetic vibe, Saptami night and North Kolkata',
+    facts: [['With', 'Spotify'], ['Finds', 'Your Pujo night']],
   },
   {
     title: 'Kolkata Wrapped',
@@ -100,7 +105,7 @@ export default async function ExperiencePage() {
             const card = (
               <>
                 <div className={styles.cardMedia}>
-                  <Image src={feature.image} alt={feature.alt} fill sizes="(max-width: 640px) 50vw, 380px" preload={i < 3} />
+                  <Image src={feature.image} alt={feature.alt} fill sizes="(max-width: 640px) 50vw, 380px" preload={i < 3} style={feature.imagePosition ? { objectPosition: feature.imagePosition } : undefined} />
                   <div className={styles.cardScrim} aria-hidden="true" />
                   {(feature.badge || !feature.href) && (
                     <span className={styles.badge}>{feature.href ? feature.badge : 'Coming soon'}</span>
@@ -129,6 +134,12 @@ export default async function ExperiencePage() {
           })}
         </ul>
       </div>
+
+      {/* the Pujo Personality's way in: the quiz and The nine live under /experience */}
+      <div style={{ marginTop: 'clamp(64px, 10vw, 128px)' }}>
+        <PersonalityEntry />
+      </div>
+      <AlponaRule className="mk-wrap" />
     </main>
   )
 }

@@ -113,7 +113,7 @@ export function archetypeImage(id: ArchetypeId, card?: ShareCard | null) {
   return render(svg)
 }
 
-/* /pujo/personality: the question, and the nine answers */
+/* /experience/personality: the question, and the nine answers */
 export function landingImage() {
   const palette = PALETTES.night_owl
   let svg = ground(palette) + lockup(palette)

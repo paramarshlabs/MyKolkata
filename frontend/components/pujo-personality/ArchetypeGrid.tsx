@@ -11,7 +11,7 @@ export function ArchetypeGrid({ highlight, className = '' }: { highlight?: Arche
     <ul className={`${styles.grid9} ${className}`}>
       {ARCHETYPE_IDS.map((id) => (
         <li key={id}>
-          <Link href={`/pujo/archetypes/${id}`} className={styles.grid9Item} aria-current={highlight === id ? 'true' : undefined}>
+          <Link href={`/experience/archetypes/${id}`} className={styles.grid9Item} aria-current={highlight === id ? 'true' : undefined}>
             <Sigil id={id} size={56} />
             <span className={styles.grid9Text}>
               <span className={styles.grid9Name}>{CONTENT[id].name}</span>

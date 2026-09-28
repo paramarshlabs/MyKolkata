@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   return pageMetadata({
     title: `The ${content.name}`,
     description: `${content.tagline} ${content.oneLine}`,
-    path: `/pujo/archetypes/${id}`,
+    path: `/experience/archetypes/${id}`,
     ownImage: true,
   })
 }
@@ -44,10 +44,10 @@ export default async function ArchetypePage({ params }: Params) {
   return (
     <main className="mk-page">
       <ArchetypeHero id={id}>
-        <Link href="/pujo/personality" className="mk-btn mk-btn--primary">
+        <Link href="/experience/personality" className="mk-btn mk-btn--primary">
           Take the quiz <span className="mk-btn-arrow" aria-hidden="true">→</span>
         </Link>
-        <Link href="/pujo/archetypes" className={`mk-btn mk-btn--text ${styles.onGround}`}>All nine</Link>
+        <Link href="/experience/archetypes" className={`mk-btn mk-btn--text ${styles.onGround}`}>All nine</Link>
       </ArchetypeHero>
 
       <section className={`${styles.paper} mk-band`} aria-labelledby="story-title">
@@ -80,7 +80,7 @@ export default async function ArchetypePage({ params }: Params) {
           <ul className={styles.people}>
             {KINDS.flatMap(([kind, label]) => people[kind].map((other) => (
               <li key={other}>
-                <Link href={`/pujo/archetypes/${other}`} className={styles.person}>
+                <Link href={`/experience/archetypes/${other}`} className={styles.person}>
                   <Sigil id={other} size={48} />
                   <span>
                     <span className={styles.personKind}>{label}</span>
@@ -106,7 +106,7 @@ export default async function ArchetypePage({ params }: Params) {
           <SectionHead id="nine-title" title="The nine" lede="Which one leads for you?" />
           <ArchetypeGrid highlight={id} />
           <div className="mk-banner-actions">
-            <Link href="/pujo/personality" className="mk-btn mk-btn--secondary">Take the quiz</Link>
+            <Link href="/experience/personality" className="mk-btn mk-btn--secondary">Take the quiz</Link>
           </div>
         </div>
       </section>

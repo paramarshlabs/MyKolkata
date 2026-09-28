@@ -54,10 +54,10 @@ export function GuessGame({ token }: { token: string }) {
   return (
     <main className="mk-page" ref={answerRef} tabIndex={-1} aria-label={verdict}>
       <ArchetypeHero id={card.primary} voice="they" note={verdict} card={{ secondary: card.secondary, status: card.status, badges: card.badges }}>
-        <Link href={`/pujo/personality?with=${token}`} className="mk-btn mk-btn--primary">
+        <Link href={`/experience/personality?with=${token}`} className="mk-btn mk-btn--primary">
           What&apos;s yours? <span className="mk-btn-arrow" aria-hidden="true">→</span>
         </Link>
-        <Link href={`/pujo/archetypes/${card.primary}`} className={`mk-btn mk-btn--text ${styles.onGround}`}>Read about the {CONTENT[card.primary].name}</Link>
+        <Link href={`/experience/archetypes/${card.primary}`} className={`mk-btn mk-btn--text ${styles.onGround}`}>Read about the {CONTENT[card.primary].name}</Link>
       </ArchetypeHero>
     </main>
   )

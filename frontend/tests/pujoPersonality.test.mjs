@@ -95,9 +95,10 @@ test('a link carries no name, and a broken or forged link opens nothing', () => 
 
 test('share links are recorded by route, not by card', () => {
   const token = encodeCard(randomCard(5))
-  assert.equal(redactPujoUrl(`https://example.org/pujo/you/${token}?x=1`), 'https://example.org/pujo/you/[card]?x=1')
-  assert.equal(redactPujoUrl(`/pujo/guess/${token}`), '/pujo/guess/[card]')
-  assert.equal(redactPujoUrl('/pujo/personality'), '/pujo/personality')
+  assert.equal(redactPujoUrl(`https://example.org/experience/you/${token}?x=1`), 'https://example.org/experience/you/[card]?x=1')
+  assert.equal(redactPujoUrl(`/experience/guess/${token}`), '/experience/guess/[card]')
+  assert.equal(redactPujoUrl('/experience/personality'), '/experience/personality')
+  assert.equal(redactPujoUrl(`/pujo/you/${token}`), '/pujo/you/[card]', 'links shared before the move to /experience')
 })
 
 test('first names on a card: letters in any script, nothing offensive', () => {
@@ -171,8 +172,10 @@ test('no font file is copied out of public/fonts', async () => {
 /* ------------------------------------------------------- public pages -- */
 
 test('the Pujo Personality is public, and nothing public writes', async () => {
-  const files = (await readdir(new URL('app/(open)/', root), { recursive: true })).filter((f) => /\.tsx?$/.test(f))
-  for (const page of ['pujo/personality/page.tsx', 'pujo/archetypes/page.tsx', 'pujo/archetypes/[id]/page.tsx', 'pujo/you/[token]/page.tsx', 'pujo/guess/[token]/page.tsx']) {
+  const files = (await readdir(new URL('app/(open)/', root), { recursive: true }))
+    .map((f) => f.replaceAll('\\', '/'))
+    .filter((f) => /\.tsx?$/.test(f))
+  for (const page of ['experience/personality/page.tsx', 'experience/archetypes/page.tsx', 'experience/archetypes/[id]/page.tsx', 'experience/you/[token]/page.tsx', 'experience/guess/[token]/page.tsx']) {
     assert.ok(files.includes(page), `missing app/(open)/${page}`)
   }
   for (const file of files) {
@@ -185,7 +188,7 @@ test('the Pujo Personality is public, and nothing public writes', async () => {
 })
 
 test('the guess preview never reads the card it is guessing', async () => {
-  assert.doesNotMatch(await read('app/(open)/pujo/guess/[token]/opengraph-image.tsx'), /decodeCard|params/)
+  assert.doesNotMatch(await read('app/(open)/experience/guess/[token]/opengraph-image.tsx'), /decodeCard|params/)
 })
 
 test('Mahalaya is 10 October 2026, and Shashthi a week later', () => {

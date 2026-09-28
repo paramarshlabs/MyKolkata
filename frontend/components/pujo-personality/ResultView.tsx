@@ -142,7 +142,7 @@ export function ResultView({ saved, result, fresh, friend, onPrefs, onFeedback, 
                 const pair = pairCopy(id, other)
                 return (
                   <li key={other}>
-                    <Link href={`/pujo/archetypes/${other}`} className={styles.person}>
+                    <Link href={`/experience/archetypes/${other}`} className={styles.person}>
                       <Sigil id={other} size={48} />
                       <span>
                         <span className={styles.personKind}>{label}</span>
@@ -313,7 +313,7 @@ function KeepIt({ saved, minor }: { saved: Saved; minor: boolean }) {
     return (
       <button type="button" className="mk-btn mk-btn--secondary" onClick={() => {
         trackPujo('pujo_signup_from_result')
-        void signInWithGoogle('/pujo/personality')
+        void signInWithGoogle('/experience/personality')
       }}>
         Sign in to keep it
       </button>

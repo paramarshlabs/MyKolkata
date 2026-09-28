@@ -4,7 +4,7 @@ import { PersonalityCta } from './PersonalityCta'
 import { Sigil } from './Sigil'
 import styles from '@/styles/PujoPersonality.module.css'
 
-/* The way in, from /home and /pujo (09-ux-flow.md §2). No hooks: it renders
+/* The way in, from /home and /experience (09-ux-flow.md §2). No hooks: it renders
    from Server and Client Components alike. */
 export function PersonalityEntry() {
   return (
@@ -19,7 +19,7 @@ export function PersonalityEntry() {
           </p>
           <div className="mk-banner-actions">
             <PersonalityCta />
-            <Link href="/pujo/archetypes" className="mk-btn mk-btn--text">Meet the nine</Link>
+            <Link href="/experience/archetypes" className="mk-btn mk-btn--text">Meet the nine</Link>
           </div>
         </div>
         <ul className={styles.entrySigils} aria-hidden="true">

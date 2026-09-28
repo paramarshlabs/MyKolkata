@@ -23,7 +23,7 @@ export default function NotFound() {
             <Link href="/home" className="mk-btn mk-btn--primary">
               Back to the city <span className="mk-btn-arrow" aria-hidden="true">→</span>
             </Link>
-            <Link href="/pujo/personality" className="mk-btn mk-btn--text">What kind of Pujo are you?</Link>
+            <Link href="/experience/personality" className="mk-btn mk-btn--text">What kind of Pujo are you?</Link>
           </div>
         </div>
       </main>

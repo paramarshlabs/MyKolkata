@@ -45,5 +45,6 @@ export function trackPujo(event: PujoEvent, props: Record<string, Value> = {}) {
 
 /* Share links carry a result; page views record the route, not the result. */
 export function redactPujoUrl(url: string): string {
-  return url.replace(/\/pujo\/(you|guess)\/[A-Za-z0-9_-]+/, '/pujo/$1/[card]')
+  /* /experience/ now; /pujo/ is where cards lived before, and old links still redirect from it */
+  return url.replace(/\/(experience|pujo)\/(you|guess)\/[A-Za-z0-9_-]+/, '/$1/$2/[card]')
 }

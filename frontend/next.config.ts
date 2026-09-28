@@ -47,6 +47,11 @@ const nextConfig: NextConfig = {
       { source: '/tinder', destination: '/experience', permanent: true },
       /* re-encoded as JPEG (3 MB to 0.3 MB); rows seeded before that still say .png */
       { source: '/southkol.png', destination: '/southkol.jpg', permanent: true },
+      /* The Pujo Personality moved from /pujo/* to /experience/*. Share cards
+         already sent around (/pujo/you/…, /pujo/guess/…) must keep opening;
+         query strings such as ?with= carry over. */
+      { source: '/pujo/:section(personality|archetypes)', destination: '/experience/:section', permanent: true },
+      { source: '/pujo/:section(archetypes|you|guess)/:rest', destination: '/experience/:section/:rest', permanent: true },
     ]
   },
   async headers() {

@@ -10,7 +10,7 @@ export function PersonalityCta() {
   const saved = useSyncExternalStore(subscribeSaved, savedSnapshot, noSnapshot) !== null
 
   return (
-    <Link href="/pujo/personality" className="mk-btn mk-btn--primary">
+    <Link href="/experience/personality" className="mk-btn mk-btn--primary">
       {saved ? 'Show my Pujo' : 'Take the quiz'} <span className="mk-btn-arrow" aria-hidden="true">→</span>
     </Link>
   )

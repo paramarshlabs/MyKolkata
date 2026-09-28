@@ -61,7 +61,7 @@ export default function PujoPersonality() {
   }
 
   /* arrival: a friend's card, then a saved Pujo, a quiz in progress, or a
-     fresh quiz. There is no landing here (the nine live at /pujo/archetypes):
+     fresh quiz. There is no landing here (the nine live at /experience/archetypes):
      the phone's storage is read once, after hydration, and the state machine
      starts from what it holds. */
   useEffect(() => {

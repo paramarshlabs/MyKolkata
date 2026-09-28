@@ -22,7 +22,7 @@ export function Compare({ you, them, themLabel = 'Your friend' }: CompareProps) 
     <div className={styles.compare}>
       <div className={styles.compareFaces}>
         {([['You', you.primary], [themLabel, them.primary]] as const).map(([who, id]) => (
-          <Link key={who} href={`/pujo/archetypes/${id}`} className={styles.compareFace}>
+          <Link key={who} href={`/experience/archetypes/${id}`} className={styles.compareFace}>
             <Sigil id={id} size={64} />
             <span className={styles.compareWho}>{who}</span>
             <span className={styles.compareName}>{CONTENT[id].name}</span>

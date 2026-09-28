@@ -7,7 +7,7 @@ import { ArchetypeGrid } from '@/components/pujo-personality/ArchetypeGrid'
 export const metadata: Metadata = pageMetadata({
   title: 'The nine Pujo personalities',
   description: 'Night Owl, Pandal Hunter, Para Kid, Pujo Romantic, Pet Pujari, Art Kid, Addabaaz, Dhunuchi and Shiuli: nine ways to do Pujo in Kolkata.',
-  path: '/pujo/archetypes',
+  path: '/experience/archetypes',
 })
 
 export default function ArchetypesPage() {
@@ -21,7 +21,7 @@ export default function ArchetypesPage() {
         />
         <ArchetypeGrid />
         <div className="mk-banner-actions">
-          <Link href="/pujo/personality" className="mk-btn mk-btn--primary">
+          <Link href="/experience/personality" className="mk-btn mk-btn--primary">
             Take the quiz <span className="mk-btn-arrow" aria-hidden="true">→</span>
           </Link>
         </div>
