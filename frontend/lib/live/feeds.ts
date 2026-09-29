@@ -1,4 +1,5 @@
 import type { Feed } from './refresh'
+import { skyFeed } from './sky'
 
 /* ==========================================================================
    Every live feed /home shows, refreshed by lib/live/server.ts and
@@ -6,4 +7,6 @@ import type { Feed } from './refresh'
    the shape it reads from Anakin is tested next to it.
    ========================================================================== */
 
-export const FEEDS: Feed[] = []
+export const FEEDS: Feed[] = [
+  skyFeed as Feed,
+]

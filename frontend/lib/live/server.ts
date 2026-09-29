@@ -37,6 +37,7 @@ export function runLiveRefresh(options: { max?: number; budgetMs?: number; only?
 }
 
 let refreshing = false
+let warned = false
 
 /* What /home shows. Never throws: no table yet, or a database outage, is
    simply no live data, and every section that uses it has its own fallback.
@@ -46,7 +47,9 @@ export async function loadLive(now: Date = new Date()): Promise<LiveSnapshot> {
   try {
     rows = await liveRepository.all()
   } catch (err) {
-    console.error('[live] could not read live feeds', err instanceof Error ? err.message : err)
+    /* most often: the live_feeds migration hasn't been applied yet. Once is enough. */
+    if (!warned) console.warn('[live] could not read live feeds; showing fallbacks', err instanceof Error ? err.message.split('\n').pop() : err)
+    warned = true
     return {}
   }
   if (process.env.ANAKIN_API_KEY && !refreshing && dueFeeds(FEEDS, rows, now).length) {

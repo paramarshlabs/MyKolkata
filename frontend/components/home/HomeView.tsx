@@ -4,6 +4,10 @@ import { prisma } from '@/lib/db/prisma'
 import { listCatalogue } from '@/lib/catalogue/list'
 import { getHomeNews, homeNewsCards } from '@/lib/news/home'
 import { newsRepository } from '@/lib/news/server'
+import { loadLive } from '@/lib/live/server'
+import type { LiveSnapshot } from '@/lib/live/refresh'
+import type { Sky } from '@/lib/live/sky'
+import { skyReport, type HeroMood } from '@/lib/home/sky'
 import { SectionHead } from '@/components/brand/SectionHead'
 import { Medallion, Sprig } from '@/components/brand/kolka'
 import { LaalPaar } from '@/components/brand/Alpona'
@@ -12,6 +16,15 @@ import { FilmStrip } from './FilmStrip'
 import { SeasonLine } from './SeasonLine'
 import { NewsBand } from './NewsBand'
 import { MarketShelf } from './MarketShelf'
+import { SkyReadout } from './SkyReadout'
+
+/* the hero follows the sky: the bus at sunset by day, the wet street after
+   dark, the monsoon from above when it is raining */
+const HERO: Record<HeroMood, { src: string; alt: string; position: string }> = {
+  day: { src: '/hero-bg.jpg', alt: 'A yellow bus passing under the steel spans of the Howrah Bridge at sunset', position: '50% 64%' },
+  night: { src: '/explore-hero-v2.webp', alt: 'A yellow taxi on a rain-wet street at night, with Howrah Bridge lit up across the river', position: '62% 50%' },
+  rain: { src: '/login-bg.jpg', alt: 'Howrah Bridge and the rooftops under heavy monsoon cloud', position: '50% 50%' },
+}
 
 type MarketItem = {
   id: string
@@ -25,7 +38,7 @@ type MarketItem = {
 
 /*  Everything /home shows. The page checks the session and renders this, so
     the view itself reads data and nothing else.                             */
-export async function HomeView({ now = new Date() }: { now?: Date } = {}) {
+export async function HomeView({ now = new Date(), live }: { now?: Date; live?: LiveSnapshot } = {}) {
   /* the paper, the city story, the sports story — persisted, never blank */
   const newsPromise = getHomeNews(newsRepository, { now })
   let marketplace: MarketItem[] = []
@@ -38,6 +51,9 @@ export async function HomeView({ now = new Date() }: { now?: Date } = {}) {
     failed = true
   }
   const news = homeNewsCards(await newsPromise)
+  const feeds = live ?? await loadLive(now)
+  const sky = skyReport((feeds.sky?.payload as Sky | undefined) ?? null, now)
+  const hero = HERO[sky.mood]
 
   return (
     <>
@@ -46,16 +62,17 @@ export async function HomeView({ now = new Date() }: { now?: Date } = {}) {
         {/* the page's largest paint: resized per device, served as AVIF or WebP, and preloaded */}
         <Image
           className="mk-banner-img"
-          src="/hero-bg.jpg"
-          alt="A yellow bus passing under the steel spans of the Howrah Bridge at sunset"
+          src={hero.src}
+          alt={hero.alt}
           fill
           sizes="100vw"
           preload
-          style={{ objectPosition: '50% 64%' }}
+          style={{ objectPosition: hero.position }}
         />
         <div className="mk-banner-scrim" aria-hidden="true" />
         <div className="mk-banner-content">
           <div className="mk-banner-copy">
+            <SkyReadout report={sky} />
             <Sprig size={38} />
             <h1 id="home-title" className="mk-display" style={{ marginTop: 8 }}>The city, this week.</h1>
             <p className="mk-banner-bn" lang="bn">চলো, একটু ঘুরে আসি।</p>

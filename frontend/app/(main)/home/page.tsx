@@ -5,6 +5,8 @@ import { HomeEntry } from '@/components/brand/HomeEntry'
 import { HomeView } from '@/components/home/HomeView'
 
 export const dynamic = 'force-dynamic'
+/* a stale live feed is refreshed after the response (lib/live/server.ts) */
+export const maxDuration = 60
 
 export const metadata: Metadata = pageMetadata({
   title: 'Home',
