@@ -136,6 +136,8 @@
 }
 .mk-notchbar .nn-option:hover { background: var(--nn-wash); color: var(--nn-fg); }
 .mk-notchbar .nn-option.is-active { background: var(--nn-bg-2); color: var(--nn-fg); }
+/* a link that leaves the site: the arrow sits at the row's far end, quietly */
+.mk-notchbar .nn-option-out { font-size: 13px; color: var(--nn-muted); }
 .mk-notchbar .nn-option svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.25; stroke-linecap: round; stroke-linejoin: round; }
 .mk-notchbar .nn-scrim {
   position: fixed; inset: 0; z-index: 44; background: rgba(10, 13, 14, 0.4);
