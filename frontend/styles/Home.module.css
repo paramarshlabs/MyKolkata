@@ -309,3 +309,38 @@
 @media (prefers-reduced-motion: reduce) {
   .stubPoster { transition: none; }
 }
+
+/* ========================================================== the pulse == */
+/*  One series: a 2px Pearl line on a dotted baseline, axes recessive, the
+    two named points labelled directly, and a crosshair on hover. The line
+    ends in the kolka — the alpona rule, drawn from data.                    */
+.pulseSummary { margin: var(--mk-6) 0 0; font-family: var(--mk-display); font-size: clamp(21px, 2.4vw, 30px); line-height: 1.3; letter-spacing: -0.015em; color: var(--mk-blush); max-width: 34ch; }
+.pulse { margin-top: var(--mk-7); }
+.pulsePlot { position: relative; height: clamp(200px, 24vw, 300px); touch-action: pan-y; cursor: crosshair; }
+.pulseSvg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.pulseBase { stroke: rgba(242, 241, 237, 0.24); stroke-width: 1; stroke-dasharray: 2 6; }
+.pulseLine { fill: none; stroke: var(--mk-pearl); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.pulseCross { stroke: rgba(242, 241, 237, 0.32); stroke-width: 1; }
+.pulsePeak, .pulseNow, .pulseTip { position: absolute; pointer-events: none; }
+.pulsePeak {
+  width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-radius: 999px;
+  background: var(--mk-obsidian); border: 2px solid var(--mk-pearl);
+}
+.pulseLabel { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 13px; letter-spacing: 0.02em; color: var(--mk-ash); }
+/* near an edge the label hangs inward instead of off the page */
+.pulsePeak[data-edge='start'] .pulseLabel { left: -2px; transform: none; }
+.pulsePeak[data-edge='end'] .pulseLabel { left: auto; right: -2px; transform: none; }
+/* the sprig stands on the line's last point */
+.pulseNow { display: flex; align-items: flex-end; gap: var(--mk-2); transform: translate(-100%, -100%); margin-left: 6px; }
+.pulseNow :global(.mk-sprig) { flex: none; }
+.pulseNowLabel { white-space: nowrap; padding-bottom: 4px; font-size: 14px; letter-spacing: 0.01em; color: var(--mk-taxi); }
+.pulseTip {
+  white-space: nowrap; padding: 6px 10px; border-radius: var(--mk-r-sm);
+  background: var(--mk-slate); border: 1px solid rgba(242, 241, 237, 0.14);
+  font-size: 13px; color: var(--mk-pearl); box-shadow: var(--mk-shadow-card);
+}
+.pulseMonths { position: relative; list-style: none; margin: var(--mk-3) 0 0; padding: 0; height: 18px; }
+.pulseMonths li { position: absolute; top: 0; transform: translateX(-50%); font-size: 12px; letter-spacing: 0.02em; color: var(--mk-ash); }
+@media (max-width: 700px) {
+  .pulseMonths li:nth-child(even) { display: none; }
+}

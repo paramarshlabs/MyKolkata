@@ -6,6 +6,7 @@ import { createWire, WireOutOfCredits, WireRateLimited } from '../lib/live/wire.
 import { dueFeeds, refreshLive, RETRY_MS, snapshotOf } from '../lib/live/refresh.ts'
 import { findList, str, num, parseMaybe } from '../lib/live/shape.ts'
 import { extractShows, upcoming } from '../lib/live/tonight.ts'
+import { normalizeTrend, readTrend } from '../lib/live/trend.ts'
 import { showWhen } from '../lib/home/when.ts'
 
 const json = (status, body) => ({ ok: status < 400, status, json: async () => body })
@@ -114,4 +115,23 @@ test('show times read the way people say them', () => {
   assert.equal(showWhen('2026-09-30T07:00:00+05:30', now), 'Tomorrow, 7 am')
   assert.equal(showWhen('2026-10-02T18:00:00+05:30', now), 'Fri 2 Oct, 6 pm')
   assert.equal(showWhen(null, now), 'Showing this week')
+})
+
+test('the Pujo pulse reads Google Trends timelines, native or flattened', () => {
+  const weeks = Array.from({ length: 52 }, (_, i) => Date.UTC(2025, 8, 28) / 1000 + i * 7 * 86400)
+  const native = { data: { default: { timelineData: weeks.map((time, i) => ({
+    time: String(time), formattedTime: 'x', value: [i === 0 ? 100 : i > 44 ? 20 + (i - 44) * 6 : 4],
+  })) } } }
+  const trend = normalizeTrend(native)
+  assert.equal(trend.points.length, 52)
+  assert.equal(trend.points[0].d, '2025-09-28')
+  const reading = readTrend(trend)
+  assert.equal(reading.peakIndex, 0)
+  assert.equal(reading.current.v, 62)
+  assert.equal(reading.ofPeak, 62)
+  assert.equal(reading.rising, true)
+
+  const flat = [{ date: 'Sep 21 – 27, 2025', value: '80' }, ...Array.from({ length: 9 }, (_, i) => ({ date: `2026-0${1 + (i % 8)}-1${i % 9}`, value: 10 }))]
+  assert.equal(normalizeTrend(flat).points[0].d, '2025-09-21')
+  assert.equal(normalizeTrend({ nothing: [] }), null)
 })
