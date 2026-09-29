@@ -1,5 +1,6 @@
 import type { Feed } from './refresh'
 import { skyFeed } from './sky'
+import { tonightFeed } from './tonight'
 
 /* ==========================================================================
    Every live feed /home shows, refreshed by lib/live/server.ts and
@@ -9,4 +10,5 @@ import { skyFeed } from './sky'
 
 export const FEEDS: Feed[] = [
   skyFeed as Feed,
+  tonightFeed as Feed,
 ]

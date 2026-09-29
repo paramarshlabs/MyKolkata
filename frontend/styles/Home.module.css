@@ -248,3 +248,64 @@
   .sky .moon { width: 32px; height: 32px; flex: none; }
   .skyLine { font-size: 14px; }
 }
+
+/* ===================================================== ticket stubs == */
+/*  Paper tickets: Pearl stock, Obsidian print, Ruby for the time — the paper
+    colours from design.md §3.3. The poster is the stub, torn along a
+    perforation; pointing at a ticket pulls the stub a little way off.       */
+.stubs {
+  list-style: none; margin: var(--mk-7) 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr)); gap: var(--mk-5);
+}
+.stub {
+  --notch: 9px;
+  position: relative; display: grid; grid-template-columns: 112px minmax(0, 1fr);
+  min-height: 168px; color: var(--mk-obsidian); text-decoration: none;
+  filter: drop-shadow(0 10px 16px rgba(10, 13, 14, 0.4));
+}
+.stubPoster {
+  position: relative; overflow: hidden; display: grid; place-items: center;
+  background: var(--mk-slate); color: var(--mk-ash);
+  border-radius: var(--mk-r-md) 0 0 var(--mk-r-md);
+  /* the stub's half of the notches */
+  -webkit-mask: radial-gradient(circle var(--notch) at 100% 0, transparent 98%, #0d1012 100%) top / 100% 51% no-repeat,
+                radial-gradient(circle var(--notch) at 100% 100%, transparent 98%, #0d1012 100%) bottom / 100% 51% no-repeat;
+  mask: radial-gradient(circle var(--notch) at 100% 0, transparent 98%, #0d1012 100%) top / 100% 51% no-repeat,
+        radial-gradient(circle var(--notch) at 100% 100%, transparent 98%, #0d1012 100%) bottom / 100% 51% no-repeat;
+  transition: transform var(--mk-t-reveal) var(--mk-ease-out);
+  transform-origin: 100% 100%;
+}
+.stubPoster img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(1.06) contrast(1.1); }
+.stubBody {
+  position: relative; display: flex; flex-direction: column; gap: 4px; min-width: 0;
+  padding: var(--mk-4) var(--mk-5) var(--mk-4) calc(var(--mk-5) + 2px);
+  background: var(--mk-pearl);
+  border-radius: 0 var(--mk-r-md) var(--mk-r-md) 0;
+  -webkit-mask: radial-gradient(circle var(--notch) at 0 0, transparent 98%, #0d1012 100%) top / 100% 51% no-repeat,
+                radial-gradient(circle var(--notch) at 0 100%, transparent 98%, #0d1012 100%) bottom / 100% 51% no-repeat;
+  mask: radial-gradient(circle var(--notch) at 0 0, transparent 98%, #0d1012 100%) top / 100% 51% no-repeat,
+        radial-gradient(circle var(--notch) at 0 100%, transparent 98%, #0d1012 100%) bottom / 100% 51% no-repeat;
+}
+/* the perforation */
+.stubBody::before {
+  content: ''; position: absolute; left: 0; top: var(--notch); bottom: var(--notch); width: 1px;
+  background-image: linear-gradient(rgba(13, 16, 18, 0.35) 50%, transparent 50%);
+  background-size: 1px 7px;
+}
+.stubSource { font-size: 12.5px; letter-spacing: 0.02em; color: rgba(13, 16, 18, 0.6); }
+.stubTitle {
+  font-family: var(--mk-display); font-size: 20px; line-height: 1.2; letter-spacing: -0.01em; color: var(--mk-obsidian);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.stubVenue { font-size: 14px; color: rgba(13, 16, 18, 0.72); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.stubWhen { margin-top: auto; padding-top: var(--mk-2); font-size: 14px; letter-spacing: 0.01em; color: var(--mk-ruby); font-variant-numeric: tabular-nums; }
+.stub:hover .stubPoster, .stub:focus-visible .stubPoster { transform: translateX(-6px) rotate(-2.5deg); }
+.stub:focus-visible { outline: 2px solid var(--mk-crimson); outline-offset: 4px; border-radius: var(--mk-r-md); }
+
+@media (max-width: 480px) {
+  .stub { grid-template-columns: 92px minmax(0, 1fr); min-height: 150px; }
+  .stubTitle { font-size: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stubPoster { transition: none; }
+}

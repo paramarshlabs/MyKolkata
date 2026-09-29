@@ -10,7 +10,8 @@ import { WireOutOfCredits, WireRateLimited, type WireRun } from './wire'
 export type SearchResult = { url?: string; title?: string; snippet?: string; [key: string]: unknown }
 export type SearchFn = (prompt: string, options?: { limit?: number }) => Promise<SearchResult[]>
 
-export type FeedContext = { wire: WireRun; search: SearchFn | null; now: Date }
+/* `last` is what this feed stored before, for feeds that carry a lookup forward */
+export type FeedContext = { wire: WireRun; search: SearchFn | null; now: Date; last: unknown }
 
 export type Feed<T = unknown> = {
   key: string
@@ -88,7 +89,9 @@ export async function refreshLive({
   if (!wire) return []
   const started = clock()
   const candidates = feeds.filter((feed) => !only || only.includes(feed.key))
-  const due = dueFeeds(candidates, await repository.all(), now).slice(0, max)
+  const rows = await repository.all()
+  const lastOf = new Map(rows.map((row) => [row.key, row.payload]))
+  const due = dueFeeds(candidates, rows, now).slice(0, max)
   const outcomes: RefreshOutcome[] = []
 
   for (const feed of due) {
@@ -98,7 +101,7 @@ export async function refreshLive({
       continue
     }
     try {
-      const payload = await feed.fetch({ wire, search, now })
+      const payload = await feed.fetch({ wire, search, now, last: lastOf.get(feed.key) ?? null })
       if (payload == null) {
         await repository.fail(feed.key, 'nothing to show', now)
         outcomes.push({ key: feed.key, status: 'empty' })

@@ -91,3 +91,18 @@ export function httpsUrl(value: unknown): string | null {
 
 export const clip = (text: string | null, max: number) =>
   !text ? null : text.length <= max ? text : `${text.slice(0, max - 1).replace(/\s+\S*$/, '')}…`
+
+/* Every object in the tree, depth-first, parsing JSON strings on the way. */
+export function eachObject(root: unknown, visit: (item: Obj) => void, limit = 4000) {
+  const seen = new Set<unknown>()
+  let count = 0
+  const walk = (value: unknown, depth: number) => {
+    value = parseMaybe(value)
+    if (!value || typeof value !== 'object' || seen.has(value) || depth > 9 || count > limit) return
+    seen.add(value)
+    count++
+    if (isObj(value)) visit(value)
+    for (const child of Array.isArray(value) ? value : Object.values(value)) walk(child, depth + 1)
+  }
+  walk(root, 0)
+}

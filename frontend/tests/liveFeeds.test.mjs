@@ -5,6 +5,8 @@ import assert from 'node:assert/strict'
 import { createWire, WireOutOfCredits, WireRateLimited } from '../lib/live/wire.ts'
 import { dueFeeds, refreshLive, RETRY_MS, snapshotOf } from '../lib/live/refresh.ts'
 import { findList, str, num, parseMaybe } from '../lib/live/shape.ts'
+import { extractShows, upcoming } from '../lib/live/tonight.ts'
+import { showWhen } from '../lib/home/when.ts'
 
 const json = (status, body) => ({ ok: status < 400, status, json: async () => body })
 
@@ -83,4 +85,33 @@ test('shape helpers find the list a feed needs wherever the action nests it', ()
   assert.equal(str(list[0], 'name', 'title'), 'A')
   assert.equal(num(list[0].views), 1204)
   assert.equal(parseMaybe('not json'), 'not json')
+})
+
+test('tonight finds listings however each source nests them, and keeps the week ahead', () => {
+  const bms = { data: { sections: [{ title: 'Movies in Kolkata', cards: [
+    { eventTitle: 'A Bengali Film', genres: ['Drama', 'Family', 'Musical'], imageUrl: 'https://assets-in.bmscdn.com/poster.jpg', url: 'https://in.bookmyshow.com/kolkata/movies/a/ET1' },
+    { eventTitle: 'A Bengali Film', imageUrl: 'https://assets-in.bmscdn.com/poster.jpg' },
+  ] }] } }
+  const meetup = JSON.stringify({ results: [
+    { title: 'Heritage walk', dateTime: '2026-09-30T07:00:00+05:30', venue: { name: 'Shobhabazar' }, eventUrl: 'https://www.meetup.com/x/events/1', featuredEventPhoto: { highResUrl: 'https://secure.meetupstatic.com/p.jpeg' } },
+    { title: 'Last month', dateTime: '2026-08-01T07:00:00+05:30', eventUrl: 'https://www.meetup.com/x/events/0' },
+  ] })
+  const films = extractShows(bms, 'BookMyShow')
+  assert.equal(films.length, 1)
+  assert.equal(films[0].title, 'A Bengali Film')
+  assert.equal(films[0].kind, 'Drama, Family')
+  const walks = extractShows(meetup, 'Meetup')
+  assert.equal(walks[0].venue, 'Shobhabazar')
+  assert.equal(walks[0].image, 'https://secure.meetupstatic.com/p.jpeg')
+  const soon = upcoming([...films, ...walks], new Date('2026-09-29T20:00:00+05:30'))
+  assert.deepEqual(soon.map((s) => s.title), ['Heritage walk', 'A Bengali Film'])
+})
+
+test('show times read the way people say them', () => {
+  const now = new Date('2026-09-29T16:00:00+05:30')
+  assert.equal(showWhen('2026-09-29T19:30:00+05:30', now), 'Tonight, 7:30 pm')
+  assert.equal(showWhen('2026-09-29T11:00:00+05:30', now), 'Today, 11 am')
+  assert.equal(showWhen('2026-09-30T07:00:00+05:30', now), 'Tomorrow, 7 am')
+  assert.equal(showWhen('2026-10-02T18:00:00+05:30', now), 'Fri 2 Oct, 6 pm')
+  assert.equal(showWhen(null, now), 'Showing this week')
 })
