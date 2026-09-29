@@ -7,6 +7,7 @@ import { dueFeeds, refreshLive, RETRY_MS, snapshotOf } from '../lib/live/refresh
 import { findList, str, num, parseMaybe } from '../lib/live/shape.ts'
 import { extractShows, upcoming } from '../lib/live/tonight.ts'
 import { normalizeTrend, readTrend } from '../lib/live/trend.ts'
+import { normalizeDerby, normalizeRising } from '../lib/live/searching.ts'
 import { showWhen } from '../lib/home/when.ts'
 
 const json = (status, body) => ({ ok: status < 400, status, json: async () => body })
@@ -134,4 +135,31 @@ test('the Pujo pulse reads Google Trends timelines, native or flattened', () => 
   const flat = [{ date: 'Sep 21 – 27, 2025', value: '80' }, ...Array.from({ length: 9 }, (_, i) => ({ date: `2026-0${1 + (i % 8)}-1${i % 9}`, value: 10 }))]
   assert.equal(normalizeTrend(flat).points[0].d, '2025-09-21')
   assert.equal(normalizeTrend({ nothing: [] }), null)
+})
+
+test('rising searches come from the rising list, with explicit ones kept off /home', () => {
+  const google = { default: { rankedList: [
+    { rankedKeyword: [{ query: 'kolkata', value: 100, formattedValue: '100' }] },
+    { rankedKeyword: [
+      { query: 'kolkata pandal 2026', value: 5000, formattedValue: 'Breakout' },
+      { query: 'kolkata metro timing', value: 850, formattedValue: '+850%' },
+      { query: 'kolkata mms leaked', value: 900, formattedValue: '+900%' },
+      { query: 'Kolkata Metro Timing', value: 10, formattedValue: '+10%' },
+    ] },
+  ] } }
+  assert.deepEqual(normalizeRising(google), [
+    { query: 'kolkata pandal 2026', growth: 'Breakout' },
+    { query: 'kolkata metro timing', growth: '+850%' },
+  ])
+  assert.deepEqual(normalizeRising({ rising: [{ query: 'kolkata rain', value: 250 }] }), [{ query: 'kolkata rain', growth: '+250%' }])
+})
+
+test('the derby is each club\'s share of the pair\'s searches over the week', () => {
+  const timeline = { default: { timelineData: [
+    { time: '1', value: [60, 40] }, { time: '2', value: [48, 52] },
+  ] } }
+  assert.deepEqual(normalizeDerby(timeline), { a: { name: 'Mohun Bagan', share: 54 }, b: { name: 'East Bengal', share: 46 } })
+  const flat = [{ date: '2026-09-28', 'Mohun Bagan': 10, 'East Bengal': 30 }]
+  assert.equal(normalizeDerby(flat).b.share, 75)
+  assert.equal(normalizeDerby({}), null)
 })

@@ -344,3 +344,39 @@
 @media (max-width: 700px) {
   .pulseMonths li:nth-child(even) { display: none; }
 }
+
+/* ======================================================== searching == */
+.searching {
+  display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: clamp(32px, 5vw, 80px); margin-top: var(--mk-7); align-items: start;
+}
+/* a ranking, so the numbers are real: the list's own counter, in Ash */
+.rising { list-style: none; margin: 0; padding: 0; counter-reset: rise; display: grid; gap: 2px; }
+.rising > li { counter-increment: rise; }
+.risingItem {
+  display: grid; grid-template-columns: 2.2em minmax(0, 1fr) auto; align-items: baseline; gap: var(--mk-3);
+  padding: var(--mk-3) var(--mk-3) var(--mk-3) 0; border-radius: var(--mk-r-sm);
+  color: var(--mk-pearl); text-decoration: none;
+  transition: background-color var(--mk-t-hover) var(--mk-ease-in-out);
+}
+.risingItem::before { content: counter(rise); font-size: 13px; color: var(--mk-ash); text-align: right; font-variant-numeric: tabular-nums; }
+.risingQuery { font-family: var(--mk-display); font-size: clamp(18px, 1.8vw, 22px); line-height: 1.3; letter-spacing: -0.01em; }
+.risingGrowth { font-size: 13px; letter-spacing: 0.02em; color: var(--mk-ash); font-variant-numeric: tabular-nums; }
+.risingItem:hover, .risingItem:focus-visible { background: rgba(242, 241, 237, 0.04); }
+.risingItem:hover .risingGrowth, .risingItem:focus-visible .risingGrowth { color: var(--mk-taxi); }
+.risingItem:focus-visible { outline: 2px solid var(--mk-crimson); outline-offset: 2px; }
+
+.derby { margin: 0; padding: clamp(20px, 3vw, 32px); border-radius: var(--mk-r-lg); background: var(--mk-ink); border: 1px solid rgba(242, 241, 237, 0.08); }
+.derbyTitle { font-size: 14px; letter-spacing: 0.015em; color: var(--mk-ash); margin-bottom: var(--mk-5); }
+.derbyNames, .derbyShares { display: flex; justify-content: space-between; gap: var(--mk-4); }
+.derbyNames { font-family: var(--mk-display); font-size: clamp(20px, 2vw, 26px); letter-spacing: -0.015em; color: var(--mk-white); }
+.derbyShares { margin: var(--mk-2) 0 var(--mk-4); font-size: 15px; color: var(--mk-pearl); }
+/* two thin fills with a 2px gap; which side is which is written above it */
+.derbyBar { display: flex; gap: 2px; height: 10px; margin-top: var(--mk-3); }
+.derbyA, .derbyB { display: block; min-width: 4px; }
+.derbyA { background: var(--mk-pearl); border-radius: 4px 0 0 4px; }
+.derbyB { background: rgba(242, 241, 237, 0.34); border-radius: 0 4px 4px 0; }
+
+@media (max-width: 900px) {
+  .searching { grid-template-columns: 1fr; }
+}

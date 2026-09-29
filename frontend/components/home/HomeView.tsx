@@ -9,6 +9,7 @@ import type { LiveSnapshot } from '@/lib/live/refresh'
 import type { Sky } from '@/lib/live/sky'
 import type { Tonight as TonightFeed } from '@/lib/live/tonight'
 import type { PujoTrend } from '@/lib/live/trend'
+import type { Searching as SearchingFeed } from '@/lib/live/searching'
 import { skyReport, type HeroMood } from '@/lib/home/sky'
 import { SectionHead } from '@/components/brand/SectionHead'
 import { Medallion, Sprig } from '@/components/brand/kolka'
@@ -21,6 +22,7 @@ import { MarketShelf } from './MarketShelf'
 import { SkyReadout } from './SkyReadout'
 import { Tonight } from './Tonight'
 import { PujoPulse } from './PujoPulse'
+import { Searching } from './Searching'
 
 /* the hero follows the sky: the bus at sunset by day, the wet street after
    dark, the monsoon from above when it is raining */
@@ -109,6 +111,8 @@ export async function HomeView({ now = new Date(), live }: { now?: Date; live?: 
       <Tonight feed={(feeds.tonight?.payload as TonightFeed | undefined) ?? null} now={now} />
 
       <PujoPulse trend={(feeds['pujo-trend']?.payload as PujoTrend | undefined) ?? null} />
+
+      <Searching feed={(feeds.searching?.payload as SearchingFeed | undefined) ?? null} />
 
       {failed ? (
         <section className="mk-band" style={{ paddingTop: 0 }}>
