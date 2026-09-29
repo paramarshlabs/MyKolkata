@@ -5,13 +5,14 @@ import { listCatalogue } from '@/lib/catalogue/list'
 import { getHomeNews, homeNewsCards } from '@/lib/news/home'
 import { newsRepository } from '@/lib/news/server'
 import { SectionHead } from '@/components/brand/SectionHead'
-import { Medallion, Sprig } from '@/components/brand/kolka'
+import { Sprig } from '@/components/brand/kolka'
 import { LaalPaar } from '@/components/brand/Alpona'
 import { PersonalityEntry } from '@/components/pujo-personality/PersonalityEntry'
 import { FilmStrip } from './FilmStrip'
 import { SeasonLine } from './SeasonLine'
 import { NewsBand } from './NewsBand'
 import { MarketShelf } from './MarketShelf'
+import { ClosingScene } from './ClosingScene'
 
 type MarketItem = {
   id: string
@@ -118,21 +119,7 @@ export async function HomeView({ now = new Date() }: { now?: Date } = {}) {
 
       <LaalPaar />
 
-      <section className="mk-band mk-band--closing" aria-labelledby="closing-title">
-        <div className="mk-wrap">
-          <Medallion size={132} />
-          <h2 id="closing-title" className="mk-display" style={{ marginTop: 24 }}>
-            <span className="block">SAME CITY.</span>
-            <span className="block">NEW STORIES.</span>
-          </h2>
-          <p className="mk-banner-bn" lang="bn" style={{ fontSize: 'clamp(18px, 3vw, 32px)' }}>পুজো আসছে।</p>
-          <div className="mk-banner-actions">
-            <Link href="/pujo" className="mk-btn mk-btn--primary">
-              Explore the Pujo <span className="mk-btn-arrow" aria-hidden="true">→</span>
-            </Link>
-          </div>
-        </div>
-      </section>
+      <ClosingScene />
     </main>
     </>
   )
