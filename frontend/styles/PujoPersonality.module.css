@@ -392,14 +392,41 @@ a.pick:hover .pickArea { color: var(--mk-taxi); }
 }
 
 /* ============================================================== entry == */
-.entry { border-top: 1px solid rgba(242, 241, 237, 0.07); }
-.entryInner { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 96px); align-items: center; }
+/*  /home's Bordeaux band. The head splits question from answer; the nine run
+    in one line beneath, each a way into its own page.                      */
+.entry { padding: clamp(56px, 7vw, 96px) 0; }
+.entryHead {
+  display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: var(--mk-5) clamp(32px, 6vw, 96px); align-items: end;
+}
 .entryBn {
   margin: 0; font-family: var(--mk-bengali); font-variation-settings: 'wght' 700;
   font-size: clamp(30px, 5vw, 52px); line-height: 1.5; letter-spacing: 0; color: var(--mk-blush);
 }
-.entrySigils { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 64px); gap: clamp(20px, 3vw, 44px); justify-content: center; }
+.entryAside { max-width: 52ch; }
+.entryAside :global(.mk-banner-actions) { margin-top: var(--mk-5); }
+.entryNine {
+  list-style: none; margin: clamp(40px, 5vw, 64px) 0 0; padding: var(--mk-6) 0 0;
+  display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: var(--mk-3);
+  border-top: 1px solid rgba(242, 241, 237, 0.14);
+}
+.entryItem {
+  display: flex; flex-direction: column; align-items: center; gap: var(--mk-2);
+  padding: var(--mk-3) 0; border-radius: var(--mk-r-md);
+  color: var(--mk-pearl); text-decoration: none; text-align: center;
+  transition: background-color var(--mk-t-hover) var(--mk-ease-in-out);
+}
+.entryItem:hover, .entryItem:focus-visible { background: rgba(38, 10, 14, 0.7); }
+.entryItem:focus-visible { outline: 2px solid var(--mk-crimson); outline-offset: 2px; }
+.entryItemBn {
+  margin-top: var(--mk-2); font-family: var(--mk-bengali); font-variation-settings: 'wght' 600;
+  font-size: 16px; line-height: 1.4; color: var(--mk-pearl);
+}
+.entryItemName { font-size: 13px; letter-spacing: 0.02em; color: var(--mk-ash); transition: color var(--mk-t-hover) var(--mk-ease-in-out); }
+.entryItem:hover .entryItemName, .entryItem:focus-visible .entryItemName { color: var(--mk-taxi); }
+@media (max-width: 1100px) {
+  .entryNine { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); row-gap: var(--mk-5); }
+}
 @media (max-width: 900px) {
-  .entryInner { grid-template-columns: 1fr; }
-  .entrySigils { justify-content: start; }
+  .entryHead { grid-template-columns: 1fr; align-items: start; }
 }
