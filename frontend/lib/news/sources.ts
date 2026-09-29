@@ -75,6 +75,9 @@ export function isBlockedSource(domain: string) {
   return BLOCKED.test(domain)
 }
 
+/* every publication name we know, for trimming "Headline - The Telegraph" */
+export const PUBLICATION_NAMES: readonly string[] = [...new Set(Object.values(PUBLICATIONS).map(({ name }) => name))]
+
 export function sourceName(domain: string, fallback?: string | null) {
   if (publicationFor(domain)) return publicationFor(domain)!.name
   if (fallback?.trim()) return fallback.trim()

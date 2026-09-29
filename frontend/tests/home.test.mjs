@@ -2,6 +2,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { seasonLine } from '../lib/home/season.ts'
+import { displayTitle } from '../lib/news/home.ts'
 
 const at = (iso) => new Date(iso)
 
@@ -35,4 +36,17 @@ test('the season line keeps the five days apart and marks what has passed', () =
   assert.ok(byKey.saptami.today && !byKey.saptami.past)
   assert.ok(!byKey.ashtami.past)
   assert.equal(line.todayAt, byKey.saptami.at)
+})
+
+test('home news titles lose the site talking about itself, and nothing else', () => {
+  assert.equal(
+    displayTitle('Upside Down House Kolkata | amusement-parks,tourist-attractions Tickets Kolkata - BookMyShow'),
+    'Upside Down House Kolkata',
+  )
+  assert.equal(displayTitle('Metro extends Blue Line hours for Pujo - The Telegraph'), 'Metro extends Blue Line hours for Pujo')
+  assert.equal(displayTitle('Tram route returns to Esplanade – getbengal.com'), 'Tram route returns to Esplanade')
+  assert.equal(displayTitle('Durga Puja 2026 - Kolkata\'s top pandals'), 'Durga Puja 2026 - Kolkata\'s top pandals')
+  assert.equal(displayTitle('Kolkata Derby: EB vs MB'), 'Kolkata Derby: EB vs MB')
+  assert.equal(displayTitle('Short | Site'), 'Short | Site')
+  assert.equal(displayTitle('Book fair dates announced - Anandabazar', 'Anandabazar'), 'Book fair dates announced')
 })

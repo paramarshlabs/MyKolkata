@@ -3,6 +3,7 @@ import { activeEvents } from './events'
 import { TRUSTED_FALLBACK_IMAGE } from './images'
 import { MAX_AGE_HOURS, selectHomeStory } from './ranking'
 import type { NewsRecord, NewsRepository } from './repository'
+import { PUBLICATION_NAMES } from './sources'
 
 /* ==========================================================================
    The Home "In the news" selection, read from the database only. Anakin is
@@ -114,6 +115,28 @@ export async function getHomeNews(repository: NewsRepository, { now, useCache = 
   }
 }
 
+/* Sites that end titles with their own name but are not publications. */
+const SITE_SUFFIXES = ['BookMyShow', 'Wikipedia', 'Tripadvisor', 'YouTube', 'Zomato', 'Kolkata Book Fair']
+const HEAD_MIN = 12
+
+/* A title as a person would write it: "Upside Down House Kolkata | amusement-
+   parks,tourist-attractions Tickets Kolkata - BookMyShow" is just "Upside Down
+   House Kolkata". Everything after a pipe is the site talking about itself;
+   after a dash, only a publication or site name is trimmed, since "Durga Puja
+   2026 - Kolkata's top pandals" is one headline. */
+export function displayTitle(title: string, sourceName?: string | null) {
+  let text = String(title || '').replace(/\s+/g, ' ').trim()
+  const pipe = text.indexOf(' | ')
+  if (pipe >= HEAD_MIN) text = text.slice(0, pipe).trim()
+  const names = [...PUBLICATION_NAMES, ...SITE_SUFFIXES, ...(sourceName ? [sourceName] : [])].map((n) => n.toLowerCase())
+  const dash = text.match(/^(.*\S)\s+[-–—]\s+([^-–—]{2,40})$/)
+  if (dash && dash[1].length >= HEAD_MIN) {
+    const tail = dash[2].trim().toLowerCase()
+    if (names.includes(tail) || /^[\w-]+\.(com|in|org|net|co\.in)$/.test(tail)) text = dash[1]
+  }
+  return text
+}
+
 export function homeNewsCards(news: HomeNews) {
-  return [news.newspaper, news.city, news.sports]
+  return [news.newspaper, news.city, news.sports].map((card) => ({ ...card, title: displayTitle(card.title, card.sourceName) }))
 }

@@ -11,6 +11,7 @@ import { LaalPaar } from '@/components/brand/Alpona'
 import { PersonalityEntry } from '@/components/pujo-personality/PersonalityEntry'
 import { FilmStrip } from './FilmStrip'
 import { SeasonLine } from './SeasonLine'
+import { NewsBand } from './NewsBand'
 
 type MarketItem = {
   id: string
@@ -24,9 +25,9 @@ type MarketItem = {
 
 /*  Everything /home shows. The page checks the session and renders this, so
     the view itself reads data and nothing else.                             */
-export async function HomeView() {
+export async function HomeView({ now = new Date() }: { now?: Date } = {}) {
   /* the paper, the city story, the sports story — persisted, never blank */
-  const newsPromise = getHomeNews(newsRepository)
+  const newsPromise = getHomeNews(newsRepository, { now })
   let marketplace: MarketItem[] = []
   let failed = false
 
@@ -69,7 +70,7 @@ export async function HomeView() {
               <Link href="/pujo" className="mk-btn mk-btn--secondary">Count down to Pujo</Link>
             </div>
           </div>
-          <SeasonLine />
+          <SeasonLine now={now} />
         </div>
       </section>
 
@@ -80,22 +81,7 @@ export async function HomeView() {
       <section className="mk-band" aria-labelledby="news-title">
         <div className="mk-wrap">
           <SectionHead id="news-title" title="In the news" lede="Papers, fairs and fixtures the city is following." />
-          <div className="mk-row" style={{ marginTop: 48 }}>
-            {news.length ? news.map((item) => (
-              <Card
-                key={item.id}
-                href={item.link || undefined}
-                external
-                image={item.image}
-                title={item.title}
-                desc={item.type === 'NEWSPAPER' ? item.description : undefined}
-                icon="book"
-                ariaLabel={item.link ? `${item.title}, opens in a new tab` : undefined}
-              />
-            )) : (
-              <p className="mk-caption">Nothing in the news yet. Check back this evening.</p>
-            )}
-          </div>
+          <NewsBand news={news} now={now} />
         </div>
       </section>
 
