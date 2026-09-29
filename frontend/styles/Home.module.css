@@ -179,3 +179,49 @@
   .newsItem { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr); gap: var(--mk-4); }
   .newsDesc { -webkit-line-clamp: 2; }
 }
+
+/* ========================================================= the shelf == */
+.shelfHead { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--mk-5); margin-bottom: var(--mk-7); }
+.shelfArrows { display: flex; gap: var(--mk-2); flex: none; }
+.flip { transform: scaleX(-1); }
+.shelf {
+  list-style: none; margin: 0; padding: var(--mk-2) 0 var(--mk-4);
+  display: grid; grid-auto-flow: column; grid-auto-columns: clamp(220px, 21vw, 300px); gap: var(--mk-5);
+  overflow-x: auto; overscroll-behavior-inline: contain; scroll-snap-type: x mandatory; scroll-padding-inline: 0;
+  scrollbar-width: none;
+}
+.shelf::-webkit-scrollbar { display: none; }
+.shelf > li { scroll-snap-align: start; min-width: 0; }
+.stall { display: flex; flex-direction: column; gap: 2px; color: inherit; text-decoration: none; min-width: 0; }
+.stallMedia {
+  position: relative; display: grid; place-items: center; overflow: hidden;
+  aspect-ratio: 4 / 5; border-radius: var(--mk-r-md); margin-bottom: var(--mk-4);
+  background: var(--mk-slate); color: var(--mk-ash); box-shadow: var(--mk-shadow-card);
+  transition: transform var(--mk-t-hover) var(--mk-ease-out), box-shadow var(--mk-t-hover) var(--mk-ease-out);
+}
+.stallMedia img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  filter: saturate(1.06) contrast(1.16) brightness(1.04);
+  transition: transform var(--mk-t-hover) var(--mk-ease-in-out);
+}
+.stallTitle { font-family: var(--mk-display); font-size: 20px; line-height: 1.25; letter-spacing: -0.01em; color: var(--mk-white); }
+.stallWhere { font-size: 13px; letter-spacing: 0.02em; color: var(--mk-ash); transition: color var(--mk-t-hover) var(--mk-ease-in-out); }
+.stallPrice { margin-top: var(--mk-1); font-size: 15px; color: var(--mk-pearl); font-variant-numeric: tabular-nums; }
+.stall:hover .stallMedia, .stall:focus-visible .stallMedia { transform: translateY(-4px); box-shadow: 0 30px 58px -24px rgba(10, 13, 14, 1); }
+.stall:hover img { transform: scale(1.05); }
+.stall:hover .stallWhere, .stall:focus-visible .stallWhere { color: var(--mk-taxi); }
+.stall:focus-visible { outline: 2px solid var(--mk-crimson); outline-offset: 6px; border-radius: var(--mk-r-md); }
+/* the last stall is a way out, not a product: an open frame, not a photograph */
+.stallMoreArt {
+  display: grid; place-items: center; aspect-ratio: 4 / 5; margin-bottom: var(--mk-4);
+  border: 1px dashed rgba(242, 241, 237, 0.24); border-radius: var(--mk-r-md);
+  color: var(--mk-pearl);
+  background: radial-gradient(120% 80% at 50% 0%, rgba(19, 42, 46, 0.5), transparent 70%);
+  transition: border-color var(--mk-t-hover) var(--mk-ease-in-out);
+}
+.stallMore:hover .stallMoreArt { border-color: rgba(242, 241, 237, 0.5); }
+
+@media (max-width: 900px) {
+  .shelf { grid-auto-columns: 62%; }
+  .shelfArrows { display: none; }
+}

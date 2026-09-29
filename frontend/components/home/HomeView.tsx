@@ -4,7 +4,6 @@ import { prisma } from '@/lib/db/prisma'
 import { listCatalogue } from '@/lib/catalogue/list'
 import { getHomeNews, homeNewsCards } from '@/lib/news/home'
 import { newsRepository } from '@/lib/news/server'
-import { Card } from '@/components/brand/Card'
 import { SectionHead } from '@/components/brand/SectionHead'
 import { Medallion, Sprig } from '@/components/brand/kolka'
 import { LaalPaar } from '@/components/brand/Alpona'
@@ -12,6 +11,7 @@ import { PersonalityEntry } from '@/components/pujo-personality/PersonalityEntry
 import { FilmStrip } from './FilmStrip'
 import { SeasonLine } from './SeasonLine'
 import { NewsBand } from './NewsBand'
+import { MarketShelf } from './MarketShelf'
 
 type MarketItem = {
   id: string
@@ -98,25 +98,18 @@ export async function HomeView({ now = new Date() }: { now?: Date } = {}) {
         <>
           <section className="mk-band" aria-labelledby="market-title" style={{ paddingTop: 0 }}>
             <div className="mk-wrap">
-              <SectionHead id="market-title" title="Marketplace" lede="Sarees, sweets and small-batch things, and where to find them." />
               {marketplace.length ? (
-                <div className="mk-grid" style={{ marginTop: 48 }}>
-                  {marketplace.map((item) => (
-                    <Card
-                      key={item._id || item.id}
-                      href={item.link || undefined}
-                      external
-                      image={item.image}
-                      title={item.title}
-                      sub={item.location}
-                      desc={item.price}
-                      icon="signboard"
-                      ariaLabel={item.link ? `${item.title}, ${item.location ?? ''}, opens in a new tab` : undefined}
-                    />
-                  ))}
-                </div>
+                <MarketShelf
+                  head={<SectionHead id="market-title" title="Marketplace" lede="Sarees, sweets and small-batch things, and where to find them." />}
+                  stalls={marketplace.map((item) => ({
+                    id: item._id || item.id, title: item.title, location: item.location, price: item.price, image: item.image, link: item.link,
+                  }))}
+                />
               ) : (
-                <p className="mk-caption" style={{ marginTop: 32 }}>Nothing listed yet. The stalls open soon.</p>
+                <>
+                  <SectionHead id="market-title" title="Marketplace" lede="Sarees, sweets and small-batch things, and where to find them." />
+                  <p className="mk-caption" style={{ marginTop: 32 }}>Nothing listed yet. The stalls open soon.</p>
+                </>
               )}
             </div>
           </section>
