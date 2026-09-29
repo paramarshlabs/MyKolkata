@@ -24,7 +24,12 @@ export function PujoPulse({ trend }: { trend: PujoTrend | null }) {
           lede="How much West Bengal searched for Durga Puja over the past year. Last Pujo's peak is on the left; the line on the right is this year."
         />
         <p className={styles.pulseSummary}>{summary}</p>
-        <PulseChart points={trend.points} peakIndex={reading.peakIndex} />
+        <PulseChart
+          points={trend.points}
+          peakIndex={reading.peakIndex}
+          peakLabel={reading.peakIndex != null ? `Pujo ${trend.points[reading.peakIndex].d.slice(0, 4)}, ${trend.points[reading.peakIndex].v}` : ''}
+          nowLabel={`This week, ${reading.current.v}`}
+        />
         <p className="mk-meta" style={{ marginTop: 16 }}>Google Trends, weekly. 100 is the busiest week of the year.</p>
         <table className="sr-only">
           <caption>Weekly search interest in Durga Puja, West Bengal, 0 to 100</caption>

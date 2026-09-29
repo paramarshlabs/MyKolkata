@@ -10,7 +10,7 @@ export const maxDuration = 60
 
 export const metadata: Metadata = pageMetadata({
   title: 'Home',
-  description: 'The city, this week: news, fairs, fixtures and the countdown to Pujo.',
+  description: 'The city, this week: the news, what the paras are saying, what is on tonight and what Kolkata is searching.',
 })
 
 export default async function HomePage() {

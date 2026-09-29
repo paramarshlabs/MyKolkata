@@ -29,10 +29,19 @@ function smooth(xy: [number, number][]) {
   return d
 }
 
-/*  One series, so no legend: the title names it. The busiest week of last
-    Pujo is marked, and the line ends in a kolka at this week — the alpona rule
-    of design.md §6, drawn from data. Pointing anywhere reads that week off. */
-export function PulseChart({ points, peakIndex }: { points: TrendPoint[]; peakIndex: number | null }) {
+type PulseChartProps = {
+  points: TrendPoint[]
+  peakIndex: number | null
+  /* points a day apart rather than a week */
+  daily?: boolean
+  peakLabel: string
+  nowLabel: string
+}
+
+/*  One series, so no legend: the title names it. The highest point is marked
+    when it isn't the end, and the line ends in a kolka — the alpona rule of
+    design.md §6, drawn from data. Pointing anywhere reads that day or week off. */
+export function PulseChart({ points, peakIndex, daily = false, peakLabel, nowLabel }: PulseChartProps) {
   const box = useRef<HTMLDivElement>(null)
   const [hover, setHover] = useState<number | null>(null)
   const n = points.length
@@ -67,18 +76,18 @@ export function PulseChart({ points, peakIndex }: { points: TrendPoint[]; peakIn
 
         {peakIndex != null && (
           <span className={styles.pulsePeak} style={pct(peakIndex)} data-edge={x(peakIndex) < W * 0.12 ? 'start' : x(peakIndex) > W * 0.88 ? 'end' : undefined}>
-            <span className={styles.pulseLabel}>Pujo {points[peakIndex].d.slice(0, 4)}, {points[peakIndex].v}</span>
+            <span className={styles.pulseLabel}>{peakLabel}</span>
           </span>
         )}
 
         <span className={styles.pulseNow} style={pct(last)}>
-          <span className={styles.pulseNowLabel}>This week, {points[last].v}</span>
+          <span className={styles.pulseNowLabel}>{nowLabel}</span>
           <Sprig size={30} />
         </span>
 
         {hover != null && (
           <span className={styles.pulseTip} style={{ ...pct(hover), transform: `translate(${hover > last * 0.8 ? '-100%' : '0'}, -130%)` }}>
-            Week of {week(points[hover].d)}: <span className="mk-tabular">{points[hover].v}</span>
+            {daily ? week(points[hover].d) : `Week of ${week(points[hover].d)}`}: <span className="mk-tabular">{points[hover].v}</span>
           </span>
         )}
       </div>

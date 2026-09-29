@@ -6,6 +6,17 @@ Not Tinder with a Kolkata skin. A way to find your people for a night of Pujo: f
 
 Numbered sources refer to [`01-research.md`](01-research.md) §9.
 
+> **Timeline change, 29 September 2026.** Rung 4 ships early, for Pujo 2026, as **Find your Ashtami date**
+> (`/experience/swipe`), ahead of rungs 3 and the verification this doc asks for. It is a deliberate
+> exception to §11's "no swiping on people". What it keeps from this doc: opt-in and 18+ (enforced on the
+> server from a date of birth, stored as a date, never an age), no percentage next to a stranger (a card
+> gives a plain-words reason instead), plans over profiles (one prompt, a night, a coarse area, and a
+> suggested pandal and time on every match, starting before 9 pm), text-only chat that is deleted after
+> 24 hours, block and report everywhere, and a first move rule taken from Bumble. What it does not have yet:
+> identity or liveness verification (date of birth only), women-only plans, the "I'm home" check-in (the
+> plan can be sent to a friend in one tap, nothing more), and SOS beyond a 112 link. Rung 3 and verification remain the conditions for anything bigger next year. The
+> code is in `frontend/lib/ashtami-date/`; the rules and their tests are in `frontend/tests/ashtamiDate.test.mjs`.
+
 ---
 
 ## 1. What the research says

@@ -1,20 +1,23 @@
 import type { Feed } from './refresh'
-import { eachObject, findList, isObj, num, str } from './shape'
+import { eachObject, findList, isObj, isUnfit, num, str } from './shape'
+import { normalizeTrend, type Trend } from './trend'
+import { optional } from './wire'
 
 /* ==========================================================================
    What Kolkata is searching: the searches rising alongside "Kolkata" in West
-   Bengal this week, and the derby fought in searches — Mohun Bagan against
-   East Bengal — both from Google Trends through Anakin Wire.
+   Bengal this week, the fastest riser's last three months drawn as a line,
+   and the derby fought in searches — Mohun Bagan against East Bengal — all
+   from Google Trends through Anakin Wire. Whatever the city is searching
+   for leads the section, so a season shows up only when the searches do.
    ========================================================================== */
 
 export type Rising = { query: string; growth: string }
 export type Derby = { a: { name: string; share: number }; b: { name: string; share: number } }
-export type Searching = { rising: Rising[]; derby: Derby | null }
+/* `pulse` is missing from what was stored before the line was added */
+export type Searching = { rising: Rising[]; derby: Derby | null; pulse?: Trend | null }
 
 export const DERBY = ['Mohun Bagan', 'East Bengal'] as const
-
-/* a home page for everyone: rising searches that are explicit stay off it */
-const UNFIT = /\b(sex|sexy|porn|xxx|nude|naked|nsfw|escort|call ?girl|mms|leaked?)\b/i
+export const GEO = 'IN-WB'
 
 function growthOf(item: Record<string, unknown>) {
   const formatted = str(item, 'formattedValue', 'growth', 'change')
@@ -42,7 +45,7 @@ export function normalizeRising(raw: unknown, max = 8): Rising[] {
     .map((item) => ({ query: str(item, 'query', 'title', 'keyword') ?? '', growth: growthOf(item) }))
     .filter((item) => {
       const key = item.query.toLowerCase()
-      if (!item.query || item.query.length > 60 || UNFIT.test(item.query) || seen.has(key)) return false
+      if (!item.query || item.query.length > 60 || isUnfit(item.query) || seen.has(key)) return false
       seen.add(key)
       return true
     })
@@ -72,10 +75,13 @@ export const searchingFeed: Feed<Searching> = {
   key: 'searching',
   ttlMs: 6 * 3_600_000,
   async fetch({ wire }) {
-    const rising = normalizeRising(await wire('gt_related_queries', { keyword: 'Kolkata', geo: 'IN-WB', timeframe: 'now 7-d' }))
-    const derbyRaw = await wire('gt_compare', { keywords: DERBY.join(','), geo: 'IN-WB', timeframe: 'now 7-d' })
-      .catch((err) => { if (err?.name === 'WireOutOfCredits' || err?.name === 'WireRateLimited') throw err; return null })
-    const derby = normalizeDerby(derbyRaw)
-    return rising.length || derby ? { rising, derby } : null
+    const rising = normalizeRising(await wire('gt_related_queries', { keyword: 'Kolkata', geo: GEO, timeframe: 'now 7-d' }))
+    /* daily for three months: long enough to show where the rise began */
+    const lead = rising[0]?.query
+    const pulse = lead
+      ? normalizeTrend(await optional(wire('gt_interest_over_time', { keyword: lead, geo: GEO, timeframe: 'today 3-m' })), lead, GEO)
+      : null
+    const derby = normalizeDerby(await optional(wire('gt_compare', { keywords: DERBY.join(','), geo: GEO, timeframe: 'now 7-d' })))
+    return rising.length || derby ? { rising, derby, pulse } : null
   },
 }

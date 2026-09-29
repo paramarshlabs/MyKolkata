@@ -70,6 +70,12 @@ export default function PrivacyPage() {
               analytics events.
             </p>
 
+            <h3>Find your Ashtami date</h3>
+            <p>
+              Find your Ashtami date is only for people 18 and over, and only if you choose to join. What it keeps is
+              set out <a href="#ashtami-date">in its own section below</a>.
+            </p>
+
             <h3>Your location</h3>
             <p>
               Near You and Explore can use your device&apos;s location, only if you allow it in your browser. We use it
@@ -89,6 +95,62 @@ export default function PrivacyPage() {
             <p>
               Like every website, our hosting provider records technical details of each request, such as your IP
               address, browser and the page asked for. We use these only to keep the service running and secure.
+            </p>
+          </section>
+
+          <section id="ashtami-date" aria-labelledby="ashtami-date-title">
+            <h2 id="ashtami-date-title" className="mk-h3">Find your Ashtami date</h2>
+            <p>
+              A way to find someone to go pandal-hopping with at Pujo. You join by filling in a short card, and you can
+              delete it whenever you like. This is everything it keeps.
+            </p>
+            <ul>
+              <li>
+                Your date of birth, to check you are 18 or over. We store the date, never show it to anyone, and show
+                others only your age. If you are under 18, nothing you type is saved.
+              </li>
+              <li>
+                Your card: your first name, whether you are a woman, a man or non-binary, who you want to see, the night
+                you want to go out, a rough area such as North Kolkata (never an address, and never your location), your
+                vibes, one prompt answer and, if you choose, your Pujo Personality.
+              </li>
+              <li>
+                One to three photos. Your phone redraws each one before it is sent, and our server strips anything left
+                in the file, such as where and on what camera it was taken. Photos are stored privately, never at a
+                public address: people see them through signed links that stop working after 30 minutes, and only if
+                your card is in their deck or you have matched.
+              </li>
+              <li>
+                Your Instagram or Snapchat username, if you add one. Only people you match with see it, and only once
+                one of you has sent a message.
+              </li>
+              <li>
+                Your swipes: who you said &ldquo;for me&rdquo; or &ldquo;not for me&rdquo; to, and your one shiuli a day.
+                The person you send a shiuli to sees that you sent it. Nobody sees your other swipes; two people only
+                find out about each other when both said &ldquo;for me&rdquo;.
+              </li>
+              <li>
+                Matches and chats. Chat is text only. A match that nobody writes in is deleted after 24 hours, or 48 if
+                one of you extends it. Every message is deleted 24 hours after it is sent: it leaves the chat on the
+                hour, and our database within a day after that at most.
+              </li>
+              <li>
+                Blocks and reports. A block hides the two of you from each other everywhere in the feature, and ends any
+                chat. A report is kept for a person to review, for up to 180 days. If you report someone from a chat, the
+                messages they sent you there are copied onto the report, because the chat itself is deleted.
+              </li>
+            </ul>
+            <p>
+              None of it is used for advertising, shared with anyone else, or used anywhere else on My Kolkata. We check
+              dates of birth; we don&apos;t verify identities, so meet in public, at a busy pandal, and tell a friend
+              where you&apos;ll be.
+            </p>
+            <h3>Deleting it</h3>
+            <p>
+              Open Find your Ashtami date, tap &ldquo;you&rdquo;, then &ldquo;delete my dating profile&rdquo;. Your card,
+              photos, swipes, matches and chats are deleted straight away. Blocks and reports stay, so a person who was
+              blocked can&apos;t find anyone again by starting over; write to {mail} if you want yours removed. A week
+              after Dashami, everything else from this year&apos;s Find your Ashtami date is deleted automatically.
             </p>
           </section>
 
@@ -124,7 +186,7 @@ export default function PrivacyPage() {
             <h2 id="share" className="mk-h3">Who we share it with</h2>
             <p>We don&apos;t sell your personal data, and we don&apos;t use it for advertising. We use these providers to run the service, and they process data for us under their own terms:</p>
             <ul>
-              <li>Supabase: sign-in and our database, hosted in Singapore.</li>
+              <li>Supabase: sign-in, our database, and private storage for Find your Ashtami date photos, hosted in Singapore.</li>
               <li>Vercel: hosting, and Web Analytics if you allow it.</li>
               <li>Google: sign-in, and Google Analytics if you allow it.</li>
               <li>Ola Maps: maps and place search, including your location when you search near you.</li>
@@ -141,6 +203,11 @@ export default function PrivacyPage() {
               <li>Your account: until you ask us to delete it.</li>
               <li>Stories: 24 hours on the wall, then deleted within a day.</li>
               <li>A Pujo saved to your account: until you delete it from your result page, or delete your account.</li>
+              <li>
+                Find your Ashtami date: chat messages for 24 hours; a match nobody writes in, 24 hours (48 if extended);
+                your card, photos, swipes and matches until you delete them, and never beyond a week after Dashami;
+                reports for up to 180 days; blocks until you ask us to remove them.
+              </li>
               <li>Analytics: under the retention settings of Google Analytics and Vercel, and never longer than 14 months.</li>
             </ul>
           </section>
@@ -166,7 +233,8 @@ export default function PrivacyPage() {
             <p>
               Accounts are for people 18 and over. We don&apos;t knowingly create accounts for anyone younger; if you
               think a child has signed up, tell us and we&apos;ll delete the account. The Pujo Personality can be used
-              without an account, and treats anyone who says they are under 18 as described above.
+              without an account, and treats anyone who says they are under 18 as described above. Find your Ashtami
+              date turns away anyone under 18 at the first step, and saves nothing they typed.
             </p>
           </section>
 
@@ -174,7 +242,8 @@ export default function PrivacyPage() {
             <h2 id="security" className="mk-h3">Security</h2>
             <p>
               Data travels over HTTPS, our database is only reachable by our servers, and only a story&apos;s author can
-              change it. No system is perfectly secure; if a breach affects your data, we&apos;ll tell you and the
+              change it. Find your Ashtami date photos sit in private storage that only our servers can open, and each
+              person can only ever read their own matches and chats. No system is perfectly secure; if a breach affects your data, we&apos;ll tell you and the
               authorities as the law requires.
             </p>
           </section>

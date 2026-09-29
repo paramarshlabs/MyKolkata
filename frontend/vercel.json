@@ -3,6 +3,7 @@
   "crons": [
     { "path": "/api/cron/news", "schedule": "30 0 * * *" },
     { "path": "/api/cron/stories", "schedule": "0 1 * * *" },
+    { "path": "/api/cron/ashtami-date", "schedule": "30 1 * * *" },
     { "path": "/api/cron/live", "schedule": "0 2 * * *" }
   ]
 }

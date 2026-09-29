@@ -1,6 +1,7 @@
 import { KOLKATA } from '@/lib/home/astro'
 import type { Feed } from './refresh'
 import { clip, eachObject, findList, httpsUrl, isObj, str } from './shape'
+import { optional } from './wire'
 
 /* ==========================================================================
    Tonight in the city: what is on in Kolkata, from BookMyShow (films and
@@ -91,22 +92,21 @@ export const tonightFeed: Feed<Tonight> = {
   async fetch({ wire, now, last }) {
     const previous = (isObj(last) ? last : {}) as Partial<Tonight>
     const coords = { lat: String(KOLKATA.lat), lon: String(KOLKATA.lon) }
-    const settle = (promise: Promise<unknown>) => promise.catch((err) => { if (err?.name === 'WireOutOfCredits' || err?.name === 'WireRateLimited') throw err; return null })
 
-    const bms = await settle(wire('bms_discover_home', { region_code: 'KOLK', region_slug: 'kolkata', ...coords }))
-    const meetup = await settle(wire('mu_search_events', { location: 'Kolkata, India', query: 'Kolkata' }))
+    const bms = await optional(wire('bms_discover_home', { region_code: 'KOLK', region_slug: 'kolkata', ...coords }))
+    const meetup = await optional(wire('mu_search_events', { location: 'Kolkata, India', query: 'Kolkata' }))
 
     /* Luma lists only some cities; look Kolkata up once a week, not every time */
     let lumaPlace = previous.lumaPlace ?? null
     let lumaCheckedAt = previous.lumaCheckedAt ?? null
     if (!lumaCheckedAt || now.getTime() - Date.parse(lumaCheckedAt) > WEEK_MS) {
-      const places = await settle(wire('lu_list_places', { continent: 'Asia & Pacific' }))
+      const places = await optional(wire('lu_list_places', { continent: 'Asia & Pacific' }))
       const kolkata = findList(places, (item) => Boolean(str(item, 'name', 'city')))
         .find((item) => /kolkata|calcutta/i.test(`${str(item, 'name')} ${str(item, 'city')} ${str(item, 'slug')}`))
       lumaPlace = kolkata ? str(kolkata, 'api_id', 'place_id', 'id') : null
       lumaCheckedAt = now.toISOString()
     }
-    const luma = lumaPlace ? await settle(wire('lu_discover_events', { place_id: lumaPlace, ...coords })) : null
+    const luma = lumaPlace ? await optional(wire('lu_discover_events', { place_id: lumaPlace, ...coords })) : null
 
     const shows = upcoming([
       ...extractShows(bms, 'BookMyShow', 8),

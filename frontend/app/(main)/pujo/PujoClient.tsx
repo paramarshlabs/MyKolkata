@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { Card } from '@/components/brand/Card'
 import { SectionHead } from '@/components/brand/SectionHead'
 import { CountdownScene, PujoDays } from '@/components/brand/Countdown'
@@ -66,7 +66,8 @@ function MahalayaPlayer() {
   )
 }
 
-function Pujo() {
+/* `children` closes the page: server-rendered bands, like the quiz's way in */
+function Pujo({ children }: { children?: ReactNode }) {
   const [regions, setRegions] = useState<Region[]>([])
   const [loading, setLoading] = useState(true)
   const [failed, setFailed] = useState(false)
@@ -173,6 +174,7 @@ function Pujo() {
           )}
         </div>
       </section>
+      {children}
     </main>
   )
 }

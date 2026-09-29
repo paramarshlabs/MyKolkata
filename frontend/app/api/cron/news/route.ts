@@ -6,6 +6,7 @@ import { activeEvents } from '@/lib/news/events'
 import { HOME_NEWS_CACHE_KEY } from '@/lib/news/home'
 import { ingestionDue, ingestKolkataNews, type NewsSearchClient } from '@/lib/news/ingest'
 import { newsRepository } from '@/lib/news/server'
+import { trendingSearches } from '@/lib/live/server'
 
 export const dynamic = 'force-dynamic'
 /* dozens of searches and article fetches; well past the default limit */
@@ -35,6 +36,7 @@ export async function GET(request: Request) {
       repository: newsRepository,
       anakin: new AnakinImageProvider() as unknown as NewsSearchClient,
       now,
+      trending: await trendingSearches(),
     })
 
     invalidate(HOME_NEWS_CACHE_KEY)

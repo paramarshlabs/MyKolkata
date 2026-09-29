@@ -2,8 +2,9 @@ import 'server-only'
 import { prisma } from '@/lib/db/prisma'
 import { createStoryHandlers, type StoryRepository } from './stories'
 
-/* The Prisma side of the story wall, shared by /api/stories and /api/stories/[id]. */
-const repository: StoryRepository = {
+/* The Prisma side of the story wall, shared by /api/stories, /api/stories/[id]
+   and /home, which shows the day's newest titles. */
+export const storyRepository: StoryRepository = {
   listActive: (now, take) => prisma.story.findMany({
     where: { expiresAt: { gt: now } },
     orderBy: { createdAt: 'desc' },
@@ -25,4 +26,4 @@ const repository: StoryRepository = {
   },
 }
 
-export const storyHandlers = createStoryHandlers(repository)
+export const storyHandlers = createStoryHandlers(storyRepository)

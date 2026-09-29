@@ -1,4 +1,3 @@
-import { PUJO_DAYS } from '@/lib/pujo'
 import { kolkataDay } from '@/lib/news/events'
 import type { Sky, SkyHour } from '@/lib/live/sky'
 import { formatMinutes, moonPhase, sunTimes, type MoonPhase } from './astro'
@@ -56,14 +55,6 @@ function hourLabel(key: string) {
   return h === 12 ? 'noon' : `${h % 12 === 0 ? 12 : h % 12} ${h < 12 ? 'am' : 'pm'}`
 }
 
-const inPujoWeek = (now: Date) => {
-  const today = kolkataDay(now).epochDay
-  const first = kolkataDay(new Date(PUJO_DAYS[0].iso)).epochDay
-  const last = kolkataDay(new Date(PUJO_DAYS[PUJO_DAYS.length - 1].iso)).epochDay
-  /* the pandals open a few days before Shashthi now */
-  return today >= first - 3 && today <= last
-}
-
 export function skyReport(sky: Sky | null, now: Date = new Date()): SkyReport {
   const moon = moonPhase(now)
   const { sunrise, sunset } = sunTimes(now)
@@ -90,12 +81,6 @@ export function skyReport(sky: Sky | null, now: Date = new Date()): SkyReport {
 
   const aqi = sky?.aqi.find((hour) => hour.t === hourKey(now))?.v
   if (aqi != null) parts.push(`Air ${airWords(aqi)}.`)
-
-  /* in Pujo week, the evening forecast is the only one that matters */
-  if (current && inPujoWeek(now) && minutes < 22 * 60) {
-    const evening = [...byKey.values()].filter((hour) => hour.t.startsWith(kolkataDay(now).iso) && Number(hour.t.slice(11)) >= 18)
-    if (evening.length && evening.every((hour) => (hour.rain ?? 0) < 30)) parts.push('A dry evening for pandal hopping.')
-  }
 
   const mood: HeroMood = current && isWet(current.code) ? 'rain' : dark ? 'night' : 'day'
   return { sentence: parts.join(' '), moon, mood }

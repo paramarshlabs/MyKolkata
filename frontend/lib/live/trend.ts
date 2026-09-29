@@ -1,18 +1,15 @@
-import type { Feed } from './refresh'
 import { findList, num, str } from './shape'
 
 /* ==========================================================================
-   The Pujo pulse: how much West Bengal has searched for "Durga Puja" over the
-   last twelve months, week by week, from Google Trends through Anakin Wire
-   (gt_interest_over_time). Twelve months takes in last year's Pujo, so one
-   request puts last year's peak and this year's climb on the same 0–100 scale.
+   Google Trends timelines, read from gt_interest_over_time through Anakin
+   Wire: how much a search was made, on Google's 0–100 scale, day by day or
+   week by week. The searching feed (lib/live/searching.ts) draws the week's
+   fastest-rising Kolkata search this way.
    ========================================================================== */
 
 export type TrendPoint = { d: string; v: number }
-export type PujoTrend = { keyword: string; geo: string; points: TrendPoint[] }
-
-export const PUJO_KEYWORD = 'Durga Puja'
-export const PUJO_GEO = 'IN-WB'
+export type Trend = { keyword: string; geo: string; points: TrendPoint[] }
+export type PujoTrend = Trend
 
 function dateOf(item: Record<string, unknown>) {
   /* Google's own timeline uses unix seconds in `time`; wrappers tend to use a date string */
@@ -28,26 +25,19 @@ function dateOf(item: Record<string, unknown>) {
   return Number.isNaN(date.getTime()) ? null : date.toISOString().slice(0, 10)
 }
 
-export function normalizeTrend(raw: unknown): PujoTrend | null {
+export function normalizeTrend(raw: unknown, keyword: string, geo: string): Trend | null {
   const rows = findList(raw, (item) => (item.value !== undefined || item.values !== undefined || item.interest !== undefined)
     && (item.time !== undefined || item.date !== undefined || item.formattedTime !== undefined || item.week !== undefined), 8)
   const points = rows
     .map((item) => ({ d: dateOf(item), v: num(item.value ?? item.values ?? item.interest) }))
     .filter((point): point is TrendPoint => Boolean(point.d) && point.v != null && point.v >= 0 && point.v <= 100)
     .sort((a, b) => a.d.localeCompare(b.d))
-  return points.length >= 8 ? { keyword: PUJO_KEYWORD, geo: PUJO_GEO, points } : null
+  return points.length >= 8 ? { keyword, geo, points } : null
 }
 
-export const pujoTrendFeed: Feed<PujoTrend> = {
-  key: 'pujo-trend',
-  ttlMs: 12 * 3_600_000,
-  async fetch({ wire }) {
-    return normalizeTrend(await wire('gt_interest_over_time', { keyword: PUJO_KEYWORD, geo: PUJO_GEO, timeframe: 'today 12-m' }))
-  },
-}
-
-/* The two points worth naming: last Pujo's peak (the highest week more than
-   four months back) and this week, and whether the line is still rising. */
+/* For a year of "Durga Puja" searches (components/home/PujoPulse.tsx): last
+   Pujo's peak (the highest week more than four months back) and this week,
+   and whether the line is still rising. */
 export function readTrend(trend: PujoTrend) {
   const { points } = trend
   const last = points[points.length - 1]
@@ -60,5 +50,31 @@ export function readTrend(trend: PujoTrend) {
     current: last,
     rising: last.v > before.v,
     ofPeak: peak >= 0 && points[peak].v > 0 ? Math.round((last.v / points[peak].v) * 100) : null,
+  }
+}
+
+const DAY_MS = 86_400_000
+
+/* A rising search, read off its line: whether the points are days or weeks,
+   the last week against the four before it, and the highest point, named
+   only when it isn't the last week (the end of the line is labelled anyway). */
+export function readPulse(trend: Trend) {
+  const { points } = trend
+  const n = points.length
+  const gaps = points.slice(1).map((point, i) => (Date.parse(point.d) - Date.parse(points[i].d)) / DAY_MS).sort((a, b) => a - b)
+  const daily = (gaps[Math.floor(gaps.length / 2)] ?? 7) <= 2
+  const week = daily ? 7 : 1
+  const mean = (list: TrendPoint[]) => (list.length ? list.reduce((sum, point) => sum + point.v, 0) / list.length : 0)
+  const recent = mean(points.slice(-week))
+  const before = mean(points.slice(Math.max(0, n - 5 * week), n - week))
+  let peak = 0
+  points.forEach((point, i) => { if (point.v > points[peak].v) peak = i })
+  return {
+    daily,
+    current: points[n - 1],
+    peakIndex: peak < n - week && points[peak].v > 0 ? peak : null,
+    /* null when almost nobody searched for it before */
+    ratio: before >= 1 ? recent / before : null,
+    recent,
   }
 }

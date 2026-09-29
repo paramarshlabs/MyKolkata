@@ -8,27 +8,34 @@ import { loadLive } from '@/lib/live/server'
 import type { LiveSnapshot } from '@/lib/live/refresh'
 import type { Sky } from '@/lib/live/sky'
 import type { Tonight as TonightFeed } from '@/lib/live/tonight'
-import type { PujoTrend } from '@/lib/live/trend'
 import type { Searching as SearchingFeed } from '@/lib/live/searching'
+import type { Adda as AddaFeed } from '@/lib/live/adda'
+import type { YouTube } from '@/lib/live/youtube'
+import type { Cricket } from '@/lib/live/cricket'
+import type { OnThisDay as OnThisDayFeed } from '@/lib/live/onthisday'
+import type { Instagram } from '@/lib/live/instagram'
+import { resolveStoryMedia } from '@/lib/stories/media'
+import { storyRepository } from '@/lib/stories/repository'
 import { skyReport, type HeroMood } from '@/lib/home/sky'
 import { SectionHead } from '@/components/brand/SectionHead'
 import { Medallion, Sprig } from '@/components/brand/kolka'
 import { LaalPaar } from '@/components/brand/Alpona'
-import { PersonalityEntry } from '@/components/pujo-personality/PersonalityEntry'
-import { FilmStrip } from './FilmStrip'
-import { SeasonLine } from './SeasonLine'
 import { NewsBand } from './NewsBand'
 import { MarketShelf } from './MarketShelf'
-import { SkyReadout } from './SkyReadout'
+import { MatchStrip } from './MatchStrip'
+import { Adda, type TodayStory } from './Adda'
 import { Tonight } from './Tonight'
-import { PujoPulse } from './PujoPulse'
 import { Searching } from './Searching'
+import { OnYouTube } from './OnYouTube'
+import { OnThisDay } from './OnThisDay'
+import { OnInstagram, type SharedGram } from './OnInstagram'
+import styles from '@/styles/Home.module.css'
 
 /* the hero follows the sky: the bus at sunset by day, the wet street after
    dark, the monsoon from above when it is raining */
 const HERO: Record<HeroMood, { src: string; alt: string; position: string }> = {
   day: { src: '/hero-bg.jpg', alt: 'A yellow bus passing under the steel spans of the Howrah Bridge at sunset', position: '50% 64%' },
-  night: { src: '/explore-hero-v2.webp', alt: 'A yellow taxi on a rain-wet street at night, with Howrah Bridge lit up across the river', position: '62% 50%' },
+  night: { src: '/hero-bg.jpg', alt: 'A yellow taxi on a rain-wet street at night, with Howrah Bridge lit up across the river', position: '10% 64%' },
   rain: { src: '/login-bg.jpg', alt: 'Howrah Bridge and the rooftops under heavy monsoon cloud', position: '50% 50%' },
 }
 
@@ -47,6 +54,10 @@ type MarketItem = {
 export async function HomeView({ now = new Date(), live }: { now?: Date; live?: LiveSnapshot } = {}) {
   /* the paper, the city story, the sports story — persisted, never blank */
   const newsPromise = getHomeNews(newsRepository, { now })
+  /* today's stories: the newest few titles for the adda, and any Instagram
+     posts they link for the Instagram band; the wall itself is /community */
+  const storiesPromise = storyRepository.listActive(now, 40)
+    .catch((err) => { console.error('[home] stories did not load', err); return [] })
   let marketplace: MarketItem[] = []
   let failed = false
 
@@ -58,7 +69,15 @@ export async function HomeView({ now = new Date(), live }: { now?: Date; live?: 
   }
   const news = homeNewsCards(await newsPromise)
   const feeds = live ?? await loadLive(now)
-  const sky = skyReport((feeds.sky?.payload as Sky | undefined) ?? null, now)
+  const storyRows = await storiesPromise
+  const stories: TodayStory[] = storyRows.slice(0, 4)
+    .map((row) => ({ id: row.id, title: row.title, createdAt: new Date(row.createdAt).toISOString() }))
+  const sharedGrams: SharedGram[] = storyRows.flatMap((row) => {
+    const media = resolveStoryMedia(row.externalUrl)
+    return media?.kind === 'instagram' ? [{ url: media.url, title: row.title }] : []
+  })
+  const payload = <T,>(key: string) => (feeds[key]?.payload as T | undefined) ?? null
+  const sky = skyReport(payload<Sky>('sky'), now)
   const hero = HERO[sky.mood]
 
   return (
@@ -78,7 +97,6 @@ export async function HomeView({ now = new Date(), live }: { now?: Date; live?: 
         <div className="mk-banner-scrim" aria-hidden="true" />
         <div className="mk-banner-content">
           <div className="mk-banner-copy">
-            <SkyReadout report={sky} />
             <Sprig size={38} />
             <h1 id="home-title" className="mk-display" style={{ marginTop: 8 }}>The city, this week.</h1>
             <p className="mk-banner-bn" lang="bn">চলো, একটু ঘুরে আসি।</p>
@@ -90,16 +108,14 @@ export async function HomeView({ now = new Date(), live }: { now?: Date; live?: 
               <Link href="/places" className="mk-btn mk-btn--primary">
                 Explore the city <span className="mk-btn-arrow" aria-hidden="true">→</span>
               </Link>
-              <Link href="/pujo" className="mk-btn mk-btn--secondary">Count down to Pujo</Link>
             </div>
+            {/* the weather now, the air, and the sun or the moon */}
+            <p className={styles.skyLine}>{sky.sentence}</p>
           </div>
-          <SeasonLine now={now} />
         </div>
       </section>
 
-      <FilmStrip />
-
-      <PersonalityEntry />
+      <MatchStrip feed={payload<Cricket>('cricket')} fetchedAt={feeds.cricket?.fetchedAt ?? null} now={now} />
 
       <section className="mk-band" aria-labelledby="news-title">
         <div className="mk-wrap">
@@ -108,11 +124,17 @@ export async function HomeView({ now = new Date(), live }: { now?: Date; live?: 
         </div>
       </section>
 
-      <Tonight feed={(feeds.tonight?.payload as TonightFeed | undefined) ?? null} now={now} />
+      <Adda feed={payload<AddaFeed>('adda')} stories={stories} now={now} />
 
-      <PujoPulse trend={(feeds['pujo-trend']?.payload as PujoTrend | undefined) ?? null} />
+      <Tonight feed={payload<TonightFeed>('tonight')} now={now} />
 
-      <Searching feed={(feeds.searching?.payload as SearchingFeed | undefined) ?? null} />
+      <Searching feed={payload<SearchingFeed>('searching')} />
+
+      <OnYouTube feed={payload<YouTube>('youtube')} now={now} />
+
+      <OnInstagram feed={payload<Instagram>('instagram')} shared={sharedGrams} />
+
+      <OnThisDay feed={payload<OnThisDayFeed>('on-this-day')} now={now} />
 
       {failed ? (
         <section className="mk-band" style={{ paddingTop: 0 }}>
@@ -154,10 +176,10 @@ export async function HomeView({ now = new Date(), live }: { now?: Date; live?: 
             <span className="block">SAME CITY.</span>
             <span className="block">NEW STORIES.</span>
           </h2>
-          <p className="mk-banner-bn" lang="bn" style={{ fontSize: 'clamp(18px, 3vw, 32px)' }}>পুজো আসছে।</p>
+          <p className="mk-banner-bn" lang="bn" style={{ fontSize: 'clamp(18px, 3vw, 32px)' }}>তোমার পাড়ার গল্পটা বলো।</p>
           <div className="mk-banner-actions">
-            <Link href="/pujo" className="mk-btn mk-btn--primary">
-              Explore the Pujo <span className="mk-btn-arrow" aria-hidden="true">→</span>
+            <Link href="/community#stories-title" className="mk-btn mk-btn--primary">
+              Post a story <span className="mk-btn-arrow" aria-hidden="true">→</span>
             </Link>
           </div>
         </div>

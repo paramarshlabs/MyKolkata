@@ -68,3 +68,15 @@ export async function loadLive(now: Date = new Date()): Promise<LiveSnapshot> {
   }
   return snapshotOf(rows)
 }
+
+/* The week's rising Kolkata searches, as stored by the searching feed, for
+   the news ingestion to follow. Empty when there are none or no table. */
+export async function trendingSearches(): Promise<string[]> {
+  try {
+    const row = await prisma.liveFeed.findUnique({ where: { key: 'searching' }, select: { payload: true } })
+    const rising = (row?.payload as { rising?: { query?: unknown }[] } | null)?.rising
+    return Array.isArray(rising) ? rising.map((item) => item?.query).filter((query): query is string => typeof query === 'string') : []
+  } catch {
+    return []
+  }
+}

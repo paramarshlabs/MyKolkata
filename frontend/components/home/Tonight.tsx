@@ -40,7 +40,7 @@ export function Tonight({ feed, now }: { feed: TonightFeed | null; now: Date }) 
   if (!shows.length) return null
   const sources = [...new Set(shows.map((show) => show.source))]
   return (
-    <section className="mk-band" aria-labelledby="tonight-title">
+    <section className="mk-band" aria-labelledby="tonight-title" style={{ paddingTop: 0 }}>
       <div className="mk-wrap">
         <SectionHead
           id="tonight-title"

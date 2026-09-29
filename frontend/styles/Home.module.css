@@ -3,125 +3,6 @@
  * styles/brand.css; everything here is specific to this page.
  */
 
-/* ========================================================= film strip == */
-/*  Four frames in a letterbox. The frame a person points at opens wider —
-    the one motion here, and it answers a hand, not a timer.                 */
-.strip {
-  display: flex; gap: 3px; padding: 3px 0;
-  height: clamp(380px, 40vw, 580px);
-  background: var(--mk-obsidian);
-}
-.frame {
-  position: relative; isolation: isolate; overflow: hidden;
-  flex: 1 1 0; min-width: 0;
-  color: var(--mk-pearl); text-decoration: none;
-  transition: flex-grow var(--mk-t-reveal) var(--mk-ease-out);
-}
-.frame:hover, .frame:focus-visible { flex-grow: 1.7; }
-.frame:focus-visible { outline: 2px solid var(--mk-crimson); outline-offset: -4px; }
-.frameImg {
-  z-index: -2; object-fit: cover;
-  filter: saturate(1.06) contrast(1.14) brightness(1.02);
-  transition: transform 700ms var(--mk-ease-out);
-}
-.frame:hover .frameImg, .frame:focus-visible .frameImg { transform: scale(1.03); }
-.frameScrim {
-  position: absolute; inset: 0; z-index: -1;
-  background: linear-gradient(0deg, rgba(10, 13, 14, 0.9) 0%, rgba(38, 10, 14, 0.34) 38%, rgba(38, 10, 14, 0) 62%);
-}
-/* the caption device, sized for a narrow frame. design.md §9.6 */
-.frameCap {
-  position: absolute; left: clamp(16px, 2vw, 28px); right: clamp(16px, 2vw, 28px); bottom: clamp(20px, 2.4vw, 32px);
-  display: flex; gap: var(--mk-3);
-}
-/* Pearl at rest: four crimson ticks in one viewport would break the budget.
-   The frame being pointed at takes the one crimson accent. */
-.frameTick {
-  width: 3px; flex: none; align-self: stretch;
-  background: rgba(242, 241, 237, 0.7);
-  transition: background-color var(--mk-t-hover) var(--mk-ease-in-out);
-}
-.frame:hover .frameTick, .frame:focus-visible .frameTick { background: var(--mk-crimson); }
-.frameText { display: flex; flex-direction: column; min-width: 0; }
-.frameLine1 { font-size: clamp(16px, 1.4vw, 19px); line-height: 1.4; color: var(--mk-pearl); }
-.frameLine2 {
-  font-family: var(--mk-display); font-size: clamp(21px, 1.9vw, 26px); line-height: 1.25;
-  letter-spacing: -0.015em; color: var(--mk-blush);
-  margin: var(--mk-1) 0 0 var(--mk-5);
-}
-
-@media (max-width: 900px) {
-  .strip {
-    height: auto; gap: 3px;
-    overflow-x: auto; overscroll-behavior-inline: contain; scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-  }
-  .strip::-webkit-scrollbar { display: none; }
-  .frame { flex: 0 0 78%; aspect-ratio: 4 / 5; scroll-snap-align: start; }
-  .frame:hover, .frame:focus-visible { flex-grow: 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .frame, .frameImg, .frameTick { transition: none; }
-  .frame:hover .frameImg, .frame:focus-visible .frameImg { transform: none; }
-}
-
-/* ======================================================== season line == */
-/*  A hairline from the build-up to Dashami. The stretch already walked is
-    solid, the rest is a run of beads; today is a single Taxi Yellow mark —
-    the small data label that needs to lift off the photograph. §3.7        */
-.season { position: relative; margin-top: clamp(40px, 6vw, 72px); max-width: 1100px; }
-.seasonNow {
-  position: relative; margin: 0 0 var(--mk-3);
-  left: clamp(0px, calc(var(--today) * 100% - 4px), calc(100% - 240px));
-  display: flex; flex-direction: column; gap: 2px; width: max-content; max-width: 100%;
-}
-.seasonDate { font-size: 13px; letter-spacing: 0.02em; color: var(--mk-ash); }
-.seasonStatus { font-size: 15px; letter-spacing: 0.01em; color: var(--mk-taxi); }
-.seasonTrack {
-  position: relative; height: 1px;
-  background-image: radial-gradient(circle, rgba(242, 241, 237, 0.42) 1px, transparent 1.4px);
-  background-size: 7px 3px; background-repeat: repeat-x; background-position: 0 50%;
-}
-.seasonDone {
-  position: absolute; left: 0; top: 0; height: 1px;
-  width: calc(var(--today) * 100%);
-  background: rgba(242, 241, 237, 0.62);
-}
-.seasonMarker {
-  position: absolute; top: -9px; width: 2px; height: 19px;
-  left: calc(var(--today) * 100% - 1px);
-  background: var(--mk-taxi);
-  box-shadow: 0 0 14px rgba(242, 179, 61, 0.55);
-}
-.seasonNodes { position: relative; list-style: none; margin: 0; padding: 0; height: 58px; }
-.seasonNode {
-  position: absolute; top: 0; left: calc(var(--at) * 100%);
-  transform: translateX(-50%);
-  display: flex; flex-direction: column; align-items: center; gap: 0;
-}
-.seasonNode[data-node='dashami'] { transform: translateX(-100%); align-items: flex-end; }
-.seasonDot {
-  width: 7px; height: 7px; margin: -4px 0 6px; border-radius: 999px;
-  background: var(--mk-obsidian); border: 1px solid rgba(242, 241, 237, 0.7);
-}
-.seasonNode[data-node='dashami'] .seasonDot { margin-right: -3px; }
-.isPast .seasonDot { background: rgba(242, 241, 237, 0.7); }
-.isToday .seasonDot { background: var(--mk-taxi); border-color: var(--mk-taxi); }
-.seasonBn {
-  font-family: var(--mk-bengali); font-variation-settings: 'wght' 600;
-  font-size: 16px; line-height: 1.4; color: var(--mk-pearl); white-space: nowrap;
-}
-.seasonDay { font-size: 12.5px; letter-spacing: 0.02em; color: var(--mk-ash); white-space: nowrap; }
-
-@media (max-width: 700px) {
-  /* four days fit in a thumb's width only as dots; the ends keep their words */
-  .seasonNode[data-node='saptami'] .seasonBn, .seasonNode[data-node='saptami'] .seasonDay,
-  .seasonNode[data-node='ashtami'] .seasonBn, .seasonNode[data-node='ashtami'] .seasonDay,
-  .seasonNode[data-node='navami'] .seasonBn, .seasonNode[data-node='navami'] .seasonDay { display: none; }
-  .seasonBn { font-size: 15px; }
-}
-
 /* =============================================================== news == */
 /*  One lead and two beside it. Space carries the hierarchy — no rules.     */
 .news {
@@ -192,7 +73,8 @@
 }
 .shelf::-webkit-scrollbar { display: none; }
 .shelf > li { scroll-snap-align: start; min-width: 0; }
-.stall { display: flex; flex-direction: column; gap: 2px; color: inherit; text-decoration: none; min-width: 0; }
+/* positioned, so its screen-reader label stays inside the shelf's scroller */
+.stall { position: relative; display: flex; flex-direction: column; gap: 2px; color: inherit; text-decoration: none; min-width: 0; }
 .stallMedia {
   position: relative; display: grid; place-items: center; overflow: hidden;
   aspect-ratio: 4 / 5; border-radius: var(--mk-r-md); margin-bottom: var(--mk-4);
@@ -227,26 +109,133 @@
 }
 
 /* ================================================================ sky == */
-/*  The corner of the hero frame: the moon at its real phase and one line
-    about the sky right now — the weather readout on a film slate.          */
-.sky {
-  position: absolute; z-index: 1;
-  top: calc(var(--mk-nav) + clamp(24px, 4vw, 56px)); right: var(--mk-edge);
-  display: flex; flex-direction: column; align-items: flex-end; gap: var(--mk-3);
-  max-width: 300px; text-align: right;
-}
-.moon { filter: drop-shadow(0 0 18px rgba(251, 228, 227, 0.35)); }
+/*  One quiet line under the hero's button: the weather now, the air, and
+    the sun or the moon. Set like a caption, so the title keeps the frame.   */
 .skyLine {
-  margin: 0; font-size: 14.5px; line-height: 1.55; letter-spacing: 0.01em; color: var(--mk-pearl);
+  margin: var(--mk-6) 0 0; max-width: 52ch;
+  font-size: 14.5px; line-height: 1.55; letter-spacing: 0.01em; color: rgba(242, 241, 237, 0.82);
   text-shadow: 0 2px 14px rgba(10, 13, 14, 0.85);
 }
 @media (max-width: 900px) {
-  .sky {
-    position: static; flex-direction: row; align-items: center; text-align: left;
-    max-width: 46ch; margin: 0 0 var(--mk-5);
+  .skyLine { font-size: 14px; margin-top: var(--mk-5); }
+}
+
+/* ============================================================ match == */
+/*  A single strip under the hero while one of ours is playing: surface 1,
+    no band padding, the state in Taxi Yellow as the one small data label.  */
+.match { background: var(--mk-ink); border-block: 1px solid rgba(242, 241, 237, 0.06); }
+.matchList { list-style: none; margin: 0; padding: var(--mk-2) 0; }
+.matchRow {
+  display: grid; grid-template-columns: 8.5rem minmax(0, auto) minmax(0, 1fr); align-items: baseline;
+  gap: var(--mk-2) var(--mk-5); padding: var(--mk-3) 0;
+  color: var(--mk-pearl); text-decoration: none;
+}
+.matchWhen { font-size: 13px; letter-spacing: 0.02em; color: var(--mk-taxi); font-variant-numeric: tabular-nums; }
+.matchTeams { font-family: var(--mk-display); font-size: clamp(17px, 1.6vw, 20px); line-height: 1.3; color: var(--mk-white); }
+.matchScore { font-family: var(--mk-text); font-size: 15px; color: var(--mk-pearl); font-variant-numeric: tabular-nums; }
+.matchV { color: var(--mk-ash); font-size: 15px; }
+.matchStatus { font-size: 14px; line-height: 1.5; color: var(--mk-ash); min-width: 0; transition: color var(--mk-t-hover) var(--mk-ease-in-out); }
+.matchRow:hover .matchStatus, .matchRow:focus-visible .matchStatus { color: var(--mk-pearl); }
+.matchRow:focus-visible { outline: 2px solid var(--mk-crimson); outline-offset: 2px; border-radius: var(--mk-r-sm); }
+@media (max-width: 700px) {
+  .matchRow { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+}
+
+/* ============================================================= adda == */
+/*  Two lists of titles, the city's threads and our own stories. Titles
+    in the display face, the meta under each in Ash; no cards, no rules.    */
+.adda {
+  display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: clamp(32px, 5vw, 80px); align-items: start;
+}
+.addaCol { margin-top: var(--mk-7); min-width: 0; }
+.addaHead { margin: 0 0 var(--mk-4); font-size: 14px; letter-spacing: 0.015em; color: var(--mk-ash); font-weight: 400; }
+.addaList { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.addaItem {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: var(--mk-3) var(--mk-3) var(--mk-3) 0; border-radius: var(--mk-r-sm);
+  color: inherit; text-decoration: none;
+  transition: background-color var(--mk-t-hover) var(--mk-ease-in-out);
+}
+.addaTitle { font-family: var(--mk-display); font-size: clamp(18px, 1.7vw, 21px); line-height: 1.3; letter-spacing: -0.01em; color: var(--mk-white); }
+.addaTitle:lang(bn) { font-family: var(--mk-bengali); letter-spacing: 0; }
+.addaMeta { font-size: 13px; letter-spacing: 0.02em; color: var(--mk-ash); transition: color var(--mk-t-hover) var(--mk-ease-in-out); }
+.addaItem:hover, .addaItem:focus-visible { background: rgba(242, 241, 237, 0.04); }
+.addaItem:hover .addaMeta, .addaItem:focus-visible .addaMeta { color: var(--mk-taxi); }
+.addaItem:focus-visible { outline: 2px solid var(--mk-crimson); outline-offset: 2px; }
+@media (max-width: 900px) {
+  .adda { grid-template-columns: 1fr; gap: 0; }
+}
+
+/* ========================================================== youtube == */
+/*  Video cards: the 16:9 thumbnail as a content card (§9.3), the title
+    under it, then channel, views and age in Ash. Sideways on a phone.      */
+.videos {
+  list-style: none; margin: var(--mk-7) 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--mk-7) var(--mk-5);
+}
+/* positioned, so its screen-reader label stays inside the scroller on a phone */
+.video { position: relative; display: flex; flex-direction: column; gap: 4px; color: inherit; text-decoration: none; min-width: 0; }
+.videoThumb {
+  position: relative; display: block; overflow: hidden; aspect-ratio: 16 / 9; margin-bottom: var(--mk-3);
+  border-radius: var(--mk-r-md); background: var(--mk-ink); box-shadow: var(--mk-shadow-card);
+  transition: transform var(--mk-t-hover) var(--mk-ease-out), box-shadow var(--mk-t-hover) var(--mk-ease-out);
+}
+.videoThumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform var(--mk-t-hover) var(--mk-ease-in-out); }
+.videoLength {
+  position: absolute; right: 8px; bottom: 8px; padding: 2px 6px; border-radius: 4px;
+  background: rgba(13, 16, 18, 0.86); font-size: 12px; color: var(--mk-pearl); font-variant-numeric: tabular-nums;
+}
+.videoTitle {
+  font-family: var(--mk-display); font-size: 18px; line-height: 1.3; letter-spacing: -0.01em; color: var(--mk-white);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.videoTitle:lang(bn) { font-family: var(--mk-bengali); letter-spacing: 0; }
+.videoMeta { font-size: 13px; letter-spacing: 0.02em; color: var(--mk-ash); transition: color var(--mk-t-hover) var(--mk-ease-in-out); }
+.video:hover .videoThumb, .video:focus-visible .videoThumb { transform: translateY(-4px); box-shadow: 0 30px 58px -24px rgba(10, 13, 14, 1); }
+.video:hover img { transform: scale(1.04); }
+.video:hover .videoMeta, .video:focus-visible .videoMeta { color: var(--mk-taxi); }
+.video:focus-visible { outline: 2px solid var(--mk-crimson); outline-offset: 6px; border-radius: var(--mk-r-md); }
+@media (max-width: 900px) {
+  .videos {
+    grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 78%;
+    overflow-x: auto; overscroll-behavior-inline: contain; scroll-snap-type: x mandatory; scrollbar-width: none;
+    padding-bottom: var(--mk-4);
   }
-  .sky .moon { width: 32px; height: 32px; flex: none; }
-  .skyLine { font-size: 14px; }
+  .videos::-webkit-scrollbar { display: none; }
+  .videos > li { scroll-snap-align: start; min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .videoThumb, .videoThumb img { transition: none; }
+  .video:hover img { transform: none; }
+}
+
+/* ======================================================== instagram == */
+/*  Instagram's own embeds, side by side; each sizes itself to its post.   */
+.grams {
+  list-style: none; margin: var(--mk-7) 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: var(--mk-5);
+  align-items: start;
+}
+
+/* ====================================================== on this day == */
+/*  A year and a line, as many as the day has (usually one). The year is
+    a numeral in Pop White, the way the countdown's are.                     */
+.moments { list-style: none; margin: var(--mk-7) 0 0; padding: 0; display: grid; gap: var(--mk-2); max-width: 900px; }
+.moment {
+  display: grid; grid-template-columns: 5.5em minmax(0, 1fr); align-items: baseline; gap: var(--mk-5);
+  padding: var(--mk-3) var(--mk-3) var(--mk-3) 0; border-radius: var(--mk-r-sm);
+  color: inherit; text-decoration: none;
+  transition: background-color var(--mk-t-hover) var(--mk-ease-in-out);
+}
+.momentYear { font-family: var(--mk-display); font-size: clamp(22px, 2.4vw, 30px); line-height: 1.1; color: var(--mk-white); font-variant-numeric: tabular-nums; }
+.momentText { font-size: 17px; line-height: 1.55; color: var(--mk-pearl); }
+.momentKind { color: var(--mk-ash); }
+a.moment:hover, a.moment:focus-visible { background: rgba(242, 241, 237, 0.04); }
+a.moment:hover .momentKind, a.moment:focus-visible .momentKind { color: var(--mk-taxi); }
+a.moment:focus-visible { outline: 2px solid var(--mk-crimson); outline-offset: 2px; }
+@media (max-width: 480px) {
+  .moment { grid-template-columns: minmax(0, 1fr); gap: 2px; }
 }
 
 /* ===================================================== ticket stubs == */
@@ -314,7 +303,11 @@
 /*  One series: a 2px Pearl line on a dotted baseline, axes recessive, the
     two named points labelled directly, and a crosshair on hover. The line
     ends in the kolka — the alpona rule, drawn from data.                    */
-.pulseSummary { margin: var(--mk-6) 0 0; font-family: var(--mk-display); font-size: clamp(21px, 2.4vw, 30px); line-height: 1.3; letter-spacing: -0.015em; color: var(--mk-blush); max-width: 34ch; }
+.pulseLead { margin-top: var(--mk-7); }
+.pulseQuery { color: var(--mk-white); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.18em; text-decoration-color: rgba(242, 241, 237, 0.3); }
+.pulseQuery:hover, .pulseQuery:focus-visible { text-decoration-color: var(--mk-crimson); }
+.pulseQuery:focus-visible { outline: 2px solid var(--mk-crimson); outline-offset: 2px; border-radius: 2px; }
+.pulseSummary { margin: 0; font-family: var(--mk-display); font-size: clamp(21px, 2.4vw, 30px); line-height: 1.3; letter-spacing: -0.015em; color: var(--mk-blush); max-width: 34ch; }
 .pulse { margin-top: var(--mk-7); }
 .pulsePlot { position: relative; height: clamp(200px, 24vw, 300px); touch-action: pan-y; cursor: crosshair; }
 .pulseSvg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }

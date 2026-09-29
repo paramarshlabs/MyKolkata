@@ -516,3 +516,12 @@ test('ingestion re-checks stored stories: junk and old undated ones are retired,
   assert.equal(byId(noImage.id).image, 'https://img.telegraphindia.com/purple.jpg')
   assert.equal((await selectHomeNews(repository, NOW)).city.id, noImage.id)
 })
+
+test('the city news follows what Kolkata is searching this week', () => {
+  const trending = ['kolkata metro timing', 'durga puja 2026', 'third search']
+  const city = buildNewsQueries('CITY', [], trending)
+  assert.deepEqual(city.slice(0, 2), ['kolkata metro timing news', 'Kolkata durga puja 2026 news'])
+  assert.ok(!city.some((query) => /third search/.test(query)), 'only the top two')
+  assert.ok(buildNewsQueries('SPORTS', [], trending).every((query) => !/metro timing/.test(query)), 'sports keeps its own subjects')
+  assert.ok(city.length <= 10)
+})

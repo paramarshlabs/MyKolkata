@@ -16,3 +16,19 @@ export function showWhen(iso: string | null, now: Date) {
   const day = date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' })
   return `${day}, ${time}`
 }
+
+/* "Today", "Yesterday", "3 days ago" — on the Kolkata calendar */
+export function daysAgo(iso: string, now: Date) {
+  const days = Math.round((Date.parse(kolkataDate(now)) - Date.parse(kolkataDate(new Date(iso)))) / DAY_MS)
+  return days <= 0 ? 'Today' : days === 1 ? 'Yesterday' : `${days} days ago`
+}
+
+/* "Just now", "40 minutes ago", "5 hours ago", then the day */
+export function ago(iso: string, now: Date) {
+  const minutes = Math.round((now.getTime() - Date.parse(iso)) / 60_000)
+  if (minutes < 2) return 'Just now'
+  if (minutes < 60) return `${minutes} minutes ago`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`
+  return daysAgo(iso, now)
+}

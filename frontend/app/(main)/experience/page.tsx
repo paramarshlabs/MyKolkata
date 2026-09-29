@@ -8,7 +8,7 @@ import styles from '@/styles/Experiences.module.css'
 
 export const metadata: Metadata = pageMetadata({
   title: 'Experiences',
-  description: 'Discover your Pujo personality and its map, find the Pujo day and time that fits you, and what is coming next: Kolkata Wrapped, the Kolkata Personality Test and Bengalis near you.',
+  description: 'Discover your Pujo personality and its map, find someone to go pandal-hopping with on Ashtami, and what is coming next: Kolkata Wrapped, the Kolkata Personality Test and Bengalis near you.',
 })
 
 type Feature = {
@@ -41,14 +41,15 @@ const FEATURES: Feature[] = [
   },
   {
     title: 'Find Your Ashtami Date',
-    kicker: 'One card at a time',
-    description: 'Find the Pujo day and time that fits you best.',
+    kicker: 'Swipe, match, pick a pandal',
+    description: 'Someone to go pandal-hopping with on Ashtami. Swipe, match, and the plan comes with it: one pandal, one time.',
     href: '/experience/swipe',
     image: '/ashtami.png',
     /* the top of the poster: its calendar lower down shows 2025's dates */
     imagePosition: '50% 0%',
     alt: 'Find Your Ashtami Date, written over a lit pandal at night with Durga and the crowd below',
-    facts: [['How', 'Swipe'], ['Takes', '2 minutes']],
+    facts: [['How', 'Swipe'], ['For', '18 and over']],
+    badge: '18+',
   },
   {
     title: 'Tune Into Pujo',

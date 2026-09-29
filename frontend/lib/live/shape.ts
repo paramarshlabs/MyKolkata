@@ -106,3 +106,23 @@ export function eachObject(root: unknown, visit: (item: Obj) => void, limit = 40
   }
   walk(root, 0)
 }
+
+/* A home page for everyone: titles and searches that are explicit stay off it. */
+const UNFIT = /\b(sex|sexy|porn|xxx|nude|naked|nsfw|escort|call ?girl|mms|leaked?|onlyfans|hentai)\b|\b18\+/i
+export const isUnfit = (text: string | null | undefined) => Boolean(text && UNFIT.test(text))
+
+/* Text a person wrote in Bengali script, so the page can mark it lang="bn". */
+export const isBengali = (text: string) => /[ঀ-৿]/.test(text)
+
+/* An instant from unix seconds, milliseconds or a date string, as ISO; null otherwise. */
+export function isoOf(value: unknown): string | null {
+  const digits = typeof value === 'string' && /^\d{9,13}(\.\d+)?$/.test(value.trim())
+  if (typeof value === 'number' || digits) {
+    const n = Number(value)
+    if (!Number.isFinite(n) || n <= 0) return null
+    return new Date(n < 1e11 ? n * 1000 : n).toISOString()
+  }
+  if (typeof value !== 'string' || !value.trim()) return null
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? null : date.toISOString()
+}

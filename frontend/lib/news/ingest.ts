@@ -1,7 +1,7 @@
 import { safePublicUrl } from '@/lib/places/anakinImageProvider'
 import { activeEvents, detectEvent, kolkataDay, type ActiveEvent, type NewsFeed } from './events'
 import { resolveStoryImage } from './images'
-import { buildNewsQueries } from './queries'
+import { buildNewsQueries, TRENDING_QUERIES } from './queries'
 import { baseScore, featureStamp, isHoldingCard, MAX_AGE_HOURS, rankStory, selectHomeStory } from './ranking'
 import { assessStory } from './relevance'
 import type { NewsRecord, NewsRepository, NewsWrite } from './repository'
@@ -59,6 +59,8 @@ export type IngestOptions = {
   fetchHtml?: (url: string) => Promise<string | null>
   now?: Date
   log?: (message: string) => void
+  /* the week's rising Kolkata searches, which steer the city queries */
+  trending?: string[]
 }
 
 export type IngestSummary = {
@@ -276,7 +278,7 @@ function dedupeBatch(candidates: Candidate[]) {
 
 /* ---------- the run ------------------------------------------------------- */
 
-export async function ingestKolkataNews({ repository, anakin, fetchHtml, now = new Date(), log = console.log }: IngestOptions): Promise<IngestSummary> {
+export async function ingestKolkataNews({ repository, anakin, fetchHtml, now = new Date(), log = console.log, trending = [] }: IngestOptions): Promise<IngestSummary> {
   const day = kolkataDay(now)
   const events = activeEvents(now)
   const summary: IngestSummary = {
@@ -287,13 +289,14 @@ export async function ingestKolkataNews({ repository, anakin, fetchHtml, now = n
     selected: { CITY: null, SPORTS: null },
   }
   log(`[news] ingest ${day.iso} — active events: ${events.map((event) => `${event.slug}${event.phase ? `/${event.phase}` : ''}`).join(', ') || 'none'}`)
+  if (trending.length) log(`[news] following this week's searches: ${trending.slice(0, TRENDING_QUERIES).join(', ')}`)
 
   /* 1–5: search both feeds */
   const raw: SearchResult[] = []
   if (!anakin?.hasApiKey) {
     log('[news] Anakin is not configured (ANAKIN_API_KEY); keeping persisted stories')
   } else {
-    const queries = FEEDS.flatMap((feed) => buildNewsQueries(feed, events))
+    const queries = FEEDS.flatMap((feed) => buildNewsQueries(feed, events, trending))
     summary.queries = queries.length
     await mapLimit(queries, CONCURRENCY, async (query) => {
       try {
