@@ -1,4 +1,4 @@
-import { MAHALAYA, PUJO_DAYS, formatPujoDate } from '@/lib/pujo'
+import { MAHALAYA, PUJO_DAYS, formatPujoDate, formatPujoDay } from '@/lib/pujo'
 import { kolkataDay } from '@/lib/news/events'
 
 /* ==========================================================================
@@ -46,9 +46,9 @@ function plural(n: number, word: string) {
 export function seasonLine(now: Date = new Date()): SeasonLine | null {
   const today = kolkataDay(now).epochDay
   const mahalaya = epochOf(MAHALAYA)
-  const days = PUJO_DAYS.map((d) => ({ ...d, epoch: epochOf(d.iso) }))
+  const days = PUJO_DAYS.map((d) => ({ ...d, epoch: epochOf(d.iso), lastEpoch: epochOf(d.lastIso ?? d.iso) }))
   const shashthi = days[0].epoch
-  const dashami = days[days.length - 1].epoch
+  const dashami = days[days.length - 1].lastEpoch
   const start = mahalaya - BUILD_UP_DAYS
 
   /* before the build-up and after Dashami there is no season to draw */
@@ -61,12 +61,12 @@ export function seasonLine(now: Date = new Date()): SeasonLine | null {
   }
 
   const nodes: SeasonNode[] = [
-    { key: 'mahalaya', bn: 'মহালয়া', en: 'Mahalaya', date: formatPujoDate(MAHALAYA), epoch: mahalaya },
-    ...days.map((d) => ({ key: d.en.toLowerCase(), bn: d.bn, en: d.en, date: formatPujoDate(d.iso), epoch: d.epoch })),
-  ].map(({ epoch, ...node }) => ({ ...node, at: position(epoch), past: epoch < today, today: epoch === today }))
+    { key: 'mahalaya', bn: 'মহালয়া', en: 'Mahalaya', date: formatPujoDate(MAHALAYA), epoch: mahalaya, lastEpoch: mahalaya },
+    ...days.map((d) => ({ key: d.en.toLowerCase(), bn: d.bn, en: d.en, date: formatPujoDay(d), epoch: d.epoch, lastEpoch: d.lastEpoch })),
+  ].map(({ epoch, lastEpoch, ...node }) => ({ ...node, at: position(epoch), past: lastEpoch < today, today: epoch <= today && today <= lastEpoch }))
 
   let status: string
-  const onDay = days.find((d) => d.epoch === today)
+  const onDay = days.find((d) => d.epoch <= today && today <= d.lastEpoch)
   if (today === mahalaya) status = 'Mahalaya today'
   else if (onDay) status = `${onDay.en} today`
   else if (today < mahalaya) status = `${plural(mahalaya - today, 'day')} to Mahalaya`

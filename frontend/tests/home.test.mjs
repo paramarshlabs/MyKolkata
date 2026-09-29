@@ -5,6 +5,9 @@ import { displayTitle } from '../lib/news/home.ts'
 import { normalizeSky } from '../lib/live/sky.ts'
 import { skyReport } from '../lib/home/sky.ts'
 import { moonPhase, sunTimes } from '../lib/home/astro.ts'
+import { seasonLine } from '../lib/home/season.ts'
+import { INSTAGRAM_FEED } from '../lib/home/instagram_feed.ts'
+import { resolveStoryMedia } from '../lib/stories/media.ts'
 
 test('home news titles lose the site talking about itself, and nothing else', () => {
   assert.equal(
@@ -61,4 +64,26 @@ test('the hero sky line is about the sky, never a festival', () => {
   const report = skyReport({ hours, aqi: [] }, new Date('2026-10-19T16:30:00+05:30'))
   assert.doesNotMatch(report.sentence, /pandal|pujo/i)
   assert.match(report.sentence, /^Partly cloudy, 28°\. Sunset/)
+})
+
+test('the season line holds Saptami across both of its dates', () => {
+  const line = seasonLine(new Date('2026-10-18T12:00:00+05:30'))
+  assert.equal(line.status, 'Saptami today')
+  const saptami = line.nodes.find((node) => node.key === 'saptami')
+  assert.equal(saptami.date, '17–18 Oct')
+  assert.equal(saptami.today, true)
+  assert.equal(line.nodes.find((node) => node.key === 'shashthi').past, true)
+  assert.equal(seasonLine(new Date('2026-10-15T12:00:00+05:30')).status, '1 day to Shashthi')
+})
+
+test('every hand-picked Instagram link is a post or reel, listed once', () => {
+  const seen = new Set()
+  for (const post of INSTAGRAM_FEED) {
+    const url = typeof post === 'string' ? post : post.url
+    const media = resolveStoryMedia(url)
+    assert.equal(media?.kind, 'instagram', `${url} is not an Instagram post or reel`)
+    assert.ok(!seen.has(media.embedUrl), `${url} is listed twice`)
+    seen.add(media.embedUrl)
+    if (typeof post !== 'string') assert.ok(post.title.trim(), `${url} has an empty title`)
+  }
 })

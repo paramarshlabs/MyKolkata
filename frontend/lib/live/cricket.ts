@@ -121,12 +121,6 @@ export function matchesNow(feed: Cricket | null, fetchedAt: string | null, now: 
 
 export const cricketFeed: Feed<Cricket> = {
   key: 'cricket',
-  /* every twenty minutes while one of ours is on or about to start, else every three hours */
-  ttlMs: (now, last) => {
-    const busy = last?.matches.some((match) => match.state === 'live'
-      || (match.start && Math.abs(Date.parse(match.start) - now.getTime()) < 3 * HOUR_MS))
-    return busy ? 20 * 60_000 : 3 * HOUR_MS
-  },
   async fetch({ wire }) {
     const matches = normalizeCricket(await wire('act_espncricinfo_live_matches_listing', { lang: 'en' }))
     return matches ? { matches } : null

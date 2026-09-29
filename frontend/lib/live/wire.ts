@@ -5,6 +5,9 @@
      POST /v1/wire/task      { action_id, params }  → { job_id, status }
      GET  /v1/wire/jobs/:id                          → { status, data }
 
+   Also here: one page as markdown through Anakin's crawl, for sites Wire
+   doesn't cover well (BookMyShow's events page).
+
    Only server code calls this (lib/live/refresh.ts), and the page never waits
    on it. Submissions are spaced to stay under the rate limit (10 requests a
    minute); running out of credits or hitting the limit anyway stops the
@@ -12,6 +15,7 @@
    ========================================================================== */
 
 const BASE = 'https://api.anakin.io/v1/wire'
+const CRAWL = 'https://api.anakin.io/v1/crawl'
 
 export class WireOutOfCredits extends Error {
   constructor(message = 'Anakin has no credits left') { super(message); this.name = 'WireOutOfCredits' }
@@ -111,5 +115,43 @@ export function createWire({
     }
     if (job?.status !== 'completed') throw new Error(`Anakin Wire job ${actionId} ${String(job?.status)}`)
     return jobResult(job)
+  }
+}
+
+export type ScrapeRun = (url: string, options?: { country?: string; timeoutMs?: number }) => Promise<string>
+
+/* One page as markdown, through Anakin's crawl held to that page (1 credit,
+   charged up front). Its URL scraper is quicker, but on 30 Sep 2026 it got
+   BookMyShow's "Select your region" page where the crawl got the listing;
+   and a headless browser gets stuck on BookMyShow's Cloudflare check. */
+export function createScraper({
+  apiKey = process.env.ANAKIN_API_KEY,
+  fetchImpl = globalThis.fetch,
+  sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+  pollMs = [3000],
+  clock = Date.now,
+}: Omit<Options, 'perMinute'> = {}): ScrapeRun | null {
+  if (!apiKey) return null
+  const headers = { 'Content-Type': 'application/json', Accept: 'application/json', 'X-API-Key': apiKey }
+
+  /* 50 seconds leaves a page view's minute room to render and save */
+  return async function scrape(url, { country = 'in', timeoutMs = 50_000 } = {}) {
+    const started = clock()
+    const submit = await fetchImpl(CRAWL, { method: 'POST', headers, body: JSON.stringify({ url, maxPages: 1, depth: 0, country }) })
+    let job = await readJson(submit) as Record<string, unknown> | null
+    if (!submit.ok) raise(submit.status, job as never)
+
+    const id = job?.jobId ?? job?.id
+    for (let poll = 0; !TERMINAL.has(String(job?.status)); poll++) {
+      if (typeof id !== 'string') throw new Error('Anakin crawl returned no job id')
+      if (clock() - started > timeoutMs) throw new Error('Anakin crawl timed out')
+      await sleep(pollMs[Math.min(poll, pollMs.length - 1)])
+      const response = await fetchImpl(`${CRAWL}/${encodeURIComponent(id)}`, { headers })
+      job = await readJson(response) as Record<string, unknown> | null
+      if (!response.ok) raise(response.status, job as never)
+    }
+    const page = Array.isArray(job?.results) ? job.results[0] as Record<string, unknown> | undefined : undefined
+    if (job?.status !== 'completed' || typeof page?.markdown !== 'string') throw new Error(`Anakin crawl ${String(job?.status)}`)
+    return page.markdown
   }
 }

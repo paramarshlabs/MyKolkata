@@ -6,7 +6,7 @@ import {
   type Gender, type Night, type PromptId, type ShowMe, type SocialKind, type VibeId, type ZoneId,
 } from '@/lib/ashtami-date/config'
 import type { OwnPhoto, OwnProfile } from '@/lib/ashtami-date/profile'
-import { formatPujoDate } from '@/lib/pujo'
+import { formatPujoDay } from '@/lib/pujo'
 import type { ArchetypeId } from '@/lib/pujo-personality/types'
 import styles from '@/styles/AshtamiDate.module.css'
 import { api, preparePhoto } from './api'
@@ -341,7 +341,7 @@ function AshtamiStep({ profile, onSaved, back, editing }: StepProps) {
       <span className={styles.ticket}>
         <span lang="bn" className={styles.ticketBn}>{NIGHT_DAYS[n].bn}</span>
         <span className={styles.ticketEn}>{n}</span>
-        <span className={styles.ticketDate}>{formatPujoDate(NIGHT_DAYS[n].iso).toLowerCase()}</span>
+        <span className={styles.ticketDate}>{formatPujoDay(NIGHT_DAYS[n]).toLowerCase()}</span>
       </span>
     ),
   }))

@@ -76,16 +76,20 @@ const PUJO_BIJOYA_DAYS = 8
 
 function pujoPhase(day: KolkataDay): string | null {
   const mahalaya = epochDayOf(MAHALAYA)
-  const days = PUJO_DAYS.map((pujoDay) => ({ phase: pujoDay.en.toLowerCase(), epochDay: epochDayOf(pujoDay.iso) }))
-  const shashthi = days[0].epochDay
-  const dashami = days[days.length - 1].epochDay
+  const days = PUJO_DAYS.map((pujoDay) => ({
+    phase: pujoDay.en.toLowerCase(),
+    first: epochDayOf(pujoDay.iso),
+    last: epochDayOf(pujoDay.lastIso ?? pujoDay.iso),
+  }))
+  const shashthi = days[0].first
+  const dashami = days[days.length - 1].last
   const today = day.epochDay
 
   if (today < mahalaya - PUJO_BUILD_UP_DAYS) return null
   if (today < mahalaya) return 'build-up'
   if (today === mahalaya) return 'mahalaya'
   if (today < shashthi) return 'preparations'
-  const pujoDay = days.find((entry) => entry.epochDay === today)
+  const pujoDay = days.find((entry) => entry.first <= today && today <= entry.last)
   if (pujoDay) return pujoDay.phase
   if (today <= dashami + PUJO_IMMERSION_DAYS) return 'immersion'
   if (today <= dashami + PUJO_IMMERSION_DAYS + PUJO_BIJOYA_DAYS) return 'bijoya'

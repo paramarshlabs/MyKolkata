@@ -73,7 +73,6 @@ export function normalizeDerby(raw: unknown, [first, second]: readonly [string, 
 
 export const searchingFeed: Feed<Searching> = {
   key: 'searching',
-  ttlMs: 6 * 3_600_000,
   async fetch({ wire }) {
     const rising = normalizeRising(await wire('gt_related_queries', { keyword: 'Kolkata', geo: GEO, timeframe: 'now 7-d' }))
     /* daily for three months: long enough to show where the rise began */

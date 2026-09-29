@@ -1,7 +1,7 @@
 import type { Searching as SearchingFeed } from '@/lib/live/searching'
 import { readPulse, type Trend } from '@/lib/live/trend'
-import { SectionHead } from '@/components/brand/SectionHead'
 import { PulseChart } from './PulseChart'
+import { LiveHead } from './LiveHead'
 import styles from '@/styles/Home.module.css'
 
 const google = (query: string) => `https://www.google.com/search?q=${encodeURIComponent(query)}`
@@ -25,10 +25,11 @@ function Pulse({ trend }: { trend: Trend }) {
   const peak = reading.peakIndex
   return (
     <div className={styles.pulseLead}>
+      <p className={styles.pulseKicker}>Rising fastest</p>
       <p className={styles.pulseSummary}>
-        Rising fastest: <a href={google(trend.keyword)} target="_blank" rel="noopener noreferrer" className={styles.pulseQuery}>{trend.keyword}<span className="sr-only">, search Google, opens in a new tab</span></a>
+        <a href={google(trend.keyword)} target="_blank" rel="noopener noreferrer" className={styles.pulseQuery}>{trend.keyword}<span className="sr-only">, search Google, opens in a new tab</span></a>
       </p>
-      <p className="mk-body" style={{ marginTop: 8 }}>{summary}</p>
+      <p className={styles.pulseLine}>{summary}</p>
       <PulseChart
         points={points}
         peakIndex={peak}
@@ -37,7 +38,7 @@ function Pulse({ trend }: { trend: Trend }) {
         nowLabel={`${day(reading.current.d)}, ${reading.current.v}`}
       />
       <p className="mk-meta" style={{ marginTop: 16 }}>
-        Google Trends, West Bengal, {reading.daily ? 'day by day' : 'week by week'}. 100 is its busiest {reading.daily ? 'day' : 'week'}.
+        {reading.daily ? 'Day by day' : 'Week by week'}, the past three months. 100 is its busiest {reading.daily ? 'day' : 'week'}.
       </p>
       {/* a table is never narrower than its text, so the one-pixel box around it does the hiding */}
       <div className="sr-only">
@@ -54,53 +55,68 @@ function Pulse({ trend }: { trend: Trend }) {
 }
 
 /*  What the city is typing into Google this week: the fastest riser drawn
-    as a line, the searches rising with "Kolkata" (a ranking, so numbered),
-    and the derby as a split of the two clubs' searches. Identity is carried
-    by the names, never by colour.                                         */
+    as a line, beside the rest of the searches rising with "Kolkata" (a
+    ranking, so numbered, counting on from the one drawn) and the derby as a
+    split of the two clubs' searches. Identity is carried by the names,
+    never by colour.                                                        */
 export function Searching({ feed }: { feed: SearchingFeed | null }) {
   if (!feed || (!feed.rising.length && !feed.derby)) return null
-  const { rising, derby, pulse } = feed
+  const { derby, pulse } = feed
+  /* the pulse is the top riser; the list carries on from it */
+  const drawn = pulse ? feed.rising.findIndex((item) => item.query === pulse.keyword) : -1
+  const rising = drawn === 0 ? feed.rising.slice(1) : feed.rising
+  const side = (rising.length > 0 || derby) && (
+    <div className={pulse ? styles.searchSide : styles.searching}>
+      {rising.length > 0 && (
+        <ol className={styles.rising} start={drawn === 0 ? 2 : undefined} style={drawn === 0 ? { counterReset: 'rise 1' } : undefined}>
+          {rising.map((item) => (
+            <li key={item.query}>
+              <a href={google(item.query)} target="_blank" rel="noopener noreferrer" className={styles.risingItem}>
+                <span className={styles.risingQuery}>{item.query}</span>
+                {item.growth && <span className={styles.risingGrowth}>{item.growth}</span>}
+                <span className="sr-only">, search Google, opens in a new tab</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      )}
+      {derby && (
+        <figure className={styles.derby}>
+          <figcaption className={styles.derbyTitle}>The derby, in searches this week</figcaption>
+          <div className={styles.derbyNames}>
+            <span>{derby.a.name}</span>
+            <span>{derby.b.name}</span>
+          </div>
+          <div className={styles.derbyBar} role="img" aria-label={`${derby.a.name} ${derby.a.share}%, ${derby.b.name} ${derby.b.share}%`}>
+            <span className={styles.derbyA} style={{ flexGrow: derby.a.share }} />
+            <span className={styles.derbyB} style={{ flexGrow: derby.b.share }} />
+          </div>
+          <div className={styles.derbyShares} aria-hidden="true">
+            <span className="mk-tabular">{derby.a.share}%</span>
+            <span className="mk-tabular">{derby.b.share}%</span>
+          </div>
+          <p className="mk-meta">
+            {derby.a.share === derby.b.share ? 'Dead level.'
+              : `${derby.a.share > derby.b.share ? derby.a.name : derby.b.name} ahead by ${Math.abs(derby.a.share - derby.b.share)} points.`}
+          </p>
+        </figure>
+      )}
+    </div>
+  )
   return (
-    <section className="mk-band" aria-labelledby="searching-title" style={{ paddingTop: 0 }}>
+    <section className={styles.live} aria-labelledby="searching-title">
       <div className="mk-wrap">
-        <SectionHead id="searching-title" title="What Kolkata is searching" lede="Rising in West Bengal this week alongside the word Kolkata, from Google Trends." />
-        {pulse && <Pulse trend={pulse} />}
-        <div className={styles.searching}>
-          {rising.length > 0 && (
-            <ol className={styles.rising}>
-              {rising.map((item) => (
-                <li key={item.query}>
-                  <a href={google(item.query)} target="_blank" rel="noopener noreferrer" className={styles.risingItem}>
-                    <span className={styles.risingQuery}>{item.query}</span>
-                    {item.growth && <span className={styles.risingGrowth}>{item.growth}</span>}
-                    <span className="sr-only">, search Google, opens in a new tab</span>
-                  </a>
-                </li>
-              ))}
-            </ol>
-          )}
-          {derby && (
-            <figure className={styles.derby}>
-              <figcaption className={styles.derbyTitle}>The derby, in searches this week</figcaption>
-              <div className={styles.derbyNames}>
-                <span>{derby.a.name}</span>
-                <span>{derby.b.name}</span>
-              </div>
-              <div className={styles.derbyBar} role="img" aria-label={`${derby.a.name} ${derby.a.share}%, ${derby.b.name} ${derby.b.share}%`}>
-                <span className={styles.derbyA} style={{ flexGrow: derby.a.share }} />
-                <span className={styles.derbyB} style={{ flexGrow: derby.b.share }} />
-              </div>
-              <div className={styles.derbyShares} aria-hidden="true">
-                <span className="mk-tabular">{derby.a.share}%</span>
-                <span className="mk-tabular">{derby.b.share}%</span>
-              </div>
-              <p className="mk-meta">
-                {derby.a.share === derby.b.share ? 'Dead level.'
-                  : `${derby.a.share > derby.b.share ? derby.a.name : derby.b.name} ahead by ${Math.abs(derby.a.share - derby.b.share)} points.`}
-              </p>
-            </figure>
-          )}
-        </div>
+        <LiveHead
+          id="searching-title"
+          title="What Kolkata is searching"
+          source="Rising in West Bengal this week alongside the word Kolkata, from Google Trends."
+        />
+        {pulse ? (
+          <div className={styles.searching}>
+            <Pulse trend={pulse} />
+            {side}
+          </div>
+        ) : side}
       </div>
     </section>
   )

@@ -6,16 +6,13 @@ import { addaFeed } from './adda'
 import { youtubeFeed } from './youtube'
 import { cricketFeed } from './cricket'
 import { onThisDayFeed } from './onthisday'
-import { createInstagramFeed, instagramConfig } from './instagram'
 
 /* ==========================================================================
    Every live feed /home shows, refreshed by lib/live/server.ts and
    /api/cron/live. Each feed lives in its own module with its normalizer, so
-   the shape it reads from Anakin is tested next to it. Instagram is the one
-   feed not on Anakin, and it is on only when its Graph API keys are set.
+   the shape it reads from Anakin is tested next to it. Instagram isn't one:
+   it is picked by hand, in lib/home/instagram_feed.ts.
    ========================================================================== */
-
-const instagram = instagramConfig()
 
 export const FEEDS: Feed[] = [
   skyFeed as Feed,
@@ -25,5 +22,4 @@ export const FEEDS: Feed[] = [
   youtubeFeed as Feed,
   cricketFeed as Feed,
   onThisDayFeed as Feed,
-  ...(instagram ? [createInstagramFeed(instagram) as Feed] : []),
 ]

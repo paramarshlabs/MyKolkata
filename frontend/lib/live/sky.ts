@@ -43,7 +43,6 @@ export function normalizeSky(forecastRaw: unknown, airRaw: unknown): Sky | null 
 
 export const skyFeed: Feed<Sky> = {
   key: 'sky',
-  ttlMs: 3 * 3_600_000,
   async fetch({ wire }) {
     const place = { latitude: String(KOLKATA.lat), longitude: String(KOLKATA.lon), timezone: 'Asia/Kolkata' }
     const forecast = await wire('om_forecast', {

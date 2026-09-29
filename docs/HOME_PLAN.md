@@ -28,11 +28,13 @@ Branch: `home-redesign`. Read the code under `frontend/`; this file only says wh
   - `lib/live/server.ts`: Prisma store; `loadLive()` refreshes stale feeds via `after()`.
   - `lib/live/shape.ts`: tolerant JSON helpers.
   - `lib/live/feeds.ts`: the registry.
-  - `app/api/cron/live/route.ts`: daily cron (in `vercel.json`); `?only=` limits it to named feeds.
+  - `app/api/cron/live/route.ts`: daily cron (in `vercel.json`); `?only=` limits it to named feeds. It takes anything due within 90 minutes, since Vercel fires a daily cron anywhere in its hour.
+  - Every feed stays fresh for `LIVE_REFRESH_HOURS` (`.env.local`, 24 when unset); `on-this-day` is also fetched again when the date changes. The sections don't say when they were fetched.
+  - `npm run live:refresh -- youtube tonight` (in `frontend/`) fetches those feeds now, fresh or not; no names means every feed, `--due` only the stale ones, `--list` shows each feed's state without fetching (`scripts/live-refresh.ts`).
   - Table: `LiveFeed` in `prisma/schema.prisma`, migration `prisma/migrations/20260929180000_live_feeds`.
 - **Feeds built:**
   - `sky`: Open-Meteo weather and air quality (`lib/live/sky.ts`).
-  - `tonight`: BookMyShow, Meetup and Luma, shown as ticket stubs (`lib/live/tonight.ts`, `components/home/Tonight.tsx`).
+  - `tonight`: BookMyShow's Kolkata events page (Anakin's crawl held to one page, `createScraper` in `lib/live/wire.ts`; the URL scraper got BookMyShow's region picker instead) and in-person Meetup events, shown as ticket stubs (`lib/live/tonight.ts`, `components/home/Tonight.tsx`). Both readers were checked against real responses on 30 Sep 2026. BookMyShow's date is read from the text printed on each poster, and only the first rows of cards carry a poster, so undated events are left out. Wire's `bms_discover_home` (section headings only) and Luma (no Kolkata place) were dropped. About 2 credits a fetch.
   - `pujo-trend`: Google Trends (`lib/live/trend.ts`, `PujoPulse`/`PulseChart`).
   - `searching`: rising "Kolkata" queries and the derby share (`lib/live/searching.ts`, `components/home/Searching.tsx`).
 - Tests: `tests/home.test.mjs`, `tests/liveFeeds.test.mjs`.
@@ -52,7 +54,7 @@ Each feed goes in its own module in `lib/live/`, is registered in `feeds.ts`, ge
 2. **Kolkata on YouTube this week** (`yt_search`). A city query, seasonal only when the data says so.
 3. **Match strip** (`act_espncricinfo_live_matches_listing` or `cricbuzz.com`). Shows only when a Kolkata, Bengal or India match is live or within 24 hours.
 4. **On this day** (`wp_on_this_day`). Filter to Kolkata, Calcutta and Bengal.
-5. **Instagram, official route only.** Instagram isn't in Wire, and scraping it is off the table. Use the Graph API hashtag search (needs a Meta app and review, 30 hashtags a week), env-gated. Also use community stories whose `externalUrl` is an Instagram post (already embeddable, see `lib/stories/media.ts`).
+5. **Instagram, picked by hand.** Done: `lib/home/instagram_feed.ts` is a hand-curated list of post and reel links, and /home shows the first three as Instagram's own embeds. Nothing is fetched or added automatically; the Graph API hashtag feed and the community-story links were removed on 30 Sep 2026.
 6. Place-scoped news or "what's new in the city" via Anakin search or scrape, fed into the news section so seasonal topics surface naturally.
 7. Lower priority, and Pujo-only if kept: pandal theme reveals (Anakin search plus `generateJson`), pandals near you (the `Pandal` model has no coordinates), a Pujo passport, a personalised home from the quiz result.
 

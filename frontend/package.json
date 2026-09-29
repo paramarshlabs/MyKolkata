@@ -12,7 +12,8 @@
     "postinstall": "prisma generate",
     "test": "tsx --test \"tests/*.test.mjs\"",
     "data:import:places": "node scripts/import-place-catalog-to-db.mjs",
-    "data:enrich:images": "node scripts/enrich-place-images.mjs"
+    "data:enrich:images": "node scripts/enrich-place-images.mjs",
+    "live:refresh": "tsx scripts/live-refresh.ts"
   },
   "dependencies": {
     "@next/third-parties": "^16.3.5",

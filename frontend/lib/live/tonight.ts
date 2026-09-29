@@ -1,118 +1,179 @@
-import { KOLKATA } from '@/lib/home/astro'
 import type { Feed } from './refresh'
-import { clip, eachObject, findList, httpsUrl, isObj, str } from './shape'
-import { optional } from './wire'
+import { clip, findDeep, findList, httpsUrl, isObj, isUnfit, str } from './shape'
+import { WireOutOfCredits, WireRateLimited } from './wire'
 
 /* ==========================================================================
-   Tonight in the city: what is on in Kolkata, from BookMyShow (films and
-   events), Meetup and Luma, through Anakin Wire. Each source wraps its site
-   differently, so a listing is anything with a title and either a picture or
-   a link; dates are kept when the source gives one.
-   ========================================================================== */
+   Tonight in the city: what is on in Kolkata this week, from BookMyShow's
+   events page (Anakin's crawl) and Meetup (Anakin Wire). Both are
+   asked at once, so a refresh fits in the minute a page view has.
 
-export type ShowSource = 'BookMyShow' | 'Meetup' | 'Luma'
+   Wire's own BookMyShow action (bms_discover_home) returns only the home
+   page's section headings, never the events in them, and Luma has no
+   Kolkata page (its nearest is Bengaluru); both were dropped on 30 Sep 2026.
+   ========================================================================== */
 
 export type Show = {
   title: string
   kind: string | null
   venue: string | null
-  /* ISO, when the source says when */
+  /* ISO when the source gives a time; YYYY-MM-DD when it gives only the day */
   when: string | null
   image: string | null
   url: string | null
-  source: ShowSource
+  /* the site it is listed on, named on the stub */
+  source: string
 }
 
-export type Tonight = { shows: Show[]; lumaPlace: string | null; lumaCheckedAt: string | null }
+export type Tonight = { shows: Show[] }
 
-const TITLE = ['title', 'name', 'eventName', 'event_name', 'eventTitle', 'label']
-const IMAGE = ['image', 'imageUrl', 'image_url', 'poster', 'posterUrl', 'poster_url', 'cover', 'coverUrl', 'cover_url', 'thumbnail', 'banner', 'highResUrl', 'photo', 'featuredEventPhoto']
-const LINK = ['url', 'link', 'eventUrl', 'event_url', 'href', 'deeplink', 'webUrl', 'permalink']
-const WHEN = ['dateTime', 'startsAt', 'starts_at', 'start_at', 'startTime', 'start_time', 'start', 'startDate', 'date', 'showtime']
-const VENUE = ['venue', 'venueName', 'venue_name', 'location', 'address', 'place', 'group']
-const KIND = ['genre', 'genres', 'category', 'type', 'eventType', 'language']
+export const BMS_EVENTS = 'https://in.bookmyshow.com/explore/events-kolkata'
 
-const IMAGE_FILE = /\.(jpe?g|png|webp|avif)(\?|$)|bmscdn|secure\.meetupstatic|images\.lumacdn|img\.evbuc/i
+const HOUR_MS = 3_600_000
+const DAY_MS = 24 * HOUR_MS
+const kolkataDay = (date: Date) => date.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' })
 
-function imageOf(item: Record<string, unknown>) {
-  for (const key of IMAGE) {
-    const value = item[key]
-    const direct = httpsUrl(value)
-    if (direct && IMAGE_FILE.test(direct)) return direct
-    if (isObj(value)) {
-      const nested = httpsUrl(str(value, 'highResUrl', 'url', 'src', 'baseUrl'))
-      if (nested) return nested
-    }
-  }
-  return null
-}
-
-function whenOf(item: Record<string, unknown>) {
-  const raw = str(item, ...WHEN)
+/* Every listed event happens in Kolkata, so its wall-clock time is Kolkata
+   time. Meetup writes a group's events in the group's timezone, so a group
+   set up in New York lists its Kolkata dinner at 7 pm -04:00 (4:30 am here). */
+export function kolkataTime(raw: string | null) {
   if (!raw) return null
-  const date = new Date(raw)
+  const local = raw.match(/^(\d{4}-\d\d-\d\dT\d\d:\d\d(?::\d\d)?)(?:\.\d+)?[+-]\d\d:\d\d$/)
+  const date = new Date(local ? `${local[1]}+05:30` : raw)
   return Number.isNaN(date.getTime()) ? null : date.toISOString()
 }
 
-/* every listing-shaped object in what a source returned */
-export function extractShows(raw: unknown, source: ShowSource, max = 10): Show[] {
+const MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
+
+/* BookMyShow prints an event's date on its poster, and the poster's URL
+   carries that text in base64 (…,ie-U2F0LCAzIE9jdA%3D%3D,… is "Sat, 3 Oct").
+   It has no year: the year is the one that puts the day ahead, or at most
+   two months behind for a run that has already begun. */
+export function posterDate(image: string | null, now: Date) {
+  const code = image?.match(/[,:]ie-([A-Za-z0-9%+/=]+)/)?.[1]
+  if (!code) return null
+  let text: string
+  try {
+    text = atob(decodeURIComponent(code))
+  } catch {
+    return null
+  }
+  const found = text.match(/\b(\d{1,2})\s+([A-Za-z]{3})/)
+  const month = found ? MONTHS.indexOf(found[2].toLowerCase()) : -1
+  if (!found || month < 0) return null
+  const today = kolkataDay(now)
+  const day = (year: number) => `${year}-${String(month + 1).padStart(2, '0')}-${found[1].padStart(2, '0')}`
+  const year = Number(today.slice(0, 4))
+  return Date.parse(day(year)) < Date.parse(today) - 60 * DAY_MS ? day(year + 1) : day(year)
+}
+
+const CARD = /\*\*([^*\n]+)\*\*\]\((https:\/\/in\.bookmyshow\.com\/events\/[^\s)]+)\)/g
+const POSTER = /!\[[^\]]*\]\((https:\/\/assets-in\.bmscdn\.com\/[^\s)]+)\)/
+
+/* BookMyShow's events page as the scraper's markdown, as it was on 30 Sep
+   2026: each event is a link whose text is its card's lines (poster, title,
+   venue, category, price) and which ends with the title in bold. Only the
+   first rows carry a poster, and so a date; the rest load theirs as you
+   scroll, and are left out rather than listed without a day. */
+export function readBookMyShow(markdown: string, now: Date): Show[] {
   const out: Show[] = []
   const titles = new Set<string>()
-  eachObject(raw, (item) => {
-    if (out.length >= max) return
-    const title = str(item, ...TITLE)
-    if (!title || title.length < 3 || title.length > 140) return
-    const image = imageOf(item)
-    const url = httpsUrl(str(item, ...LINK))
-    if (!image && !url) return
-    const key = title.toLowerCase()
-    if (titles.has(key)) return
-    titles.add(key)
-    const kind = Array.isArray(item.genres) ? (item.genres as unknown[]).filter((g) => typeof g === 'string').slice(0, 2).join(', ') || null : str(item, ...KIND)
-    out.push({ title: clip(title, 90)!, kind: clip(kind, 40), venue: clip(str(item, ...VENUE), 60), when: whenOf(item), image, url, source })
-  })
+  let from = 0
+  for (const card of markdown.matchAll(CARD)) {
+    const body = markdown.slice(from, card.index)
+    from = card.index + card[0].length
+    const title = card[1].trim()
+    const image = httpsUrl(body.match(POSTER)?.[1])
+    const when = posterDate(image, now)
+    if (!when || titles.has(title.toLowerCase()) || isUnfit(title)) continue
+    titles.add(title.toLowerCase())
+    const lines = body.split(/\\?\n/).map((line) => line.replace(/^\[/, '').trim()).filter(Boolean)
+    const at = lines.lastIndexOf(title)
+    const line = (offset: number) => (at >= 0 && lines[at + offset] && !lines[at + offset].startsWith('₹') ? lines[at + offset] : null)
+    out.push({
+      title: clip(title, 90)!,
+      kind: clip(line(2), 40),
+      venue: clip(line(1)?.replace(/[:,]\s*Kolkata$/i, '') ?? null, 60),
+      when,
+      image,
+      url: card[2],
+      source: 'BookMyShow',
+    })
+  }
   return out
 }
 
-/* upcoming within a week, soonest first; undated listings (films showing
-   all week) after the dated ones */
-export function upcoming(shows: Show[], now: Date, days = 7) {
-  const from = now.getTime() - 2 * 3_600_000
-  const to = now.getTime() + days * 86_400_000
-  return shows
-    .filter((show) => !show.when || (Date.parse(show.when) >= from && Date.parse(show.when) <= to))
-    .sort((a, b) => (a.when ? Date.parse(a.when) : Infinity) - (b.when ? Date.parse(b.when) : Infinity))
+const outOfTown = (city: string | null) => Boolean(city) && !/kolkata|calcutta|howrah|salt ?lake|bidhannagar|new ?town|rajarhat|dum ?dum/i.test(city!)
+
+/* Meetup's mu_search_events, as Wire returned it on 30 Sep 2026:
+     { events: [{ title, date_time, event_type, event_url, photo_url,
+       venue: { name, city, country } | null, group: { name, photo_url } }] }
+   A recurring event can come back as a stub with no title or link. */
+export function readMeetup(raw: unknown, max = 12): Show[] {
+  const events = findList(raw, (item) => 'event_url' in item || 'date_time' in item)
+  const out: Show[] = []
+  const titles = new Set<string>()
+  for (const event of events) {
+    const title = str(event, 'title')
+    const url = httpsUrl(event.event_url)
+    if (!title || !url || out.length >= max) continue
+    if (String(event.event_type).toUpperCase() === 'ONLINE' || outOfTown(str(event.venue, 'city'))) continue
+    if (titles.has(title.toLowerCase())) continue
+    titles.add(title.toLowerCase())
+    out.push({
+      title: clip(title, 90)!,
+      kind: null,
+      venue: clip(str(event.venue, 'name'), 60),
+      when: kolkataTime(str(event, 'date_time')),
+      image: httpsUrl(event.photo_url) ?? (isObj(event.group) ? httpsUrl(event.group.photo_url) : null),
+      url,
+      source: 'Meetup',
+    })
+  }
+  return out
 }
 
-const WEEK_MS = 7 * 86_400_000
+/* a listing with only a day runs the whole Kolkata day */
+const DAY_ONLY = /^\d{4}-\d\d-\d\d$/
+const startOf = (when: string) => Date.parse(DAY_ONLY.test(when) ? `${when}T00:00:00+05:30` : when)
+const endOf = (when: string) => Date.parse(DAY_ONLY.test(when) ? `${when}T23:59:59+05:30` : when)
+
+/* upcoming within a week, soonest first; undated listings after the dated ones */
+export function upcoming(shows: Show[], now: Date, days = 7) {
+  const from = now.getTime() - 2 * HOUR_MS
+  const to = now.getTime() + days * DAY_MS
+  return shows
+    .filter((show) => !show.when || (endOf(show.when) >= from && startOf(show.when) <= to))
+    .sort((a, b) => (a.when ? startOf(a.when) : Infinity) - (b.when ? startOf(b.when) : Infinity))
+}
+
+const reason = (outcome: PromiseSettledResult<unknown>) =>
+  outcome.status === 'rejected' ? (outcome.reason instanceof Error ? outcome.reason.message : String(outcome.reason)) : ''
 
 export const tonightFeed: Feed<Tonight> = {
   key: 'tonight',
-  ttlMs: 6 * 3_600_000,
-  async fetch({ wire, now, last }) {
-    const previous = (isObj(last) ? last : {}) as Partial<Tonight>
-    const coords = { lat: String(KOLKATA.lat), lon: String(KOLKATA.lon) }
-
-    const bms = await optional(wire('bms_discover_home', { region_code: 'KOLK', region_slug: 'kolkata', ...coords }))
-    const meetup = await optional(wire('mu_search_events', { location: 'Kolkata, India', query: 'Kolkata' }))
-
-    /* Luma lists only some cities; look Kolkata up once a week, not every time */
-    let lumaPlace = previous.lumaPlace ?? null
-    let lumaCheckedAt = previous.lumaCheckedAt ?? null
-    if (!lumaCheckedAt || now.getTime() - Date.parse(lumaCheckedAt) > WEEK_MS) {
-      const places = await optional(wire('lu_list_places', { continent: 'Asia & Pacific' }))
-      const kolkata = findList(places, (item) => Boolean(str(item, 'name', 'city')))
-        .find((item) => /kolkata|calcutta/i.test(`${str(item, 'name')} ${str(item, 'city')} ${str(item, 'slug')}`))
-      lumaPlace = kolkata ? str(kolkata, 'api_id', 'place_id', 'id') : null
-      lumaCheckedAt = now.toISOString()
+  async fetch({ wire, scrape, now, last }) {
+    const [bms, meetup] = await Promise.allSettled([
+      (async () => {
+        if (!scrape) throw new Error('no scraper')
+        const shows = readBookMyShow(await scrape(BMS_EVENTS), now)
+        if (!shows.length) throw new Error('no dated events on the page')
+        return shows
+      })(),
+      wire('mu_search_events', { location: 'in--kolkata', event_type: 'inPerson' }).then((found) => {
+        if (!findDeep(found, (value) => isObj(value) && Array.isArray(value.events))) throw new Error('no events list')
+        return readMeetup(found)
+      }),
+    ])
+    for (const outcome of [bms, meetup]) {
+      if (outcome.status === 'rejected' && (outcome.reason instanceof WireOutOfCredits || outcome.reason instanceof WireRateLimited)) throw outcome.reason
     }
-    const luma = lumaPlace ? await optional(wire('lu_discover_events', { place_id: lumaPlace, ...coords })) : null
+    if (bms.status === 'rejected' && meetup.status === 'rejected') throw new Error(`BookMyShow: ${reason(bms)}; Meetup: ${reason(meetup)}`)
 
-    const shows = upcoming([
-      ...extractShows(bms, 'BookMyShow', 8),
-      ...extractShows(meetup, 'Meetup', 6),
-      ...extractShows(luma, 'Luma', 6),
-    ], now).slice(0, 12)
-    return shows.length ? { shows, lumaPlace, lumaCheckedAt } : null
+    /* a source that failed this time keeps what it listed last time; a quiet
+       week is an answer, kept like any other rather than asked again */
+    const previous = isObj(last) && Array.isArray(last.shows) ? (last.shows as Show[]) : []
+    const listed = (outcome: PromiseSettledResult<Show[]>, source: string) =>
+      outcome.status === 'fulfilled' ? outcome.value : previous.filter((show) => show.source === source)
+    return { shows: upcoming([...listed(bms, 'BookMyShow'), ...listed(meetup, 'Meetup')], now).slice(0, 12) }
   },
 }

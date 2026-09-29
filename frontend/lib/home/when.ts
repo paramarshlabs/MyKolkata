@@ -3,9 +3,16 @@
 const DAY_MS = 86_400_000
 const kolkataDate = (d: Date) => d.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' })
 
-/* "Tonight, 7:30 pm", "Tomorrow, 11 am", "Sat 3 Oct, 6 pm" — Kolkata time */
+/* "Tonight, 7:30 pm", "Tomorrow, 11 am", "Sat 3 Oct, 6 pm" — Kolkata time.
+   A listing with only a day (YYYY-MM-DD) is "Today", "Tomorrow", "Sat 3 Oct". */
 export function showWhen(iso: string | null, now: Date) {
   if (!iso) return 'Showing this week'
+  if (/^\d{4}-\d\d-\d\d$/.test(iso)) {
+    const days = Math.round((Date.parse(iso) - Date.parse(kolkataDate(now))) / DAY_MS)
+    if (days === 0) return 'Today'
+    if (days === 1) return 'Tomorrow'
+    return new Date(`${iso}T12:00:00+05:30`).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' })
+  }
   const date = new Date(iso)
   const time = date.toLocaleTimeString('en-GB', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata' })
     .replace(':00', '').replace(/\s?(am|pm)/i, (m) => ` ${m.trim().toLowerCase()}`)

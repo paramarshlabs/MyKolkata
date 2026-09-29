@@ -1,5 +1,5 @@
 import { kolkataMonthDay, type MomentKind, type OnThisDay as OnThisDayFeed } from '@/lib/live/onthisday'
-import { SectionHead } from '@/components/brand/SectionHead'
+import { LiveHead } from './LiveHead'
 import styles from '@/styles/Home.module.css'
 
 const KIND: Record<MomentKind, string | null> = { event: null, birth: 'Born', death: 'Died', holiday: 'Observed' }
@@ -10,9 +10,9 @@ export function OnThisDay({ feed, now }: { feed: OnThisDayFeed | null; now: Date
   if (!feed?.moments.length || feed.day !== kolkataMonthDay(now)) return null
   const today = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone: 'Asia/Kolkata' })
   return (
-    <section className="mk-band" aria-labelledby="onthisday-title" style={{ paddingTop: 0 }}>
+    <section className={styles.live} aria-labelledby="onthisday-title">
       <div className="mk-wrap">
-        <SectionHead id="onthisday-title" title="On this day" lede={`${today}, in Kolkata and Bengal, from Wikipedia.`} />
+        <LiveHead id="onthisday-title" title="On this day" source={`${today}, in Kolkata and Bengal, from Wikipedia.`} />
         <ol className={styles.moments}>
           {feed.moments.map((moment) => {
             const body = (

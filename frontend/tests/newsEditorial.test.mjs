@@ -248,6 +248,8 @@ test('the Durga Puja phase follows the calendar and steers the searches', () => 
   assert.equal(puja.phase, 'ashtami')
   assert.ok(buildNewsQueries('CITY', activeEvents(ASHTAMI)).includes('Maha Ashtami Kolkata'))
   assert.equal(activeEvents(new Date('2026-10-10T09:00:00+05:30')).find((event) => event.slug === 'durga-puja').phase, 'mahalaya')
+  assert.equal(activeEvents(new Date('2026-10-16T09:00:00+05:30')).find((event) => event.slug === 'durga-puja').phase, 'shashthi')
+  assert.equal(activeEvents(new Date('2026-10-18T09:00:00+05:30')).find((event) => event.slug === 'durga-puja').phase, 'saptami', 'Saptami runs over two dates')
   assert.equal(activeEvents(new Date('2026-10-21T09:00:00+05:30')).find((event) => event.slug === 'durga-puja').phase, 'dashami')
   assert.equal(activeEvents(new Date('2026-09-18T06:00:00+05:30')).some((event) => event.slug === 'durga-puja'), false, 'not before the three-week build-up to Mahalaya')
   assert.equal(activeEvents(new Date('2026-09-19T06:00:00+05:30')).find((event) => event.slug === 'durga-puja').phase, 'build-up')

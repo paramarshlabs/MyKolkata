@@ -2,17 +2,16 @@
 // normalizers that read each Anakin action.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { createWire, WireOutOfCredits, WireRateLimited } from '../lib/live/wire.ts'
-import { dueFeeds, refreshLive, RETRY_MS, snapshotOf } from '../lib/live/refresh.ts'
+import { createScraper, createWire, WireOutOfCredits, WireRateLimited } from '../lib/live/wire.ts'
+import { dueFeeds, refreshIntervalMs, refreshLive, RETRY_MS, snapshotOf } from '../lib/live/refresh.ts'
 import { findList, str, num, parseMaybe } from '../lib/live/shape.ts'
-import { extractShows, upcoming } from '../lib/live/tonight.ts'
+import { BMS_EVENTS, kolkataTime, posterDate, readBookMyShow, readMeetup, tonightFeed, upcoming } from '../lib/live/tonight.ts'
 import { normalizeTrend, readPulse, readTrend } from '../lib/live/trend.ts'
 import { normalizeDerby, normalizeRising, searchingFeed } from '../lib/live/searching.ts'
 import { normalizeAdda } from '../lib/live/adda.ts'
 import { ageHours, extractVideos, rankVideos, viewsLabel, viewsOf, youtubeFeed } from '../lib/live/youtube.ts'
-import { cricketFeed, matchesNow, normalizeCricket } from '../lib/live/cricket.ts'
+import { matchesNow, normalizeCricket } from '../lib/live/cricket.ts'
 import { normalizeOnThisDay, onThisDayFeed } from '../lib/live/onthisday.ts'
-import { createInstagramFeed, instagramConfig, normalizeGrams } from '../lib/live/instagram.ts'
 import { isoOf, isUnfit } from '../lib/live/shape.ts'
 import { ago, daysAgo, showWhen } from '../lib/home/when.ts'
 
@@ -60,23 +59,55 @@ const HOUR = 3_600_000
 const at = new Date('2026-09-29T12:00:00Z')
 
 test('stale feeds are due, stalest first; a feed that just failed waits', () => {
-  const feeds = [{ key: 'a', ttlMs: HOUR }, { key: 'b', ttlMs: HOUR }, { key: 'c', ttlMs: HOUR }, { key: 'd', ttlMs: HOUR }]
+  const feeds = [{ key: 'a' }, { key: 'b' }, { key: 'c' }, { key: 'd' }]
   const rows = [
     { key: 'a', fetchedAt: new Date(at - 2 * HOUR), attemptedAt: new Date(at - 2 * HOUR), error: null },
     { key: 'b', fetchedAt: new Date(at - 10 * 60_000), attemptedAt: new Date(at - 10 * 60_000), error: null },
     { key: 'c', fetchedAt: new Date(at - 5 * HOUR), attemptedAt: new Date(at - 60_000), error: 'boom' },
   ]
-  assert.deepEqual(dueFeeds(feeds, rows, at).map((f) => f.key), ['d', 'a'])
+  assert.deepEqual(dueFeeds(feeds, rows, at, HOUR).map((f) => f.key), ['d', 'a'])
   rows[2].attemptedAt = new Date(at - RETRY_MS - 1)
-  assert.deepEqual(dueFeeds(feeds, rows, at).map((f) => f.key), ['d', 'c', 'a'])
+  assert.deepEqual(dueFeeds(feeds, rows, at, HOUR).map((f) => f.key), ['d', 'c', 'a'])
+  /* a day's interval leaves all three fetched ones alone */
+  assert.deepEqual(dueFeeds(feeds, rows, at, 24 * HOUR).map((f) => f.key), ['d'])
+})
+
+test('every feed stays fresh for LIVE_REFRESH_HOURS, a day when it is unset or not a number', () => {
+  assert.equal(refreshIntervalMs(undefined), 24 * HOUR)
+  assert.equal(refreshIntervalMs(''), 24 * HOUR)
+  assert.equal(refreshIntervalMs('soon'), 24 * HOUR)
+  assert.equal(refreshIntervalMs('-3'), 24 * HOUR)
+  assert.equal(refreshIntervalMs('6'), 6 * HOUR)
+  assert.equal(refreshIntervalMs(' 0.5 '), HOUR / 2)
+  assert.equal(refreshIntervalMs('0'), 0)
+})
+
+test('a feed whose stored payload has expired is due before the interval is up', () => {
+  const feeds = [{ key: 'day', expired: (now, last) => last?.day !== 'today' }]
+  const row = (day) => ({ key: 'day', payload: { day }, fetchedAt: new Date(at - HOUR), attemptedAt: new Date(at - HOUR), error: null })
+  assert.deepEqual(dueFeeds(feeds, [row('today')], at, 24 * HOUR).map((f) => f.key), [])
+  assert.deepEqual(dueFeeds(feeds, [row('yesterday')], at, 24 * HOUR).map((f) => f.key), ['day'])
+})
+
+test('a forced refresh fetches fresh feeds, and ones another refresh holds', async () => {
+  const repo = memoryRepo([
+    { key: 'fresh', payload: { n: 0 }, fetchedAt: new Date(at - 60_000), attemptedAt: new Date(at - 60_000), error: null },
+    { key: 'held', payload: null, fetchedAt: null, attemptedAt: new Date(at - 30_000), error: null },
+  ])
+  const feeds = [{ key: 'fresh', fetch: async () => ({ n: 1 }) }, { key: 'held', fetch: async () => ({ n: 2 }) }]
+  /* unforced, one is fresh and the other looks like an attempt in flight */
+  assert.deepEqual(await refreshLive({ repository: repo, feeds, wire: async () => null, now: at, max: 5, intervalMs: 24 * HOUR }), [])
+  const forced = await refreshLive({ repository: repo, feeds, wire: async () => null, now: at, max: 5, intervalMs: 24 * HOUR, force: true })
+  assert.deepEqual(forced.map((o) => [o.key, o.status]), [['fresh', 'saved'], ['held', 'saved']])
+  assert.deepEqual(repo.table.get('fresh').payload, { n: 1 })
 })
 
 test('a refresh saves what it fetched and stops the run when credits run out', async () => {
   const repo = memoryRepo()
   const feeds = [
-    { key: 'one', ttlMs: HOUR, fetch: async () => ({ n: 1 }) },
-    { key: 'two', ttlMs: HOUR, fetch: async () => { throw new WireOutOfCredits() } },
-    { key: 'three', ttlMs: HOUR, fetch: async () => ({ n: 3 }) },
+    { key: 'one', fetch: async () => ({ n: 1 }) },
+    { key: 'two', fetch: async () => { throw new WireOutOfCredits() } },
+    { key: 'three', fetch: async () => ({ n: 3 }) },
   ]
   const outcomes = await refreshLive({ repository: repo, feeds, wire: async () => null, now: at, max: 5 })
   assert.deepEqual(outcomes.map((o) => o.status), ['saved', 'failed'])
@@ -95,24 +126,129 @@ test('shape helpers find the list a feed needs wherever the action nests it', ()
   assert.equal(parseMaybe('not json'), 'not json')
 })
 
-test('tonight finds listings however each source nests them, and keeps the week ahead', () => {
-  const bms = { data: { sections: [{ title: 'Movies in Kolkata', cards: [
-    { eventTitle: 'A Bengali Film', genres: ['Drama', 'Family', 'Musical'], imageUrl: 'https://assets-in.bmscdn.com/poster.jpg', url: 'https://in.bookmyshow.com/kolkata/movies/a/ET1' },
-    { eventTitle: 'A Bengali Film', imageUrl: 'https://assets-in.bmscdn.com/poster.jpg' },
-  ] }] } }
-  const meetup = JSON.stringify({ results: [
-    { title: 'Heritage walk', dateTime: '2026-09-30T07:00:00+05:30', venue: { name: 'Shobhabazar' }, eventUrl: 'https://www.meetup.com/x/events/1', featuredEventPhoto: { highResUrl: 'https://secure.meetupstatic.com/p.jpeg' } },
-    { title: 'Last month', dateTime: '2026-08-01T07:00:00+05:30', eventUrl: 'https://www.meetup.com/x/events/0' },
-  ] })
-  const films = extractShows(bms, 'BookMyShow')
-  assert.equal(films.length, 1)
-  assert.equal(films[0].title, 'A Bengali Film')
-  assert.equal(films[0].kind, 'Drama, Family')
-  const walks = extractShows(meetup, 'Meetup')
-  assert.equal(walks[0].venue, 'Shobhabazar')
-  assert.equal(walks[0].image, 'https://secure.meetupstatic.com/p.jpeg')
-  const soon = upcoming([...films, ...walks], new Date('2026-09-29T20:00:00+05:30'))
-  assert.deepEqual(soon.map((s) => s.title), ['Heritage walk', 'A Bengali Film'])
+test('tonight reads Meetup as Wire returns it: in person, in Kolkata, on Kolkata time', () => {
+  const found = { status: 'ok', data: { resolved_location: { slug: 'in--kolkata' }, events: [
+    { title: 'Hot Latin Thursday', date_time: '2026-10-01T19:00:00+05:30', event_type: 'PHYSICAL', event_url: 'https://www.meetup.com/kolkata-salsa-meetup/events/1/', photo_url: null, venue: { name: 'Veda', city: 'Kolkata', country: 'IN' }, group: { name: 'Kolkata Salsa', photo_url: 'https://secure.meetupstatic.com/g.jpeg' } },
+    { title: 'Founders dinner', date_time: '2026-09-30T19:00:00-04:00', event_type: 'PHYSICAL', event_url: 'https://www.meetup.com/x/events/2/', photo_url: 'https://secure.meetupstatic.com/e.jpeg', venue: { name: 'Webel Bhavan', city: 'Kolkata', country: 'in' }, group: { timezone: 'America/New_York' } },
+    { title: 'A webinar', date_time: '2026-09-30T21:30:00+05:30', event_type: 'ONLINE', event_url: 'https://www.meetup.com/x/events/3/', venue: { name: 'Online event' } },
+    { title: 'Coffee in Colorado', date_time: '2026-10-02T14:00:00-06:00', event_type: 'PHYSICAL', event_url: 'https://www.meetup.com/x/events/4/', venue: { name: 'Cafe', city: 'Colorado Springs' } },
+    { title: null, date_time: '2026-10-08T19:00:00+05:30', event_type: null, event_url: null, group: { urlname: 'Kolkata-Salsa-Meetup' } },
+    { title: 'Next month', date_time: '2026-11-01T09:30:00+05:30', event_type: 'PHYSICAL', event_url: 'https://www.meetup.com/x/events/5/', venue: null },
+  ] } }
+  const shows = readMeetup(found)
+  assert.deepEqual(shows.map((s) => s.title), ['Hot Latin Thursday', 'Founders dinner', 'Next month'])
+  assert.equal(shows[0].venue, 'Veda')
+  assert.equal(shows[0].image, 'https://secure.meetupstatic.com/g.jpeg')
+  assert.equal(shows[0].source, 'Meetup')
+  /* a New York group's 7 pm dinner in Kolkata is 7 pm here */
+  assert.equal(shows[1].when, new Date('2026-09-30T19:00:00+05:30').toISOString())
+  assert.equal(kolkataTime('2026-09-30T13:30:00Z'), '2026-09-30T13:30:00.000Z')
+  const soon = upcoming(shows, new Date('2026-09-30T12:00:00+05:30'))
+  assert.deepEqual(soon.map((s) => s.title), ['Founders dinner', 'Hot Latin Thursday'])
+})
+
+/* two cards from BookMyShow's events page as the scraper returned it: the
+   first rows carry a poster with the date on it, the later ones don't */
+const poster = (date) => `https://assets-in.bmscdn.com/discovery-catalog/events/tr:w-400,h-600,bg-CCCCCC,e-usm-2-2-0.5-0.008:w-400.0,h-660.0,cm-pad_resize,bg-000000,fo-top:l-text,ie-${encodeURIComponent(btoa(date))},fs-29,co-FFFFFF,ly-612,lx-24,pa-8_0_0_0,l-end/et00515981-pyghesrtlf-portrait.jpg`
+const bmsPage = `# Events in Kolkata
+
+Workshops
+
+Music Shows
+
+[![Tobo Joyo Gaane Day 1](${poster('Sat, 3 Oct')})\\
+\\
+Tobo Joyo Gaane Day 1\\
+\\
+Rabindra Sadan: Kolkata\\
+\\
+Concerts\\
+\\
+₹ 300 onwards\\
+\\
+**Tobo Joyo Gaane Day 1**](https://in.bookmyshow.com/events/tobo-joyo-gaane-day-1/ET00515981) [![Aagomoni](${poster('Fri, 2 Oct onwards')})\\
+\\
+Aagomoni\\
+\\
+Nazrul Mancha: Southern Avenue, Kolkata\\
+\\
+Concerts\\
+\\
+₹ 499 onwards\\
+\\
+**Aagomoni**](https://in.bookmyshow.com/events/agamoni/ET00502987)
+
+[Te Amo Ft.The Indie Jams\\
+\\
+Park Street SOCIAL: Kolkata\\
+\\
+Club Gigs\\
+\\
+₹ 299 onwards\\
+\\
+**Te Amo Ft.The Indie Jams**](https://in.bookmyshow.com/events/te-amo-ft-the-indie-jams/ET00518616)
+
+Browse by Venues`
+
+test('tonight reads BookMyShow’s events page: the date is on the poster', () => {
+  const now = new Date('2026-09-30T20:00:00+05:30')
+  const shows = readBookMyShow(bmsPage, now)
+  assert.deepEqual(shows.map((s) => [s.title, s.when, s.venue, s.kind]), [
+    ['Tobo Joyo Gaane Day 1', '2026-10-03', 'Rabindra Sadan', 'Concerts'],
+    ['Aagomoni', '2026-10-02', 'Nazrul Mancha: Southern Avenue', 'Concerts'],
+  ])
+  assert.equal(shows[0].url, 'https://in.bookmyshow.com/events/tobo-joyo-gaane-day-1/ET00515981')
+  assert.equal(shows[0].source, 'BookMyShow')
+  assert.match(shows[0].image, /^https:\/\/assets-in\.bmscdn\.com\//)
+  /* no year on the poster: a January date in December is next January's */
+  assert.equal(posterDate(poster('Fri, 8 Jan'), new Date('2026-12-20T12:00:00+05:30')), '2027-01-08')
+  assert.equal(posterDate('https://assets-in.bmscdn.com/x/et1-portrait.jpg', now), null)
+})
+
+test('tonight asks both sites at once, keeps a quiet week, and keeps what a failed site listed last time', async () => {
+  const now = new Date('2026-09-30T20:00:00+05:30')
+  const meetup = { data: { events: [
+    { title: 'Hot Latin Thursday', date_time: '2026-10-01T19:00:00+05:30', event_type: 'PHYSICAL', event_url: 'https://www.meetup.com/x/events/1/', venue: { name: 'Veda', city: 'Kolkata' } },
+  ] } }
+  const asked = []
+  const both = await tonightFeed.fetch({
+    wire: async (action, params) => { asked.push(action, params.location); return meetup },
+    scrape: async (url) => { asked.push(url); return bmsPage },
+    now, last: null,
+  })
+  assert.deepEqual(asked.sort(), [BMS_EVENTS, 'in--kolkata', 'mu_search_events'].sort())
+  assert.deepEqual(both.shows.map((s) => s.title), ['Hot Latin Thursday', 'Aagomoni', 'Tobo Joyo Gaane Day 1'])
+
+  const quiet = await tonightFeed.fetch({ wire: async () => ({ data: { events: [] } }), scrape: async () => bmsPage, now: new Date('2026-12-01T12:00:00+05:30'), last: null })
+  assert.deepEqual(quiet, { shows: [] })
+
+  const blocked = await tonightFeed.fetch({ wire: async () => meetup, scrape: async () => '# Performing security verification', now, last: both })
+  assert.deepEqual(blocked.shows.map((s) => s.title), ['Hot Latin Thursday', 'Aagomoni', 'Tobo Joyo Gaane Day 1'])
+
+  await assert.rejects(tonightFeed.fetch({ wire: async () => { throw new Error('down') }, scrape: null, now, last: null }), /BookMyShow: no scraper; Meetup: down/)
+  await assert.rejects(tonightFeed.fetch({ wire: async () => meetup, scrape: async () => { throw new WireOutOfCredits() }, now, last: null }), WireOutOfCredits)
+})
+
+test('the scraper crawls just the one page and polls until it is done', async () => {
+  const calls = []
+  const replies = [
+    json(202, { jobId: 'c1', status: 'pending' }),
+    json(200, { id: 'c1', status: 'processing', results: [] }),
+    json(200, { id: 'c1', status: 'completed', results: [{ url: BMS_EVENTS, status: 'completed', markdown: '# Events in Kolkata' }] }),
+  ]
+  const scrape = createScraper({ apiKey: 'k', fetchImpl: async (url, init) => { calls.push([url, init?.method ?? 'GET', init?.body && JSON.parse(init.body)]); return replies.shift() }, sleep: async () => {} })
+  assert.equal(await scrape(BMS_EVENTS), '# Events in Kolkata')
+  assert.deepEqual(calls[0], ['https://api.anakin.io/v1/crawl', 'POST', { url: BMS_EVENTS, maxPages: 1, depth: 0, country: 'in' }])
+  assert.equal(calls[2][0], 'https://api.anakin.io/v1/crawl/c1')
+
+  const broke = createScraper({ apiKey: 'k', fetchImpl: async () => json(402, { error: { code: 'INSUFFICIENT_CREDITS' } }) })
+  await assert.rejects(broke(BMS_EVENTS), WireOutOfCredits)
+  const failed = createScraper({ apiKey: 'k', fetchImpl: async () => json(200, { id: 'c2', status: 'failed', results: [] }) })
+  await assert.rejects(failed(BMS_EVENTS), /crawl failed/)
+  let t = 0
+  const stuck = createScraper({ apiKey: 'k', fetchImpl: async () => json(200, { id: 'c3', status: 'processing' }), sleep: async () => { t += 20_000 }, clock: () => t })
+  await assert.rejects(stuck(BMS_EVENTS), /timed out/)
+  assert.equal(createScraper({ apiKey: '' }), null)
 })
 
 test('show times read the way people say them', () => {
@@ -122,6 +258,9 @@ test('show times read the way people say them', () => {
   assert.equal(showWhen('2026-09-30T07:00:00+05:30', now), 'Tomorrow, 7 am')
   assert.equal(showWhen('2026-10-02T18:00:00+05:30', now), 'Fri 2 Oct, 6 pm')
   assert.equal(showWhen(null, now), 'Showing this week')
+  assert.equal(showWhen('2026-09-29', now), 'Today')
+  assert.equal(showWhen('2026-09-30', now), 'Tomorrow')
+  assert.equal(showWhen('2026-10-03', now), 'Sat 3 Oct')
 })
 
 test('Google Trends timelines read the same, native or flattened', () => {
@@ -306,7 +445,7 @@ test('the match strip reads Cricinfo\'s listing and keeps only India, Bengal and
   assert.equal(normalizeCricket({ nothing: true }), null)
 })
 
-test('the match strip shows a fresh live score and what starts within a day, and refreshes faster while one is on', () => {
+test('the match strip shows a fresh live score and what starts within a day', () => {
   const now = new Date('2026-09-30T15:00:00+05:30')
   const feed = { matches: [
     { id: 'later', state: 'upcoming', start: '2026-10-02T09:30:00+05:30', teams: [] },
@@ -317,9 +456,6 @@ test('the match strip shows a fresh live score and what starts within a day, and
   assert.deepEqual(matchesNow(feed, '2026-09-30T14:00:00+05:30', now).map((m) => m.id), ['on', 'soon'])
   /* a live score four hours old says nothing true */
   assert.deepEqual(matchesNow(feed, '2026-09-30T11:00:00+05:30', now).map((m) => m.id), ['soon'])
-  assert.equal(cricketFeed.ttlMs(now, feed), 20 * 60_000)
-  assert.equal(cricketFeed.ttlMs(now, { matches: [feed.matches[0]] }), 3 * HOUR)
-  assert.equal(cricketFeed.ttlMs(now, null), 3 * HOUR)
 })
 
 const wikiPage = (title, description, extract = '') => ({
@@ -355,11 +491,11 @@ test('on this day keeps the city\'s and Bengal\'s anniversaries, once each', () 
   assert.deepEqual(normalizeOnThisDay(flat).map((m) => m.kind), ['birth'])
 })
 
-test('on this day is fetched once a date', () => {
+test('on this day is fetched again once the date changes', () => {
   const now = new Date('2026-09-30T10:00:00Z')
-  assert.equal(onThisDayFeed.ttlMs(now, { day: '09-30', moments: [] }), 24 * HOUR)
-  assert.equal(onThisDayFeed.ttlMs(now, { day: '09-29', moments: [] }), 0)
-  assert.equal(onThisDayFeed.ttlMs(now, null), 0)
+  assert.equal(onThisDayFeed.expired(now, { day: '09-30', moments: [] }), false)
+  assert.equal(onThisDayFeed.expired(now, { day: '09-29', moments: [] }), true)
+  assert.equal(onThisDayFeed.expired(now, null), true)
 })
 
 test('shape helpers read instants and keep explicit text off the page', () => {
@@ -379,37 +515,4 @@ test('ages read the way people say them', () => {
   assert.equal(ago('2026-09-29T09:00:00+05:30', now), 'Yesterday')
   assert.equal(daysAgo('2026-09-27T23:00:00+05:30', now), '3 days ago')
   assert.equal(daysAgo('2026-09-30T00:30:00+05:30', now), 'Today')
-})
-
-test('instagram is off until both Graph keys are set', () => {
-  assert.equal(instagramConfig({}), null)
-  assert.equal(instagramConfig({ INSTAGRAM_USER_ID: '17841400000000000' }), null)
-  assert.equal(instagramConfig({ INSTAGRAM_USER_ID: 'not-an-id', INSTAGRAM_GRAPH_TOKEN: 't' }), null)
-  assert.deepEqual(instagramConfig({ INSTAGRAM_USER_ID: ' 17841400000000000 ', INSTAGRAM_GRAPH_TOKEN: 't' }), { user: '17841400000000000', token: 't' })
-})
-
-test('instagram keeps embeddable posts and looks the hashtag up once', async () => {
-  const media = { data: [
-    { id: '1', caption: 'Rain on the tram lines', permalink: 'https://www.instagram.com/p/CODE12345/', timestamp: '2026-09-29T10:00:00+0000' },
-    { id: '2', caption: 'Something nsfw', permalink: 'https://www.instagram.com/p/CODE22222/' },
-    { id: '3', caption: 'No link' },
-    { id: '4', caption: null, permalink: 'https://www.instagram.com/reel/CODE33333/' },
-  ] }
-  assert.deepEqual(normalizeGrams(media).map((post) => post.permalink), ['https://www.instagram.com/p/CODE12345/', 'https://www.instagram.com/reel/CODE33333/'])
-
-  const calls = []
-  const fetchImpl = async (url) => {
-    calls.push(url.pathname)
-    const body = url.pathname.endsWith('/ig_hashtag_search') ? { data: [{ id: '17843853986012965' }] } : media
-    return { ok: true, status: 200, json: async () => body }
-  }
-  const feed = createInstagramFeed({ user: '17841400000000000', token: 'secret' }, fetchImpl)
-  const first = await feed.fetch({ last: null })
-  assert.equal(first.hashtagId, '17843853986012965')
-  assert.equal(first.posts.length, 2)
-  await feed.fetch({ last: first })
-  assert.deepEqual(calls, ['/v23.0/ig_hashtag_search', '/v23.0/17843853986012965/top_media', '/v23.0/17843853986012965/top_media'])
-
-  const denied = createInstagramFeed({ user: '1', token: 'secret' }, async () => ({ ok: false, status: 400, json: async () => ({ error: { code: 10 } }) }))
-  await assert.rejects(denied.fetch({ last: null }), (err) => /\(400 10\)/.test(err.message) && !/secret/.test(err.message))
 })

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, type ReactNode } from 'react'
-import { MAHALAYA, PUJO_DAYS, formatPujoDate, formatPujoDateLong } from '@/lib/pujo'
+import { MAHALAYA, PUJO_DAYS, formatPujoDay, formatPujoDateLong } from '@/lib/pujo'
 import { KaashPhoolScene } from '@/components/brand/KaashPhool'
 
 type Left = { d: number; h: number; m: number; s: number; done: boolean }
@@ -68,7 +68,7 @@ export function PujoDays({ className = '' }: { className?: string }) {
         <li className="mk-count-day" key={d.en}>
           <span className="mk-count-day-bn" lang="bn">{d.bn}</span>
           <span className="mk-count-day-en">{d.en}</span>
-          <span className="mk-count-day-date">{formatPujoDate(d.iso)}</span>
+          <span className="mk-count-day-date">{formatPujoDay(d)}</span>
         </li>
       ))}
     </ol>

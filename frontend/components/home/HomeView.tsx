@@ -13,8 +13,7 @@ import type { Adda as AddaFeed } from '@/lib/live/adda'
 import type { YouTube } from '@/lib/live/youtube'
 import type { Cricket } from '@/lib/live/cricket'
 import type { OnThisDay as OnThisDayFeed } from '@/lib/live/onthisday'
-import type { Instagram } from '@/lib/live/instagram'
-import { resolveStoryMedia } from '@/lib/stories/media'
+import { INSTAGRAM_FEED } from '@/lib/home/instagram_feed'
 import { storyRepository } from '@/lib/stories/repository'
 import { skyReport, type HeroMood } from '@/lib/home/sky'
 import { SectionHead } from '@/components/brand/SectionHead'
@@ -28,7 +27,7 @@ import { Tonight } from './Tonight'
 import { Searching } from './Searching'
 import { OnYouTube } from './OnYouTube'
 import { OnThisDay } from './OnThisDay'
-import { OnInstagram, type SharedGram } from './OnInstagram'
+import { OnInstagram } from './OnInstagram'
 import styles from '@/styles/Home.module.css'
 
 /* the hero follows the sky: the bus at sunset by day, the wet street after
@@ -54,9 +53,8 @@ type MarketItem = {
 export async function HomeView({ now = new Date(), live }: { now?: Date; live?: LiveSnapshot } = {}) {
   /* the paper, the city story, the sports story — persisted, never blank */
   const newsPromise = getHomeNews(newsRepository, { now })
-  /* today's stories: the newest few titles for the adda, and any Instagram
-     posts they link for the Instagram band; the wall itself is /community */
-  const storiesPromise = storyRepository.listActive(now, 40)
+  /* today's stories: the newest few titles for the adda; the wall itself is /community */
+  const storiesPromise = storyRepository.listActive(now, 4)
     .catch((err) => { console.error('[home] stories did not load', err); return [] })
   let marketplace: MarketItem[] = []
   let failed = false
@@ -72,10 +70,6 @@ export async function HomeView({ now = new Date(), live }: { now?: Date; live?: 
   const storyRows = await storiesPromise
   const stories: TodayStory[] = storyRows.slice(0, 4)
     .map((row) => ({ id: row.id, title: row.title, createdAt: new Date(row.createdAt).toISOString() }))
-  const sharedGrams: SharedGram[] = storyRows.flatMap((row) => {
-    const media = resolveStoryMedia(row.externalUrl)
-    return media?.kind === 'instagram' ? [{ url: media.url, title: row.title }] : []
-  })
   const payload = <T,>(key: string) => (feeds[key]?.payload as T | undefined) ?? null
   const sky = skyReport(payload<Sky>('sky'), now)
   const hero = HERO[sky.mood]
@@ -132,7 +126,7 @@ export async function HomeView({ now = new Date(), live }: { now?: Date; live?: 
 
       <OnYouTube feed={payload<YouTube>('youtube')} now={now} />
 
-      <OnInstagram feed={payload<Instagram>('instagram')} shared={sharedGrams} />
+      <OnInstagram posts={INSTAGRAM_FEED} />
 
       <OnThisDay feed={payload<OnThisDayFeed>('on-this-day')} now={now} />
 

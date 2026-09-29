@@ -76,7 +76,6 @@ export function normalizeAdda(raw: unknown, subreddit = SUBREDDIT, max = 8): Thr
 
 export const addaFeed: Feed<Adda> = {
   key: 'adda',
-  ttlMs: 3 * 3_600_000,
   async fetch({ wire }) {
     const threads = normalizeAdda(await wire('rt_subreddit_posts', { subreddit: SUBREDDIT, sort: 'top', time: 'week', limit: 25 }))
     return threads.length ? { subreddit: SUBREDDIT, threads } : null

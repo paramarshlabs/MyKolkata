@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { readdir, readFile } from 'node:fs/promises'
 import test from 'node:test'
-import { MAHALAYA, PUJO_DAYS } from '../lib/pujo.ts'
+import { MAHALAYA, PUJO_DAYS, formatPujoDay } from '../lib/pujo.ts'
 import { redactPujoUrl } from '../lib/pujo-personality/analytics.ts'
 import { ARCHETYPE_IDS, DIMENSION_IDS } from '../lib/pujo-personality/config.ts'
 import { BADGES, CONTENT, PAIRS, STATUSES, TAGLINE_LINES, aName, pairCopy, peopleFor, streakLine } from '../lib/pujo-personality/content.ts'
@@ -191,7 +191,8 @@ test('the guess preview never reads the card it is guessing', async () => {
   assert.doesNotMatch(await read('app/(open)/experience/guess/[token]/opengraph-image.tsx'), /decodeCard|params/)
 })
 
-test('Mahalaya is 10 October 2026, and Shashthi a week later', () => {
+test('Mahalaya is 10 October 2026, Shashthi six days later, and Saptami runs two dates', () => {
   assert.equal(MAHALAYA, '2026-10-10T00:00:00+05:30')
-  assert.equal(PUJO_DAYS[0].iso, '2026-10-17T00:00:00+05:30')
+  assert.equal(PUJO_DAYS[0].iso, '2026-10-16T00:00:00+05:30')
+  assert.deepEqual(PUJO_DAYS.map(formatPujoDay), ['16 Oct', '17–18 Oct', '19 Oct', '20 Oct', '21 Oct'])
 })

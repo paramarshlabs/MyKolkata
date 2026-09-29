@@ -100,7 +100,6 @@ export function rankVideos(videos: Video[], max = 6) {
 
 export const youtubeFeed: Feed<YouTube> = {
   key: 'youtube',
-  ttlMs: 12 * HOUR_MS,
   async fetch({ wire, now }) {
     /* the English search must work; the Bengali one only adds to it */
     const english = await wire('yt_search', { query: QUERIES[0], limit: 40 })

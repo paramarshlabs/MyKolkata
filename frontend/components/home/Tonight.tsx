@@ -1,7 +1,7 @@
 import { upcoming, type Show, type Tonight as TonightFeed } from '@/lib/live/tonight'
 import { showWhen } from '@/lib/home/when'
-import { SectionHead } from '@/components/brand/SectionHead'
 import { CityIcon } from '@/components/brand/icons'
+import { LiveHead, fullRows } from './LiveHead'
 import styles from '@/styles/Home.module.css'
 
 function Stub({ show, now }: { show: Show; now: Date }) {
@@ -12,7 +12,7 @@ function Stub({ show, now }: { show: Show; now: Date }) {
           /* eslint-disable-next-line @next/next/no-img-element */
           <img src={show.image} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" />
         ) : (
-          <CityIcon name="lamp" size={32} />
+          <CityIcon name="lamp" size={40} />
         )}
       </span>
       <span className={styles.stubBody}>
@@ -32,23 +32,27 @@ function Stub({ show, now }: { show: Show; now: Date }) {
   )
 }
 
-/*  What is on tonight and this week: films, gigs and meetups as paper ticket
+/*  What is on tonight and this week: gigs, talks and meetups as paper ticket
     stubs — the one Pearl object on a dark page, the way a ticket is the one
-    bright thing in a pocket. Renders nothing until the feed has something.  */
+    bright thing in a pocket. Whole rows of three on a wide screen; a row to
+    swipe through on a narrow one. Renders nothing until the feed has something. */
 export function Tonight({ feed, now }: { feed: TonightFeed | null; now: Date }) {
   const shows = feed ? upcoming(feed.shows, now).slice(0, 6) : []
   if (!shows.length) return null
   const sources = [...new Set(shows.map((show) => show.source))]
+  const shown = fullRows(shows.length)
   return (
-    <section className="mk-band" aria-labelledby="tonight-title" style={{ paddingTop: 0 }}>
+    <section className={styles.live} aria-labelledby="tonight-title">
       <div className="mk-wrap">
-        <SectionHead
+        <LiveHead
           id="tonight-title"
           title="Tonight in the city"
-          lede={`Films, gigs and meetups on in Kolkata this week, from ${sources.join(sources.length > 2 ? ', ' : ' and ').replace(/, ([^,]*)$/, ' and $1')}.`}
+          source={`Gigs, talks and meetups this week, from ${sources.join(sources.length > 2 ? ', ' : ' and ').replace(/, ([^,]*)$/, ' and $1')}.`}
         />
         <ul className={styles.stubs}>
-          {shows.map((show) => <li key={`${show.source}-${show.title}`}><Stub show={show} now={now} /></li>)}
+          {shows.map((show, i) => (
+            <li key={`${show.source}-${show.title}`} data-extra={i >= shown || undefined}><Stub show={show} now={now} /></li>
+          ))}
         </ul>
       </div>
     </section>

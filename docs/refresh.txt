@@ -1,0 +1,25 @@
+The "Updated … ago" stamps are gone from every live section on the landing page. Each feed now refreshes once every LIVE_REFRESH_HOURS (default 24), and there's a script to refresh feeds by name. Typecheck, lint and all the live-feed tests pass. I haven't run a real refresh: it spends Anakin credits and writes to the live Supabase table, so I left that first run for you.
+
+The script (run from frontend/):
+
+
+npm run live:refresh                        # every feed, now
+npm run live:refresh -- youtube tonight     # just these (youtube,tonight works too)
+npm run live:refresh -- --due               # only the stale ones, like the site does
+npm run live:refresh -- --list              # when each was fetched, due or not; fetches nothing
+Feed names are sky, tonight, searching, adda, youtube, cricket and on-this-day. It shows progress, then one line per feed with the result, how long it took and what was stored (for example videos 9). It fetches a named feed even if it was just refreshed. A typo in a feed name gets you the list of valid names.
+
+What changed
+
+No "last updated": the stamp is removed from LiveHead.tsx and its style. I also removed the cricket strip's "Score at 3:40 pm", since that is a last-updated label too.
+One interval in .env: I added LIVE_REFRESH_HOURS=24 to frontend/.env.local. Fractions work, 0 means refresh after every view, and it falls back to 24 if unset. It's read in refresh.ts and replaces the old per-feed timings of 20 minutes to 12 hours.
+"On this day": it still refreshes when the date changes. Otherwise it would disappear for most of each day, because the section hides anything that isn't today's.
+Daily cron: on Vercel's Hobby plan, the daily job can fire at any point within its hour. A 24-hour-old fetch can then look a few minutes too new and get skipped. The cron now also takes anything due within the next 90 minutes (route.ts).
+For the script: the database side moved out of server.ts into store.ts, because server.ts can't be loaded outside Next.
+Side effects to know about
+
+Cricket: live scores used to refresh every 20 minutes during a match; now it's once a day. A live score still only shows if it was fetched in the last 3 hours, but it no longer says how old it is. If you want cricket faster, a separate setting for it is a small change.
+Tonight: in local dev it no longer refetches on every page view. Use the script instead.
+--list shows that searching has never been fetched successfully: its last attempt timed out on Google Trends. npm run live:refresh -- searching is a good first test.
+
+Three unrelated tests fail. They're in files already changed in your working tree: an emoji in about-creator/page.tsx, the Instagram link list, and a missing .env.example.

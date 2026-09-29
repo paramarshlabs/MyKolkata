@@ -1,40 +1,13 @@
 import 'server-only'
 import { after } from 'next/server'
 import { prisma } from '@/lib/db/prisma'
-import { AnakinImageProvider } from '@/lib/places/anakinImageProvider'
 import { FEEDS } from './feeds'
-import { dueFeeds, refreshLive, snapshotOf, type LiveRepository, type LiveRow, type LiveSnapshot, type SearchFn } from './refresh'
-import { createWire } from './wire'
+import { dueFeeds, snapshotOf, type LiveRow, type LiveSnapshot } from './refresh'
+import { liveRepository, runLiveRefresh } from './store'
 
-/* The Prisma side of the live feeds, and the two ways they refresh: after a
-   /home view when something is stale, and from /api/cron/live. */
-export const liveRepository: LiveRepository = {
-  all: () => prisma.liveFeed.findMany() as Promise<LiveRow[]>,
-  async claim(key, now, leaseMs) {
-    await prisma.liveFeed.createMany({ data: [{ key }], skipDuplicates: true })
-    const { count } = await prisma.liveFeed.updateMany({
-      where: { key, OR: [{ attemptedAt: null }, { attemptedAt: { lt: new Date(now.getTime() - leaseMs) } }] },
-      data: { attemptedAt: now },
-    })
-    return count === 1
-  },
-  async save(key, payload, now) {
-    await prisma.liveFeed.update({ where: { key }, data: { payload: payload as object, fetchedAt: now, error: null } })
-  },
-  async fail(key, message, now) {
-    await prisma.liveFeed.update({ where: { key }, data: { error: message, attemptedAt: now } })
-  },
-}
-
-function anakinSearch(): SearchFn | null {
-  if (!process.env.ANAKIN_API_KEY) return null
-  const provider = new AnakinImageProvider() as unknown as { search: SearchFn }
-  return (prompt, options) => provider.search(prompt, options)
-}
-
-export function runLiveRefresh(options: { max?: number; budgetMs?: number; only?: string[]; now?: Date } = {}) {
-  return refreshLive({ repository: liveRepository, feeds: FEEDS, wire: createWire(), search: anakinSearch(), ...options })
-}
+/* The two ways the live feeds refresh: after a /home view when something is
+   stale, and from /api/cron/live. The Prisma side is in store.ts. */
+export { runLiveRefresh }
 
 let refreshing = false
 let warned = false

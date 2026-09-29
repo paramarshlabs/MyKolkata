@@ -96,8 +96,8 @@ export const kolkataMonthDay = (now: Date) => now.toLocaleDateString('en-CA', { 
 
 export const onThisDayFeed: Feed<OnThisDay> = {
   key: 'on-this-day',
-  /* nothing changes until the date does */
-  ttlMs: (now, last) => (last?.day === utcDay(now) ? 24 * 3_600_000 : 0),
+  /* nothing changes until the date does, and then all of it does */
+  expired: (now, last) => last?.day !== utcDay(now),
   async fetch({ wire, now }) {
     const moments = normalizeOnThisDay(await wire('wp_on_this_day', {}))
     return moments ? { day: utcDay(now), moments } : null
