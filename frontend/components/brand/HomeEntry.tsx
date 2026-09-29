@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { UiIcon } from '@/components/brand/icons'
 
 const KEY = 'mk-entry-film-9'
 
@@ -24,18 +25,31 @@ export function HomeEntry() {
   const [show, setShow] = useState(false)
   const [out, setOut] = useState(false)
   const [needsTap, setNeedsTap] = useState(false)
+  /* the browser refused sound, so the film runs silent until someone asks */
+  const [silent, setSilent] = useState(false)
 
   const dismiss = useCallback(() => {
     markSeen()
     setOut(true)
   }, [])
 
+  /* Browsers refuse sound until the page has been touched, so a first visit
+     would sit on a still frame. Try with sound; if refused, play silent — which
+     is always allowed — and offer the sound as a button. Only if even that
+     fails does the film wait for a tap. */
   const playWithSound = useCallback(() => {
     const video = videoRef.current
     if (!video) return
     video.muted = false
     video.volume = 1
-    video.play().then(() => setNeedsTap(false)).catch(() => setNeedsTap(true))
+    video.play()
+      .then(() => { setNeedsTap(false); setSilent(false) })
+      .catch(() => {
+        video.muted = true
+        video.play()
+          .then(() => { setNeedsTap(false); setSilent(true) })
+          .catch(() => setNeedsTap(true))
+      })
   }, [])
 
   useEffect(() => {
@@ -80,6 +94,12 @@ export function HomeEntry() {
         />
         {needsTap ? <span className="mk-entry-play">Play</span> : null}
       </div>
+      {silent ? (
+        <button type="button" className="mk-entry-sound" onClick={playWithSound}>
+          <UiIcon name="volumeOff" size={18} />
+          Sound on
+        </button>
+      ) : null}
       <button type="button" className="mk-entry-skip" onClick={dismiss}>
         Skip
       </button>

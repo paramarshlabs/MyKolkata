@@ -490,6 +490,19 @@
     cursor: pointer; transition: color var(--mk-t-hover) var(--mk-ease-out), border-color var(--mk-t-hover) var(--mk-ease-out);
   }
   .mk-entry-skip:hover, .mk-entry-skip:focus-visible { color: var(--mk-pearl); border-color: rgba(242, 241, 237, 0.4); }
+  /* the film is playing silent: the one thing worth pressing is the sound */
+  .mk-entry-sound {
+    position: absolute; z-index: 4;
+    left: max(var(--mk-edge), env(safe-area-inset-left));
+    bottom: max(var(--mk-6), env(safe-area-inset-bottom));
+    display: inline-flex; align-items: center; gap: var(--mk-2);
+    min-height: 44px; padding: 10px 18px; border-radius: var(--mk-r-sm);
+    border: 1px solid rgba(242, 241, 237, 0.3); background: rgba(13, 16, 18, 0.5);
+    color: var(--mk-pearl); font-family: var(--mk-text); font-size: 14px; letter-spacing: 0.02em;
+    cursor: pointer; transition: border-color var(--mk-t-hover) var(--mk-ease-out);
+  }
+  .mk-entry-sound:hover, .mk-entry-sound:focus-visible { border-color: rgba(242, 241, 237, 0.6); }
+  .mk-entry-sound:focus-visible { outline: 2px solid var(--mk-crimson); outline-offset: 2px; }
   .mk-entry-skip:focus-visible { outline: 2px solid var(--mk-crimson); outline-offset: 2px; }
   body:has(.mk-entry:not(.is-out)) { overflow: hidden; }
   .mk-modal {
