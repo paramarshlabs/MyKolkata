@@ -225,35 +225,3 @@
   .shelf { grid-auto-columns: 62%; }
   .shelfArrows { display: none; }
 }
-
-/* ============================================================ closing == */
-/*  The kaash field as the last frame. The scene's own layers come from
-    styles/brand.css (.mk-sky-*); this only sizes the band and sets the copy. */
-.closing {
-  position: relative; overflow: hidden; isolation: isolate;
-  aspect-ratio: 21 / 9; min-height: 460px; max-height: 760px; width: 100%;
-}
-.closingScrim {
-  position: absolute; inset: 0; pointer-events: none;
-  background:
-    linear-gradient(100deg, rgba(10, 13, 14, 0.82) 0%, rgba(10, 13, 14, 0.42) 30%, rgba(10, 13, 14, 0) 56%),
-    linear-gradient(0deg, rgba(10, 13, 14, 0.6) 0%, rgba(38, 10, 14, 0.14) 30%, rgba(38, 10, 14, 0) 50%);
-}
-.closingCopy {
-  position: absolute; left: 0; bottom: 0; z-index: 2;
-  width: 100%; max-width: calc(1440px + 2 * var(--mk-edge));
-  padding: 0 var(--mk-edge) clamp(40px, 6vw, 80px);
-}
-.closingBn {
-  margin: 0; font-family: var(--mk-bengali); font-variation-settings: 'wght' 700;
-  font-size: clamp(44px, 7vw, 92px); line-height: 1.35; letter-spacing: 0; color: var(--mk-blush);
-  text-shadow: 0 14px 34px rgba(10, 13, 14, 0.5);
-}
-.closingTitle {
-  margin: 0; font-family: var(--mk-display); font-weight: 400; color: var(--mk-white);
-  font-size: clamp(24px, 3.2vw, 40px); line-height: 1.1; letter-spacing: -0.025em;
-}
-
-@media (max-width: 900px) {
-  .closing { aspect-ratio: 4 / 5; min-height: 0; max-height: none; }
-}
