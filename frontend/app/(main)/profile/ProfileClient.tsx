@@ -6,6 +6,7 @@ import { Sprig } from '@/components/brand/kolka'
 import { Motif } from '@/components/brand/motifs'
 import { AlponaLoader } from '@/components/brand/Alpona'
 import styles from '@/styles/Profile.module.css'
+import { ProfilePujo } from './ProfilePujo'
 
 export default function Profile() {
   const { user, isLoaded, logout } = useAuth()
@@ -60,6 +61,8 @@ export default function Profile() {
             <dd className={styles.statValue}>Active</dd>
           </div>
         </dl>
+
+        <ProfilePujo />
 
         <section className={styles.manage} aria-labelledby="manage-title">
           <h2 id="manage-title" className="mk-h2">Your account</h2>

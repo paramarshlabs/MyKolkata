@@ -66,7 +66,7 @@ export default function UserMenu() {
             onClick={() => { markFollowed(); setOpen(false) }}
           >
             Follow on Instagram
-            <span className="nn-option-out" aria-hidden="true">↗</span>
+            <svg className="nn-option-out" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 16 16 8M9 8h7v7" /></svg>
             <span className="sr-only"> (opens in a new tab)</span>
           </a>
           <button type="button" className="nn-option" onClick={() => { setOpen(false); void logout() }}>Sign out</button>
