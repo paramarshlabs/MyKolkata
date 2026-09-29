@@ -3,6 +3,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { seasonLine } from '../lib/home/season.ts'
 import { displayTitle } from '../lib/news/home.ts'
+import { DAYPARTS, currentDaypart, daypartAt, daypartHours, kolkataClock } from '../lib/home/day.ts'
 
 const at = (iso) => new Date(iso)
 
@@ -49,4 +50,23 @@ test('home news titles lose the site talking about itself, and nothing else', ()
   assert.equal(displayTitle('Kolkata Derby: EB vs MB'), 'Kolkata Derby: EB vs MB')
   assert.equal(displayTitle('Short | Site'), 'Short | Site')
   assert.equal(displayTitle('Book fair dates announced - Anandabazar', 'Anandabazar'), 'Book fair dates announced')
+})
+
+test('the day runs on the Kolkata clock and every hour belongs to one part', () => {
+  for (let hour = 0; hour < 24; hour++) {
+    const owners = DAYPARTS.filter((p) => (p.from < p.to ? hour >= p.from && hour < p.to : hour >= p.from || hour < p.to))
+    assert.equal(owners.length, 1, `hour ${hour}`)
+  }
+  assert.equal(daypartAt(7), 'sakal')
+  assert.equal(daypartAt(13), 'dupur')
+  assert.equal(daypartAt(16), 'bikel')
+  assert.equal(daypartAt(19), 'sandhe')
+  assert.equal(daypartAt(23), 'raat')
+  assert.equal(daypartAt(2), 'raat')
+  /* 15:10 UTC is 20:40 in Kolkata */
+  assert.equal(currentDaypart(new Date('2026-09-29T15:10:00Z')), 'raat')
+  assert.equal(kolkataClock(new Date('2026-09-29T15:10:00Z')).label, '8:40 pm')
+  assert.equal(kolkataClock(new Date('2026-09-29T06:30:00Z')).label, '12:00 pm')
+  assert.equal(daypartHours(DAYPARTS[1]), '11 am to 3 pm')
+  assert.equal(daypartHours(DAYPARTS[4]), '8 pm to 4 am')
 })
