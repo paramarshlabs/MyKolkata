@@ -360,6 +360,352 @@ model Story {
   @@map("stories")
 }
 
+// Puja moments: Instagram posts people submitted for review. Nothing in the app
+// reads this table any more, but it holds submissions, so it stays described
+// here: without a model, `db push` would drop it. @@ignore keeps it out of the
+// Prisma client. Migration 20260923000000_puja_moments created it.
+model PujaMoment {
+  id           String   @id
+  instagramUrl String   @unique
+  category     String
+  location     String
+  caption      String?
+  submitterId  String?
+  status       String   @default("PENDING")
+  featured     Boolean  @default(false)
+  year         Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime
+
+  @@index([status, featured, createdAt(sort: Desc)])
+  @@index([status, year, category, createdAt(sort: Desc)])
+  @@map("puja_moments")
+  @@ignore
+}
+
+// The Kolkata Puja datasets, loaded into the database by a scraper: pandals (with a
+// generated geography point) and their photo gallery, immersion ghats, the panjika,
+// points of interest, chronicles, a food trail, helplines, hotels and Metro lines.
+// Brought in with `db pull` so `db push` keeps them; the model names are the table
+// names, as introspection writes them. Re-pull whenever the scraper adds a table.
+
+model kolkata_puja_pandals {
+  slug                   String                    @id
+  site_id                String?
+  name                   String
+  zone                   String?
+  locality               String?
+  address                String?
+  lat                    Float?
+  lng                    Float?
+  geog                   Unsupported("geography")? @default(dbgenerated("\nCASE\n    WHEN ((lat IS NOT NULL) AND (lng IS NOT NULL)) THEN (st_setsrid(st_makepoint(lng, lat), 4326))::geography\n    ELSE NULL::geography\nEND"))
+  coordinate_status      String?
+  geocoded_by            String?
+  is_location_verified   Boolean?
+  nearest_metro          String?
+  nearest_bus_stop       String?
+  bus_routes             String[]
+  categories             String[]
+  theme_description      String?
+  sculpted_by            String?
+  year                   Int?
+  established            Int?
+  rating                 Decimal?                  @db.Decimal(3, 1)
+  view_count             Int?
+  crowd_level            String?
+  image_url              String?
+  gallery                String[]
+  keywords               String[]
+  meta_title             String?
+  meta_description       String?
+  is_hidden              Boolean?
+  is_featured            Boolean?
+  is_verified            Boolean?
+  nearby_slugs           String[]
+  source_url             String?
+  raw                    Json?
+  scraped_at             DateTime?                 @default(now()) @db.Timestamptz(6)
+  pincode                String?
+  red_road_carnival_rank Int?
+  carnival_region        String?
+  carnival_awards        String[]
+  carnival_tableau       String?
+  gallery_photo_count    Int?                      @default(0)
+  kolkata_puja_gallery   kolkata_puja_gallery[]
+
+  @@index([categories], map: "kpp_categories_idx", type: Gin)
+  @@index([geog], map: "kpp_geog_idx", type: Gist)
+  @@index([zone], map: "kpp_zone_idx")
+}
+
+model kolkata_puja_gallery {
+  id                   String                @id
+  pandal_slug          String?
+  pandal_name          String?
+  title                String?
+  photographer         String?
+  category             String?
+  year                 Int?
+  image_url            String?
+  created_at           DateTime?             @db.Timestamptz(6)
+  scraped_at           DateTime?             @default(now()) @db.Timestamptz(6)
+  kolkata_puja_pandals kolkata_puja_pandals? @relation(fields: [pandal_slug], references: [slug], onUpdate: NoAction)
+
+  @@index([pandal_slug], map: "kpg_slug_idx")
+}
+
+model kolkata_puja_immersion_ghats {
+  name         String    @id
+  name_bengali String?
+  address      String?
+  description  String?
+  facilities   String[]
+  eco_kmc      Boolean?
+  scraped_at   DateTime? @default(now()) @db.Timestamptz(6)
+}
+
+model kolkata_puja_panzika {
+  day_order      Int       @id
+  day            String?
+  start_date     DateTime? @db.Date
+  date_label     String?
+  tithi          String?
+  tithi_end_time String?
+  nakshatra      String?
+  sunrise        String?
+  sunset         String?
+  brahma_muhurta String?
+  key_moment     String?
+  puja_highlight String?
+  significance   String?
+  rituals        Json?
+  scraped_at     DateTime? @default(now()) @db.Timestamptz(6)
+}
+
+model kolkata_puja_pois {
+  id         String                    @id
+  name       String
+  category   String?
+  address    String?
+  lat        Float?
+  lng        Float?
+  geog       Unsupported("geography")? @default(dbgenerated("(st_setsrid(st_makepoint(lng, lat), 4326))::geography"))
+  phone      String?
+  open_hours String?
+  scraped_at DateTime?                 @default(now()) @db.Timestamptz(6)
+
+  @@index([category], map: "kpoi_cat_idx")
+  @@index([geog], map: "kpoi_geog_idx", type: Gist)
+}
+
+model kolkata_puja_chronicles {
+  slug         String    @id
+  title        String?
+  excerpt      String?
+  author       String?
+  published_at DateTime? @db.Timestamptz(6)
+  read_minutes Int?
+  image        String?
+  url          String?
+  scraped_at   DateTime? @default(now()) @db.Timestamptz(6)
+}
+
+model kolkata_puja_food_trail {
+  name       String    @id
+  type       String?
+  area       String?
+  address    String?
+  must_try   String?
+  hours      String?
+  scraped_at DateTime? @default(now()) @db.Timestamptz(6)
+}
+
+model kolkata_puja_helplines {
+  name          String    @id
+  number        String?
+  location      String?
+  always_active Boolean?
+  scraped_at    DateTime? @default(now()) @db.Timestamptz(6)
+}
+
+model kolkata_puja_hotels {
+  name          String    @id
+  address       String?
+  price_range   String?
+  nearest_metro String?
+  phone         String?
+  area          String?
+  scraped_at    DateTime? @default(now()) @db.Timestamptz(6)
+}
+
+model kolkata_puja_metro_lines {
+  line          String    @id
+  name_bengali  String?
+  station_count Int?
+  route_from    String?
+  route_to      String?
+  status        String?
+  scraped_at    DateTime? @default(now()) @db.Timestamptz(6)
+}
+
+// Find your Ashtami date (/experience/swipe): 18+, opt-in, one Pujo season.
+// A profile keeps a date of birth (never an age), a coarse area (never an
+// address or coordinates) and photo keys in a private bucket that are never
+// sent to anyone: photos go out as short-lived signed URLs. The rules live in
+// lib/ashtami-date/rules.ts; the deck's query filters with the same ones.
+model DateProfile {
+  id           String    @id @default(cuid())
+  // Supabase auth id. Never sent to another user.
+  userId       String    @unique
+  birthDate    DateTime  @db.Date
+  firstName    String?
+  gender       String? // woman | man | nonbinary
+  showMe       String? // women | men | everyone
+  night        String? // saptami | ashtami | navami | dashami
+  zone         String? // a coarse area key, lib/ashtami-date/config.ts
+  vibes        String[]  @default([])
+  promptId     String?
+  promptAnswer String?
+  // shown only to a match, and only after the first message
+  socialKind   String? // instagram | snapchat
+  socialHandle String?
+  archetype    String? // a Pujo Personality archetype, if they chose to show it
+  consentedAt  DateTime?
+  // every onboarding step done: on the deck
+  active       Boolean   @default(false)
+  // off the deck after reports from several people, until someone reviews it
+  hiddenAt     DateTime?
+  // the day's aajker special (pick of the day), once chosen
+  pickDay      String?
+  pickId       String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  photos     DatePhoto[]
+  swipesMade DateSwipe[]   @relation("swiper")
+  swipesGot  DateSwipe[]   @relation("target")
+  matchesA   DateMatch[]   @relation("matchA")
+  matchesB   DateMatch[]   @relation("matchB")
+  messages   DateMessage[]
+
+  // the deck: live profiles of the genders the viewer asked for, who asked for the viewer's
+  @@index([active, gender, showMe, updatedAt(sort: Desc)])
+  @@map("date_profiles")
+}
+
+model DatePhoto {
+  id         String   @id @default(cuid())
+  profileId  String
+  // a random object name in the private bucket; nothing about the person
+  storageKey String   @unique
+  position   Int
+  width      Int
+  height     Int
+  createdAt  DateTime @default(now())
+
+  profile DateProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  // at most one photo per slot, so a profile can never hold more than the slots allow
+  @@unique([profileId, position])
+  @@map("date_photos")
+}
+
+model DateSwipe {
+  id        String   @id @default(cuid())
+  swiperId  String
+  targetId  String
+  liked     Boolean
+  // the Kolkata day a shiuli (the super-like) was spent on: one per swiper per day
+  shiuliDay String?
+  createdAt DateTime @default(now())
+
+  swiper DateProfile @relation("swiper", fields: [swiperId], references: [id], onDelete: Cascade)
+  target DateProfile @relation("target", fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@unique([swiperId, targetId])
+  @@unique([swiperId, shiuliDay])
+  @@index([targetId, liked])
+  @@map("date_swipes")
+}
+
+// A mutual "for me". aId is always the lower profile id, so a pair has one row.
+model DateMatch {
+  id             String    @id @default(cuid())
+  aId            String
+  bId            String
+  createdAt      DateTime  @default(now())
+  // no first message by then and the match is gone; null once someone writes
+  expiresAt      DateTime?
+  extensionsUsed Int       @default(0)
+  firstMoveAt    DateTime?
+  // the plan, fixed when they matched
+  planNight      String
+  planPandal     String
+  planArea       String
+  planNote       String
+  planTime       String
+  planZone       String
+  aReadAt        DateTime?
+  bReadAt        DateTime?
+
+  a        DateProfile   @relation("matchA", fields: [aId], references: [id], onDelete: Cascade)
+  b        DateProfile   @relation("matchB", fields: [bId], references: [id], onDelete: Cascade)
+  messages DateMessage[]
+
+  @@unique([aId, bId])
+  @@index([bId])
+  @@index([expiresAt])
+  @@map("date_matches")
+}
+
+// Text only, and deleted 24 hours after it is sent.
+model DateMessage {
+  id        String   @id @default(cuid())
+  matchId   String
+  senderId  String
+  body      String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  match  DateMatch   @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  sender DateProfile @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([matchId, createdAt])
+  @@index([expiresAt])
+  @@map("date_messages")
+}
+
+// By auth user id, not profile, so a block outlives either profile: someone
+// who is blocked can't delete and come back to find the person again.
+model DateBlock {
+  id            String   @id @default(cuid())
+  blockerUserId String
+  blockedUserId String
+  createdAt     DateTime @default(now())
+
+  @@unique([blockerUserId, blockedUserId])
+  @@index([blockedUserId])
+  @@map("date_blocks")
+}
+
+// Kept for a person to review. evidence is the reported person's messages in
+// that chat, copied at report time, because the chat itself is deleted.
+model DateReport {
+  id             String   @id @default(cuid())
+  reporterUserId String
+  reportedUserId String
+  reason         String
+  note           String?
+  evidence       Json?
+  status         String   @default("OPEN") // OPEN | REVIEWED
+  createdAt      DateTime @default(now())
+
+  @@index([reportedUserId, status])
+  @@index([reporterUserId, createdAt])
+  @@index([createdAt])
+  @@map("date_reports")
+}
+
 /// One row per live feed on /home (lib/live): what Anakin last returned,
 /// already reduced to what the page shows. Refreshed after a page view when
 /// stale, and by /api/cron/live; the page only ever reads it.
