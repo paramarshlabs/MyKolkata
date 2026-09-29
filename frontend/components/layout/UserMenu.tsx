@@ -3,6 +3,8 @@
 import Link from 'next/link'
 import { useEffect, useId, useRef, useState } from 'react'
 import { useAuth } from '@/components/providers/AuthProvider'
+import { markFollowed } from '@/lib/instagramPrompt'
+import { INSTAGRAM_URL } from '@/lib/site/site'
 
 /* The account, as an avatar in the notch and a small Pearl sheet beneath it. */
 export default function UserMenu() {
@@ -55,6 +57,18 @@ export default function UserMenu() {
           )}
           <Link className="nn-option" href="/profile" onClick={() => setOpen(false)}>Profile</Link>
           <Link className="nn-option" href="/about-creator" onClick={() => setOpen(false)}>About the creator</Link>
+          {/* the same follow as the Instagram card's, so that card won't ask again afterwards */}
+          <a
+            className="nn-option"
+            href={INSTAGRAM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => { markFollowed(); setOpen(false) }}
+          >
+            Follow on Instagram
+            <svg className="nn-option-out" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 16 16 8M9 8h7v7" /></svg>
+            <span className="sr-only"> (opens in a new tab)</span>
+          </a>
           <button type="button" className="nn-option" onClick={() => { setOpen(false); void logout() }}>Sign out</button>
         </div>
       )}

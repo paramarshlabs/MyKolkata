@@ -589,3 +589,44 @@
   .mk-legal-scroll { overflow-x: auto; }
   .mk-legal-toc { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: var(--mk-2) var(--mk-5); }
 }
+
+/* The Instagram card: bottom corner, never over the whole page, never twice in a visit */
+@layer components {
+  .mk-ig {
+    position: fixed; z-index: 55;
+    right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom));
+    width: min(360px, calc(100vw - 32px));
+    padding: var(--mk-5); display: grid; gap: var(--mk-3);
+    background: var(--mk-ink); color: var(--mk-pearl);
+    border: 1px solid rgba(242, 241, 237, 0.14); border-radius: var(--mk-r-md);
+    box-shadow: var(--mk-shadow-panel);
+    animation: mk-ig-in var(--mk-t-reveal) var(--mk-ease-out) both;
+  }
+  .mk-ig.is-leaving { animation: mk-ig-out 200ms var(--mk-ease-in-out) both; }
+  @keyframes mk-ig-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  @keyframes mk-ig-out { to { opacity: 0; transform: translateY(12px); } }
+
+  .mk-ig-close {
+    position: absolute; top: 6px; right: 6px; display: grid; place-items: center;
+    width: 40px; height: 40px; padding: 0; border: 0; border-radius: 999px;
+    background: none; color: var(--mk-ash); cursor: pointer;
+  }
+  .mk-ig-close:hover, .mk-ig-close:focus-visible { color: var(--mk-white); background: rgba(242, 241, 237, 0.06); }
+  .mk-ig-head { display: flex; align-items: center; gap: var(--mk-3); padding-right: 32px; }
+  .mk-ig-mark {
+    flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px;
+    color: var(--mk-white); background: linear-gradient(135deg, var(--mk-taxi), var(--mk-crimson) 55%, var(--mk-crimson-depth));
+  }
+  .mk-ig-title { margin: 0; font-family: var(--mk-display); font-weight: 400; font-size: 19px; line-height: 1.2; color: var(--mk-white); }
+  .mk-ig-handle { margin: 2px 0 0; font-size: 13px; letter-spacing: 0.02em; color: var(--mk-ash); }
+  .mk-ig-body { margin: 0; font-size: 15px; line-height: 1.5; }
+  .mk-ig-actions { display: flex; align-items: center; gap: var(--mk-4); }
+  .mk-ig-actions .mk-btn--primary { flex: 1; }
+
+  @media (max-width: 640px) {
+    .mk-ig { left: max(12px, env(safe-area-inset-left)); right: max(12px, env(safe-area-inset-right)); bottom: max(12px, env(safe-area-inset-bottom)); width: auto; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mk-ig, .mk-ig.is-leaving { animation: none; }
+  }
+}

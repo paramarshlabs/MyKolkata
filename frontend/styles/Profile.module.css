@@ -23,7 +23,17 @@
 .accountRows { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: var(--mk-3) var(--mk-6); }
 .accountRows dd { margin: 0; color: var(--mk-pearl); overflow-wrap: anywhere; }
 
+/* Your Pujo: the archetype's sigil beside its name, the way the result shows it */
+.pujo { padding-top: clamp(64px, 9vw, 112px); }
+.pujoCard { margin-top: var(--mk-6); display: flex; gap: clamp(20px, 4vw, 40px); align-items: center; padding: clamp(20px, 4vw, 36px); max-width: 820px; }
+.pujoSigil { flex: none; }
+.pujoCopy { min-width: 0; }
+.pujoBn { margin: 0; font-family: var(--mk-bengali); font-variation-settings: 'wght' 700; font-size: clamp(28px, 4vw, 40px); line-height: 1.4; color: var(--mk-blush); }
+.pujoName { margin: 0; font-family: var(--mk-display); font-size: clamp(26px, 3.4vw, 36px); line-height: 1.1; letter-spacing: -0.02em; color: var(--mk-white); }
+.pujoEmpty { align-items: flex-start; }
+
 @media (max-width: 640px) {
   .stats { grid-template-columns: 1fr; }
+  .pujoCard { flex-direction: column; align-items: flex-start; }
   .avatar { width: 96px; height: 96px; }
 }

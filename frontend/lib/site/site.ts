@@ -40,3 +40,6 @@ export function pageMetadata({ title, description, path, noindex, ownImage }: Pa
     ...(noindex ? { robots: { index: false, follow: false } } : {}),
   }
 }
+
+export const INSTAGRAM_HANDLE = 'mykolkata._'
+export const INSTAGRAM_URL = 'https://www.instagram.com/mykolkata._/'
