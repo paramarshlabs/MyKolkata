@@ -359,3 +359,17 @@ model Story {
   @@index([expiresAt, createdAt(sort: Desc)])
   @@map("stories")
 }
+
+/// One row per live feed on /home (lib/live): what Anakin last returned,
+/// already reduced to what the page shows. Refreshed after a page view when
+/// stale, and by /api/cron/live; the page only ever reads it.
+model LiveFeed {
+  key         String    @id
+  payload     Json?
+  fetchedAt   DateTime?
+  /// the last refresh attempt, successful or not; also the refresh lease
+  attemptedAt DateTime?
+  error       String?
+
+  @@map("live_feeds")
+}
