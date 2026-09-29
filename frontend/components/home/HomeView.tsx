@@ -4,7 +4,6 @@ import { prisma } from '@/lib/db/prisma'
 import { listCatalogue } from '@/lib/catalogue/list'
 import { getHomeNews, homeNewsCards } from '@/lib/news/home'
 import { newsRepository } from '@/lib/news/server'
-import { currentDaypart, kolkataClock, type DaypartId } from '@/lib/home/day'
 import { SectionHead } from '@/components/brand/SectionHead'
 import { Sprig } from '@/components/brand/kolka'
 import { LaalPaar } from '@/components/brand/Alpona'
@@ -14,7 +13,6 @@ import { SeasonLine } from './SeasonLine'
 import { NewsBand } from './NewsBand'
 import { MarketShelf } from './MarketShelf'
 import { ClosingScene } from './ClosingScene'
-import { Daypart, DaySection } from './Daypart'
 
 type MarketItem = {
   id: string
@@ -26,9 +24,8 @@ type MarketItem = {
   link?: string | null
 }
 
-/*  Everything /home shows, laid out as a day in the city: the hero and the
-    film strip, then morning to night, then the closing shot. The page checks
-    the session and renders this, so the view itself only reads data.       */
+/*  Everything /home shows. The page checks the session and renders this, so
+    the view itself reads data and nothing else.                             */
 export async function HomeView({ now = new Date() }: { now?: Date } = {}) {
   /* the paper, the city story, the sports story — persisted, never blank */
   const newsPromise = getHomeNews(newsRepository, { now })
@@ -42,16 +39,10 @@ export async function HomeView({ now = new Date() }: { now?: Date } = {}) {
     failed = true
   }
   const news = homeNewsCards(await newsPromise)
-  const part = currentDaypart(now)
-  const clock = kolkataClock(now).label
-  const partProps = (id: DaypartId) => ({ id, now: part === id, clock })
-  /* the parts of the day that have something in them; "What's on now" goes to
-     the latest of them that has begun */
-  const shown: DaypartId[] = ['sakal', 'dupur', 'bikel']
-  const jump = shown.includes(part) ? part : shown[shown.length - 1]
 
   return (
-    <main className="mk-page" style={{ paddingBottom: 0 }}>
+    <>
+      <main className="mk-page" style={{ paddingBottom: 0 }}>
       <section className="mk-banner" aria-labelledby="home-title">
         {/* the page's largest paint: resized per device, served as AVIF or WebP, and preloaded */}
         <Image
@@ -77,7 +68,7 @@ export async function HomeView({ now = new Date() }: { now?: Date } = {}) {
               <Link href="/places" className="mk-btn mk-btn--primary">
                 Explore the city <span className="mk-btn-arrow" aria-hidden="true">→</span>
               </Link>
-              <Link href={`#${jump}`} className="mk-btn mk-btn--secondary">What&apos;s on now</Link>
+              <Link href="/pujo" className="mk-btn mk-btn--secondary">Count down to Pujo</Link>
             </div>
           </div>
           <SeasonLine now={now} />
@@ -86,45 +77,50 @@ export async function HomeView({ now = new Date() }: { now?: Date } = {}) {
 
       <FilmStrip />
 
-      <Daypart {...partProps('sakal')}>
-        <DaySection>
-          <SectionHead level={3} id="news-title" title="In the news" lede="Papers, fairs and fixtures the city is following." />
-          <NewsBand news={news} now={now} />
-        </DaySection>
-      </Daypart>
+      <PersonalityEntry />
 
-      <Daypart {...partProps('dupur')}>
-        <DaySection>
-          {failed ? (
+      <section className="mk-band" aria-labelledby="news-title">
+        <div className="mk-wrap">
+          <SectionHead id="news-title" title="In the news" lede="Papers, fairs and fixtures the city is following." />
+          <NewsBand news={news} now={now} />
+        </div>
+      </section>
+
+      {failed ? (
+        <section className="mk-band" style={{ paddingTop: 0 }}>
+          <div className="mk-wrap">
             <div className="mk-panel mk-empty" role="status">
-              <h3 className="mk-h3">The market didn&apos;t load.</h3>
+              <h2 className="mk-h3">The market didn&apos;t load.</h2>
               <p className="mk-body">The connection to our listings dropped. Refresh the page to try again.</p>
             </div>
-          ) : marketplace.length ? (
-            <MarketShelf
-              head={<SectionHead level={3} id="market-title" title="Marketplace" lede="Sarees, sweets and small-batch things, and where to find them." />}
-              stalls={marketplace.map((item) => ({
-                id: item._id || item.id, title: item.title, location: item.location, price: item.price, image: item.image, link: item.link,
-              }))}
-            />
-          ) : (
-            <>
-              <SectionHead level={3} id="market-title" title="Marketplace" lede="Sarees, sweets and small-batch things, and where to find them." />
-              <p className="mk-caption" style={{ marginTop: 32 }}>Nothing listed yet. The stalls open soon.</p>
-            </>
-          )}
-        </DaySection>
-      </Daypart>
-
-      <Daypart {...partProps('bikel')}>
-        <DaySection wide>
-          <PersonalityEntry level={3} />
-        </DaySection>
-      </Daypart>
+          </div>
+        </section>
+      ) : (
+        <>
+          <section className="mk-band" aria-labelledby="market-title" style={{ paddingTop: 0 }}>
+            <div className="mk-wrap">
+              {marketplace.length ? (
+                <MarketShelf
+                  head={<SectionHead id="market-title" title="Marketplace" lede="Sarees, sweets and small-batch things, and where to find them." />}
+                  stalls={marketplace.map((item) => ({
+                    id: item._id || item.id, title: item.title, location: item.location, price: item.price, image: item.image, link: item.link,
+                  }))}
+                />
+              ) : (
+                <>
+                  <SectionHead id="market-title" title="Marketplace" lede="Sarees, sweets and small-batch things, and where to find them." />
+                  <p className="mk-caption" style={{ marginTop: 32 }}>Nothing listed yet. The stalls open soon.</p>
+                </>
+              )}
+            </div>
+          </section>
+        </>
+      )}
 
       <LaalPaar />
 
       <ClosingScene />
     </main>
+    </>
   )
 }

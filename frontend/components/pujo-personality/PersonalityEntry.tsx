@@ -7,15 +7,14 @@ import styles from '@/styles/PujoPersonality.module.css'
 /* The way in, from /home (09-ux-flow.md §2). A Bordeaux band — the warm surface
    the rest of the page never uses — with the nine laid out as one run, each
    leading to its own page. No hooks: it renders from Server Components too. */
-export function PersonalityEntry({ level = 2 }: { level?: 2 | 3 }) {
-  const Heading = level === 3 ? 'h3' : 'h2'
+export function PersonalityEntry() {
   return (
     <section className={`mk-band--deep ${styles.entry}`} aria-labelledby="personality-entry">
       <div className="mk-wrap">
         <div className={styles.entryHead}>
           <div>
             <p className={styles.entryBn} lang="bn">তুমি কোন পুজো?</p>
-            <Heading id="personality-entry" className="mk-h1">What kind of Pujo are you?</Heading>
+            <h2 id="personality-entry" className="mk-h1">What kind of Pujo are you?</h2>
           </div>
           <div className={styles.entryAside}>
             <p className="mk-body-lg">
