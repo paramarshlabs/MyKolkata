@@ -1,0 +1,67 @@
+/*
+ * /home — the city's opening scene. Built on the component layer in
+ * styles/brand.css; everything here is specific to this page.
+ */
+
+/* ========================================================= film strip == */
+/*  Four frames in a letterbox. The frame a person points at opens wider —
+    the one motion here, and it answers a hand, not a timer.                 */
+.strip {
+  display: flex; gap: 3px; padding: 3px 0;
+  height: clamp(380px, 40vw, 580px);
+  background: var(--mk-obsidian);
+}
+.frame {
+  position: relative; isolation: isolate; overflow: hidden;
+  flex: 1 1 0; min-width: 0;
+  color: var(--mk-pearl); text-decoration: none;
+  transition: flex-grow var(--mk-t-reveal) var(--mk-ease-out);
+}
+.frame:hover, .frame:focus-visible { flex-grow: 1.7; }
+.frame:focus-visible { outline: 2px solid var(--mk-crimson); outline-offset: -4px; }
+.frameImg {
+  z-index: -2; object-fit: cover;
+  filter: saturate(1.06) contrast(1.14) brightness(1.02);
+  transition: transform 700ms var(--mk-ease-out);
+}
+.frame:hover .frameImg, .frame:focus-visible .frameImg { transform: scale(1.03); }
+.frameScrim {
+  position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(0deg, rgba(10, 13, 14, 0.9) 0%, rgba(38, 10, 14, 0.34) 38%, rgba(38, 10, 14, 0) 62%);
+}
+/* the caption device, sized for a narrow frame. design.md §9.6 */
+.frameCap {
+  position: absolute; left: clamp(16px, 2vw, 28px); right: clamp(16px, 2vw, 28px); bottom: clamp(20px, 2.4vw, 32px);
+  display: flex; gap: var(--mk-3);
+}
+/* Pearl at rest: four crimson ticks in one viewport would break the budget.
+   The frame being pointed at takes the one crimson accent. */
+.frameTick {
+  width: 3px; flex: none; align-self: stretch;
+  background: rgba(242, 241, 237, 0.7);
+  transition: background-color var(--mk-t-hover) var(--mk-ease-in-out);
+}
+.frame:hover .frameTick, .frame:focus-visible .frameTick { background: var(--mk-crimson); }
+.frameText { display: flex; flex-direction: column; min-width: 0; }
+.frameLine1 { font-size: clamp(16px, 1.4vw, 19px); line-height: 1.4; color: var(--mk-pearl); }
+.frameLine2 {
+  font-family: var(--mk-display); font-size: clamp(21px, 1.9vw, 26px); line-height: 1.25;
+  letter-spacing: -0.015em; color: var(--mk-blush);
+  margin: var(--mk-1) 0 0 var(--mk-5);
+}
+
+@media (max-width: 900px) {
+  .strip {
+    height: auto; gap: 3px;
+    overflow-x: auto; overscroll-behavior-inline: contain; scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .strip::-webkit-scrollbar { display: none; }
+  .frame { flex: 0 0 78%; aspect-ratio: 4 / 5; scroll-snap-align: start; }
+  .frame:hover, .frame:focus-visible { flex-grow: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .frame, .frameImg, .frameTick { transition: none; }
+  .frame:hover .frameImg, .frame:focus-visible .frameImg { transform: none; }
+}
