@@ -10,6 +10,7 @@ import { Medallion, Sprig } from '@/components/brand/kolka'
 import { LaalPaar } from '@/components/brand/Alpona'
 import { PersonalityEntry } from '@/components/pujo-personality/PersonalityEntry'
 import { FilmStrip } from './FilmStrip'
+import { SeasonLine } from './SeasonLine'
 
 type MarketItem = {
   id: string
@@ -68,6 +69,7 @@ export async function HomeView() {
               <Link href="/pujo" className="mk-btn mk-btn--secondary">Count down to Pujo</Link>
             </div>
           </div>
+          <SeasonLine />
         </div>
       </section>
 

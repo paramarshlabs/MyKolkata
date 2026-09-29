@@ -65,3 +65,59 @@
   .frame, .frameImg, .frameTick { transition: none; }
   .frame:hover .frameImg, .frame:focus-visible .frameImg { transform: none; }
 }
+
+/* ======================================================== season line == */
+/*  A hairline from the build-up to Dashami. The stretch already walked is
+    solid, the rest is a run of beads; today is a single Taxi Yellow mark —
+    the small data label that needs to lift off the photograph. §3.7        */
+.season { position: relative; margin-top: clamp(40px, 6vw, 72px); max-width: 1100px; }
+.seasonNow {
+  position: relative; margin: 0 0 var(--mk-3);
+  left: clamp(0px, calc(var(--today) * 100% - 4px), calc(100% - 240px));
+  display: flex; flex-direction: column; gap: 2px; width: max-content; max-width: 100%;
+}
+.seasonDate { font-size: 13px; letter-spacing: 0.02em; color: var(--mk-ash); }
+.seasonStatus { font-size: 15px; letter-spacing: 0.01em; color: var(--mk-taxi); }
+.seasonTrack {
+  position: relative; height: 1px;
+  background-image: radial-gradient(circle, rgba(242, 241, 237, 0.42) 1px, transparent 1.4px);
+  background-size: 7px 3px; background-repeat: repeat-x; background-position: 0 50%;
+}
+.seasonDone {
+  position: absolute; left: 0; top: 0; height: 1px;
+  width: calc(var(--today) * 100%);
+  background: rgba(242, 241, 237, 0.62);
+}
+.seasonMarker {
+  position: absolute; top: -9px; width: 2px; height: 19px;
+  left: calc(var(--today) * 100% - 1px);
+  background: var(--mk-taxi);
+  box-shadow: 0 0 14px rgba(242, 179, 61, 0.55);
+}
+.seasonNodes { position: relative; list-style: none; margin: 0; padding: 0; height: 58px; }
+.seasonNode {
+  position: absolute; top: 0; left: calc(var(--at) * 100%);
+  transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 0;
+}
+.seasonNode[data-node='dashami'] { transform: translateX(-100%); align-items: flex-end; }
+.seasonDot {
+  width: 7px; height: 7px; margin: -4px 0 6px; border-radius: 999px;
+  background: var(--mk-obsidian); border: 1px solid rgba(242, 241, 237, 0.7);
+}
+.seasonNode[data-node='dashami'] .seasonDot { margin-right: -3px; }
+.isPast .seasonDot { background: rgba(242, 241, 237, 0.7); }
+.isToday .seasonDot { background: var(--mk-taxi); border-color: var(--mk-taxi); }
+.seasonBn {
+  font-family: var(--mk-bengali); font-variation-settings: 'wght' 600;
+  font-size: 16px; line-height: 1.4; color: var(--mk-pearl); white-space: nowrap;
+}
+.seasonDay { font-size: 12.5px; letter-spacing: 0.02em; color: var(--mk-ash); white-space: nowrap; }
+
+@media (max-width: 700px) {
+  /* four days fit in a thumb's width only as dots; the ends keep their words */
+  .seasonNode[data-node='saptami'] .seasonBn, .seasonNode[data-node='saptami'] .seasonDay,
+  .seasonNode[data-node='ashtami'] .seasonBn, .seasonNode[data-node='ashtami'] .seasonDay,
+  .seasonNode[data-node='navami'] .seasonBn, .seasonNode[data-node='navami'] .seasonDay { display: none; }
+  .seasonBn { font-size: 15px; }
+}
