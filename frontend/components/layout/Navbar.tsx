@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
 import { NotchWing } from '@/components/brand/kolka'
 import UserMenu from '@/components/layout/UserMenu'
+import { LanguageToggle } from '@/components/layout/LanguageToggle'
 
 /*  The notch bar — see /brand-kit and styles/notchbar.css. Three notches cut
     from a Pearl bezel: the lockup, the sections, and search with the account.
@@ -155,6 +156,7 @@ export default function Navbar() {
         <NotchWing side="left" />
         <NotchWing side="corner-right" />
         {showSearch && searchField(0)}
+        <LanguageToggle />
         <UserMenu />
       </aside>
 
@@ -176,6 +178,7 @@ export default function Navbar() {
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
           </button>
           {showSearch && searchField(1, true)}
+          <LanguageToggle />
           <UserMenu />
         </div>
         <div className={`nn-drawer ${menuOpen ? 'is-open' : ''}`} id={menuId}>

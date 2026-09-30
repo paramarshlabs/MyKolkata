@@ -180,3 +180,17 @@
 @media (max-width: 639px) {
   .mk-notchbar .nn-brand-text--solo { display: flex; }
 }
+
+/* language — one letter beside the account: অ for Bengali, A for English back */
+.mk-notchbar .nn-lang {
+  display: grid; place-items: center; flex: none; width: 30px; height: 30px; padding: 0;
+  border: 1px solid var(--nn-line); border-radius: 999px; background: none; cursor: pointer;
+  font-family: var(--mk-text); font-size: 14px; line-height: 1; color: var(--nn-fg);
+  transition: background var(--mk-t-fast) var(--mk-ease-in-out);
+}
+.mk-notchbar .nn-lang [lang="bn"] { font-family: var(--mk-bengali); font-size: 15px; transform: translateY(1px); }
+.mk-notchbar .nn-lang:hover, .mk-notchbar .nn-lang[aria-pressed="true"] { background: var(--nn-bg-2); }
+.mk-notchbar .nn-solo-end { display: flex; align-items: center; gap: 10px; }
+
+/* Bengali is never letter-spaced — it breaks the matra. [data-bn] marks swapped text. */
+:root[data-lang="bn"] [data-bn] { letter-spacing: 0; }

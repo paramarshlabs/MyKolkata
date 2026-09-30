@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { NotchWing } from '@/components/brand/kolka'
 import Navbar from '@/components/layout/Navbar'
+import { LanguageToggle } from '@/components/layout/LanguageToggle'
 import { useAuth } from '@/components/providers/AuthProvider'
 
 /*  The header for the public pages under app/(open). Signed in, it is the
@@ -30,7 +31,10 @@ export function OpenHeader() {
             </span>
           </Link>
           {/* hidden until the session is known, so a signed-in visitor never sees it flash */}
-          {isAuthenticated === false && <Link className="nn-signin" href="/login">Sign in</Link>}
+          <span className="nn-solo-end">
+            <LanguageToggle />
+            {isAuthenticated === false && <Link className="nn-signin" href="/login">Sign in</Link>}
+          </span>
         </div>
       </header>
     </div>
