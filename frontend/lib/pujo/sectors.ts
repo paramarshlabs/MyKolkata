@@ -41,7 +41,7 @@ export type Area = { id: string; name: string; zone: ZoneId; pincodes: readonly 
 export const AREAS: readonly Area[] = [
   /* North */
   { id: 'bagbazar-kumartuli', name: 'Bagbazar–Kumartuli', zone: 'north', pincodes: ['700003', '700005'], keywords: ['bagbazar', 'kumartuli', 'ahiritola', 'shobhabazar', 'beniatola', 'nimtala'] },
-  { id: 'hatibagan-shyambazar', name: 'Hatibagan–Shyambazar', zone: 'north', pincodes: ['700002', '700004', '700006'], keywords: ['hatibagan', 'shyambazar', 'darjipara', 'maniktala', 'girish park', 'simla', 'simulia', 'beadon', 'grey street', 'gray street', 'shyampukur', 'tala', 'chitpur', 'cossipore', 'halsibagan', 'sikdar bagan'] },
+  { id: 'hatibagan-shyambazar', name: 'Hatibagan–Shyambazar', zone: 'north', pincodes: ['700002', '700004', '700006'], keywords: ['hatibagan', 'shyambazar', 'darjipara', 'maniktala', 'girish park', 'simla', 'simulia', 'beadon', 'grey street', 'gray street', 'shyampukur', 'tala park', 'chitpur', 'cossipore', 'halsibagan', 'sikdar bagan'] },
   { id: 'belgachia-dum-dum', name: 'Belgachia–Dum Dum', zone: 'north', pincodes: ['700028', '700030', '700037', '700065', '700074', '700079', '700080', '700081'], keywords: ['belgachia', 'paikpara', 'nagerbazar', 'motijheel', 'dum dum'] },
   { id: 'baranagar-sinthee', name: 'Baranagar–Sinthee', zone: 'north', pincodes: ['700035', '700036', '700050', '700076', '700090', '700108'], keywords: ['baranagar', 'sinthee', 'sinthi', 'noapara', 'dakshineswar', 'alambazar'] },
   /* Central */
@@ -81,6 +81,8 @@ export const areaById = (id: string | null | undefined) => (id ? AREA_BY_ID.get(
 export const PINCODE_TRUST_KM = 3.5
 /* a pujo with no usable pincode joins the nearest area centre within this */
 export const NEAREST_AREA_KM = 5
+/* a name's area is believed for a pinned pujo only when the pin is this close to it */
+export const KEYWORD_AREA_KM = 12
 
 /* the area a pujo's name or address names, when nothing better places it; the longest keyword wins,
    so "Dum Dum Park" goes to Lake Town–Baguiati, not Belgachia–Dum Dum */

@@ -9,6 +9,6 @@ export const metadata: Metadata = pageMetadata({
 })
 
 export default async function PlacesPage() {
-  await requireUser()
+  await requireUser('/places')
   return <PlacesClient />
 }

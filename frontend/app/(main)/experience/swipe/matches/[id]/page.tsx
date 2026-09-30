@@ -13,7 +13,7 @@ type Params = { params: Promise<{ id: string }> }
 
 /* the chat itself is fetched by the browser, and only for the two people in the match */
 export default async function ChatPage({ params }: Params) {
-  await requireUser()
   const { id } = await params
+  await requireUser(`/experience/swipe/matches/${encodeURIComponent(id)}`)
   return <ChatClient matchId={id} />
 }

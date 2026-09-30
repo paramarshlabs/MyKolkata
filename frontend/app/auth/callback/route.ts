@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { DEFAULT_AFTER_SIGN_IN, safeNext } from '@/lib/returnTo'
 import { createClient } from '@/lib/supabase/server'
 
 /*
@@ -8,9 +9,8 @@ import { createClient } from '@/lib/supabase/server'
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
-  const requested = searchParams.get('next') ?? '/home'
-  /* same-origin paths only — '//host' would be an open redirect */
-  const next = requested.startsWith('/') && !requested.startsWith('//') ? requested : '/home'
+  /* same-origin paths only — '//host' or '/\host' would be an open redirect (lib/returnTo.ts) */
+  const next = safeNext(searchParams.get('next'), DEFAULT_AFTER_SIGN_IN)
 
   if (code) {
     const supabase = await createClient()

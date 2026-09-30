@@ -14,7 +14,8 @@ DECLARE
   data_api boolean := EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon')
     AND EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticated');
 BEGIN
-  FOREACH t IN ARRAY ARRAY['date_profiles', 'date_photos', 'date_swipes', 'date_matches', 'date_messages', 'date_blocks', 'date_reports'] LOOP
+  FOREACH t IN ARRAY ARRAY['date_profiles', 'date_photos', 'date_swipes', 'date_matches', 'date_messages', 'date_blocks', 'date_reports',
+    'pujo_pandal_details', 'pujo_pin_reports'] LOOP
     rel := to_regclass(format('public.%I', t));
     CONTINUE WHEN rel IS NULL;
     IF NOT (SELECT relrowsecurity FROM pg_class WHERE oid = rel) THEN

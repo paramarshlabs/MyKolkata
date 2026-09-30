@@ -1,5 +1,6 @@
 import 'server-only'
 import { redirect } from 'next/navigation'
+import { loginPath } from '@/lib/returnTo'
 import { createClient } from '@/lib/supabase/server'
 
 /*
@@ -19,9 +20,10 @@ export async function currentUserId(): Promise<string | null> {
   return data.claims.sub
 }
 
-/* Pages and Server Functions: a signed-out visitor is sent to /login. */
-export async function requireUser(): Promise<string> {
+/* Pages and Server Functions: a signed-out visitor is sent to /login, and
+   comes back to `returnTo` (a path on this site) once signed in. */
+export async function requireUser(returnTo?: string): Promise<string> {
   const userId = await currentUserId()
-  if (!userId) redirect('/login')
+  if (!userId) redirect(loginPath(returnTo))
   return userId
 }

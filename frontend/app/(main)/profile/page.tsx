@@ -10,6 +10,6 @@ export const metadata: Metadata = pageMetadata({
 })
 
 export default async function ProfilePage() {
-  await requireUser()
+  await requireUser('/profile')
   return <ProfileClient />
 }

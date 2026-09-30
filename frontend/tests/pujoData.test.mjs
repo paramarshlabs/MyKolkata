@@ -12,7 +12,7 @@ import { buildIndex, findPujo, isRoutable, placeFrom, tierLabel } from '../lib/p
 import { linesFromText, placesFromRows } from '../lib/pujo/pois.ts'
 import { nearestPujos, toClientIndex } from '../lib/pujo/client.ts'
 import { buildSearchIndex, noMatch, parseQuery, search } from '../lib/pujo/search.ts'
-import { formatKm, straightKm, walkKm, walkMinutes } from '../lib/pujo/geo.ts'
+import { corePoints, formatKm, straightKm, walkKm, walkMinutes } from '../lib/pujo/geo.ts'
 
 const root = new URL('../', import.meta.url)
 const read = (path) => readFile(new URL(path, root), 'utf8')
@@ -390,4 +390,14 @@ test('walking is straight-line × 1.3 at a Pujo pace, and reads as a person woul
   assert.equal(formatKm(0.01), '50 m')
   assert.equal(formatKm(1.24), '1.2 km')
   assert.equal(formatKm(12.6), '13 km')
+})
+
+test('a map frames the cluster, not the stray pin 30 km out', () => {
+  const cluster = [0, 1, 2, 3, 4, 5].map((i) => ({ lat: 22.59 + i * 0.004, lng: 88.36 + i * 0.003 }))
+  const stray = { lat: 22.468, lng: 87.97 }
+  const core = corePoints([...cluster, stray])
+  assert.equal(core.length, cluster.length)
+  assert.ok(!core.includes(stray))
+  /* a small set is left alone */
+  assert.equal(corePoints([cluster[0], stray]).length, 2)
 })

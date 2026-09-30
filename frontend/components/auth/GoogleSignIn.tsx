@@ -2,9 +2,11 @@
 
 import { useState } from 'react'
 import { useAuth } from '@/components/providers/AuthProvider'
+import { DEFAULT_AFTER_SIGN_IN, safeNext } from '@/lib/returnTo'
 
-/* Google is the only way in. The button leaves for Google; /auth/callback brings the visitor back. */
-export function GoogleSignIn({ label, initialError }: { label: string; initialError?: string | null }) {
+/* Google is the only way in. The button leaves for Google; /auth/callback brings
+   the visitor back, to `next` (a path on this site, checked at both ends). */
+export function GoogleSignIn({ label, initialError, next = DEFAULT_AFTER_SIGN_IN }: { label: string; initialError?: string | null; next?: string }) {
   const { signInWithGoogle } = useAuth()
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(initialError ?? null)
@@ -13,7 +15,7 @@ export function GoogleSignIn({ label, initialError }: { label: string; initialEr
     setPending(true)
     setError(null)
     try {
-      await signInWithGoogle('/home')
+      await signInWithGoogle(safeNext(next))
     } catch {
       setPending(false)
       setError('Google could not be reached. Try again in a moment.')

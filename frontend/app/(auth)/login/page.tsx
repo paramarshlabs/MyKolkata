@@ -5,17 +5,21 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { AuthLoading, AuthStage } from '@/components/auth/AuthStage'
 import { GoogleSignIn } from '@/components/auth/GoogleSignIn'
+import { safeNext } from '@/lib/returnTo'
 
 function Login() {
   const { isAuthenticated, isLoaded } = useAuth()
   const [isSignUpMode, setIsSignUpMode] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
   /* /auth/callback sends a failed code exchange back here */
-  const failed = useSearchParams().get('error') === 'oauth'
+  const failed = searchParams.get('error') === 'oauth'
+  /* where they were going: an invite, a pujo, a group (lib/returnTo.ts) */
+  const next = safeNext(searchParams.get('next'))
 
   useEffect(() => {
-    if (isLoaded && isAuthenticated) router.replace('/home')
-  }, [isLoaded, isAuthenticated, router])
+    if (isLoaded && isAuthenticated) router.replace(next)
+  }, [isLoaded, isAuthenticated, router, next])
 
   if (!isLoaded || isAuthenticated) return <AuthLoading label="Opening the door" />
 
@@ -33,6 +37,7 @@ function Login() {
         <GoogleSignIn
           label={isSignUpMode ? 'Create account with Google' : 'Sign in with Google'}
           initialError={failed ? 'That sign-in did not go through. Try again.' : null}
+          next={next}
         />
       </div>
     </AuthStage>

@@ -11,7 +11,7 @@ import { KOLKATA_CENTRE, medianPoint, straightKm, type LatLng } from './geo'
 import { fullName, shortName, titleCase } from './names'
 import { nearest, placesFromRows, type HelpPoint, type Landmark, type PoiRow, type Station } from './pois'
 import {
-  AREAS, NEAREST_AREA_KM, PINCODE_TRUST_KM, areaForPincode, areaFromText, pincodeFromText, zoneFromData, type Area, type ZoneId,
+  AREAS, KEYWORD_AREA_KM, NEAREST_AREA_KM, PINCODE_TRUST_KM, areaForPincode, areaFromText, pincodeFromText, zoneFromData, type Area, type ZoneId,
 } from './sectors'
 
 export type PandalRow = {
@@ -214,8 +214,12 @@ export function buildIndex({ pandals, pois, famous = {} }: BuildInput): PujoInde
       /* trust the pin over a pincode it contradicts */
       if (!pincodeArea || !centre || straightKm(point, centre) > PINCODE_TRUST_KM) area = nearestArea(point) ?? pincodeArea
     }
-    /* no pin and no pincode, but "Ultadanga Sangrami" says where it is */
-    area ??= areaFromText(rawNames.get(draft.slug), draft.place, draft.address)
+    /* no pin and no pincode, but "Ultadanga Sangrami" says where it is; a pin has to agree */
+    if (!area) {
+      const named = areaFromText(rawNames.get(draft.slug), draft.place, draft.address)
+      const centre = named ? centres.get(named.id) : null
+      if (named && (!point || (centre && straightKm(point, centre) <= KEYWORD_AREA_KM))) area = named
+    }
     const far = point && straightKm(point, KOLKATA_CENTRE) > SUBURB_KM
     const zone: ZoneId = area?.zone ?? (far ? 'suburbs' : dataZone ?? 'suburbs')
     const station = point ? nearest(point, stations) : null

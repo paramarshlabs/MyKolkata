@@ -9,6 +9,6 @@ export const metadata: Metadata = pageMetadata({
 })
 
 export default async function ContributePage() {
-  await requireUser()
+  await requireUser('/community')
   return <CommunityClient />
 }

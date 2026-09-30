@@ -1,22 +1,16 @@
 // @ts-nocheck
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { AlponaLoader } from '@/components/brand/Alpona'
-import { clientOlaStyleUrl, proxiedOlaMapsUrl } from '@/lib/places/olaMapsProxy'
+import { KOLKATA_CENTER, safeErrorMessage, useOlaMap } from '@/components/maps/useOlaMap'
 import styles from '@/styles/NearYou.module.css'
 
-const KOLKATA_CENTER = [88.3639, 22.5726]
-/* Dark is the primary experience. Style loads via our proxy so phone/LAN
-   origins are not blocked by Ola's browser-domain allowlist. */
+/* Dark is the primary experience. The map boots through components/maps/useOlaMap,
+   which loads Ola via our proxy (lib/places/olaMapsProxy). */
 const SOURCE_ID = 'mykolkata-places'
 const SELECTED_LAYER_ID = 'mykolkata-selected-place'
 const PLACE_PHOTO_LAYER_ID = 'mykolkata-place-photos'
-
-function safeErrorMessage(error) {
-  const message = error instanceof Error ? error.message : String(error || 'Unknown Ola Maps error')
-  return message.replace(/([?&]api_key=)[^&\s]+/gi, '$1[redacted]')
-}
 
 /* Brand surfaces, not a rainbow: food and cafés sit on Bordeaux, everything
    else on Slate. The letter carries the category — colour never does alone. */
@@ -190,45 +184,6 @@ function cameraPadding(map) {
   return { top, bottom, left: side, right: side }
 }
 
-/* MapLibre paints to a canvas sized at init — mobile URL bars and orientation
-   change the container after that, so the canvas must be resized explicitly. */
-function waitForSizedContainer(element) {
-  return new Promise((resolve) => {
-    if (element.clientWidth > 0 && element.clientHeight > 0) {
-      resolve()
-      return
-    }
-    let settled = false
-    const finish = () => {
-      if (settled || element.clientWidth <= 0 || element.clientHeight <= 0) return
-      settled = true
-      observer.disconnect()
-      resolve()
-    }
-    const observer = new ResizeObserver(finish)
-    observer.observe(element)
-    requestAnimationFrame(finish)
-    window.setTimeout(finish, 400)
-  })
-}
-
-function bindMapResize(map, element) {
-  const resize = () => {
-    try { map.resize() } catch { /* map may already be removed */ }
-  }
-  const schedule = () => requestAnimationFrame(resize)
-  const observer = new ResizeObserver(schedule)
-  observer.observe(element)
-  window.visualViewport?.addEventListener('resize', schedule)
-  window.addEventListener('orientationchange', schedule)
-  schedule()
-  return () => {
-    observer.disconnect()
-    window.visualViewport?.removeEventListener('resize', schedule)
-    window.removeEventListener('orientationchange', schedule)
-  }
-}
-
 /*
  * camera: { key, center?, radiusKm?, fit? } — a new key moves the map once.
  * `center` frames the circle around a point; `fit` frames the loaded places.
@@ -236,8 +191,6 @@ function bindMapResize(map, element) {
  */
 export default function NearYouMap({ places, selectedPlaceId, onSelect, userPosition, onViewportChange, camera }) {
   const elementRef = useRef(null)
-  const mapRef = useRef(null)
-  const olaMapsRef = useRef(null)
   const userMarkerRef = useRef(null)
   const registeredImageIdsRef = useRef(new Set())
   const appliedCameraKeyRef = useRef('')
@@ -249,8 +202,6 @@ export default function NearYouMap({ places, selectedPlaceId, onSelect, userPosi
   const onSelectRef = useRef(onSelect)
   const onViewportChangeRef = useRef(onViewportChange)
   const syncVersionRef = useRef(0)
-  const [attempt, setAttempt] = useState(0)
-  const [status, setStatus] = useState('loading')
   const placeKey = useMemo(() => places.map((place) => place.id).join('|'), [places])
 
   /* map event handlers are bound once, so they read the latest props through refs */
@@ -261,133 +212,54 @@ export default function NearYouMap({ places, selectedPlaceId, onSelect, userPosi
     onViewportChangeRef.current = onViewportChange
   })
 
-  useEffect(() => {
-    let cancelled = false
-    let map
-    let unbindResize = () => {}
-    /* Constructor still wants a key; tile auth runs on the server proxy. */
-    const apiKey = process.env.NEXT_PUBLIC_OLA_MAPS_API_KEY || 'proxied'
+  const { status, mapRef, olaMapsRef, retry } = useOlaMap(elementRef, {
+    /* a retry resumes the view the visitor had, and re-frames nothing they chose */
+    initialView: () => {
+      registeredImageIdsRef.current = new Set()
+      appliedCameraKeyRef.current = savedCameraRef.current ? appliedCameraKeyRef.current : ''
+      const saved = savedCameraRef.current
+      return { center: saved?.center || KOLKATA_CENTER, zoom: saved?.zoom || 13.5 }
+    },
+    setup: async (map) => {
+      addPlaceLayers(map)
 
-    setStatus('loading')
-    registeredImageIdsRef.current = new Set()
-    appliedCameraKeyRef.current = savedCameraRef.current ? appliedCameraKeyRef.current : ''
-    /* cellular + style fetch often exceeds a short desktop budget */
-    const loadTimer = window.setTimeout(() => {
-      if (!cancelled) setStatus((current) => current === 'ready' ? current : 'error')
-    }, 25000)
+      map.on('click', PLACE_PHOTO_LAYER_ID, (event) => {
+        const placeId = event.features?.[0]?.properties?.id
+        if (placeId) onSelectRef.current?.(placeId)
+      })
+      map.on('mouseenter', PLACE_PHOTO_LAYER_ID, () => { map.getCanvas().style.cursor = 'pointer' })
+      map.on('mouseleave', PLACE_PHOTO_LAYER_ID, () => { map.getCanvas().style.cursor = '' })
 
-    import('olamaps-web-sdk')
-      .then(async ({ OlaMaps }) => {
-        if (cancelled || !elementRef.current) return
-
-        await waitForSizedContainer(elementRef.current)
-        if (cancelled || !elementRef.current) return
-
-        /* probe first so a missing server key shows the setup hint, not a blank map */
-        const styleUrl = clientOlaStyleUrl()
-        const styleResponse = await fetch(styleUrl)
-        if (cancelled) return
-        if (!styleResponse.ok) {
-          setStatus(styleResponse.status === 503 ? 'missing-key' : 'error')
-          return
-        }
-
-        const olaMaps = new OlaMaps({ apiKey })
-        olaMapsRef.current = olaMaps
-        const saved = savedCameraRef.current
-        map = await olaMaps.init({
-          container: elementRef.current,
-          /* the SDK only accepts a style URL string — it calls style.includes() */
-          style: styleUrl,
-          center: saved?.center || KOLKATA_CENTER,
-          zoom: saved?.zoom || 13.5,
-          attributionControl: true,
-          /* Overrides the SDK transform so every Ola URL goes through /api/maps/ola */
-          transformRequest: (url) => ({ url: proxiedOlaMapsUrl(url) }),
-        })
-        if (cancelled) {
-          map?.remove()
-          return
-        }
-
-        mapRef.current = map
-        unbindResize = bindMapResize(map, elementRef.current)
-        map.addControl(olaMaps.addNavigationControls({ showCompass: false }), 'bottom-right')
-        map.on('error', (event) => {
-          console.warn('Ola map resource error:', safeErrorMessage(event?.error))
-        })
-
-        let setupStarted = false
-        const finishSetup = async () => {
-          if (setupStarted) return
-          setupStarted = true
-          try {
-            if (cancelled) return
-            map.resize()
-            addPlaceLayers(map)
-
-            map.on('click', PLACE_PHOTO_LAYER_ID, (event) => {
-              const placeId = event.features?.[0]?.properties?.id
-              if (placeId) onSelectRef.current?.(placeId)
-            })
-            map.on('mouseenter', PLACE_PHOTO_LAYER_ID, () => { map.getCanvas().style.cursor = 'pointer' })
-            map.on('mouseleave', PLACE_PHOTO_LAYER_ID, () => { map.getCanvas().style.cursor = '' })
-
-            await ensurePhotoImages(map, latestPlacesRef.current, registeredImageIdsRef.current)
-            if (cancelled) return
-            map.getSource(SOURCE_ID)?.setData(placesGeoJson(latestPlacesRef.current, latestSelectedIdRef.current))
-            map.resize()
-            window.clearTimeout(loadTimer)
-            setStatus('ready')
-          } catch (error) {
-            console.error('Ola map setup failed:', safeErrorMessage(error))
-            if (!cancelled) setStatus('error')
-          }
-        }
-
-        map.once('load', finishSetup)
-        if (map.loaded()) finishSetup()
-
-        map.on('dragstart', () => { userInteractingRef.current = true })
-        map.on('zoomstart', (event) => {
-          if (event.originalEvent) userInteractingRef.current = true
-        })
-        map.on('rotatestart', (event) => {
-          if (event.originalEvent) userInteractingRef.current = true
-        })
-        map.on('moveend', () => {
-          if (!userInteractingRef.current) return
-          userInteractingRef.current = false
-          const bounds = map.getBounds()
-          onViewportChangeRef.current?.({
-            north: bounds.getNorth(),
-            east: bounds.getEast(),
-            south: bounds.getSouth(),
-            west: bounds.getWest()
-          })
+      map.on('dragstart', () => { userInteractingRef.current = true })
+      map.on('zoomstart', (event) => {
+        if (event.originalEvent) userInteractingRef.current = true
+      })
+      map.on('rotatestart', (event) => {
+        if (event.originalEvent) userInteractingRef.current = true
+      })
+      map.on('moveend', () => {
+        if (!userInteractingRef.current) return
+        userInteractingRef.current = false
+        const bounds = map.getBounds()
+        onViewportChangeRef.current?.({
+          north: bounds.getNorth(),
+          east: bounds.getEast(),
+          south: bounds.getSouth(),
+          west: bounds.getWest()
         })
       })
-      .catch((error) => {
-        console.error('Ola map initialization failed:', safeErrorMessage(error))
-        if (!cancelled) setStatus('error')
-      })
 
-    return () => {
-      cancelled = true
-      window.clearTimeout(loadTimer)
-      unbindResize()
+      await ensurePhotoImages(map, latestPlacesRef.current, registeredImageIdsRef.current)
+      map.getSource(SOURCE_ID)?.setData(placesGeoJson(latestPlacesRef.current, latestSelectedIdRef.current))
+    },
+    beforeRemove: (map) => {
       syncVersionRef.current += 1
-      if (map) {
-        const center = map.getCenter?.()
-        savedCameraRef.current = center ? { center: [center.lng, center.lat], zoom: map.getZoom() } : null
-      }
+      const center = map.getCenter?.()
+      savedCameraRef.current = center ? { center: [center.lng, center.lat], zoom: map.getZoom() } : null
       userMarkerRef.current?.remove()
       userMarkerRef.current = null
-      mapRef.current = null
-      olaMapsRef.current = null
-      map?.remove()
-    }
-  }, [attempt])
+    },
+  })
 
   /* markers */
   useEffect(() => {
@@ -403,7 +275,7 @@ export default function NearYouMap({ places, selectedPlaceId, onSelect, userPosi
       .catch((error) => {
         console.error('Ola place marker update failed:', safeErrorMessage(error))
       })
-  }, [placeKey, places, selectedPlaceId, status])
+  }, [mapRef, placeKey, places, selectedPlaceId, status])
 
   /* camera — once per key, and only when there is something to frame */
   useEffect(() => {
@@ -428,7 +300,7 @@ export default function NearYouMap({ places, selectedPlaceId, onSelect, userPosi
       })
       appliedCameraKeyRef.current = camera.key
     }
-  }, [camera, placeKey, places, status])
+  }, [camera, mapRef, placeKey, places, status])
 
   /* a newly selected place slides into view; re-renders don't move the map */
   useEffect(() => {
@@ -447,7 +319,7 @@ export default function NearYouMap({ places, selectedPlaceId, onSelect, userPosi
       offset: [0, clientWidth < 768 ? -clientHeight * 0.18 : -40],
       duration: 380
     })
-  }, [placeKey, places, selectedPlaceId, status])
+  }, [mapRef, placeKey, places, selectedPlaceId, status])
 
   useEffect(() => {
     const map = mapRef.current
@@ -466,12 +338,12 @@ export default function NearYouMap({ places, selectedPlaceId, onSelect, userPosi
         .setLngLat([userPosition.lng, userPosition.lat])
         .addTo(map)
     }
-  }, [status, userPosition])
+  }, [mapRef, olaMapsRef, status, userPosition])
 
   return (
     <div className={styles.mapFrame}>
       <div ref={elementRef} className={styles.map} aria-label="Interactive Ola map of Kolkata places" />
-      {status === 'loading' && (
+      {(status === 'loading' || status === 'waiting') && (
         <div className={styles.mapStatus}>
           <AlponaLoader label="Loading the Kolkata map" />
         </div>
@@ -486,7 +358,7 @@ export default function NearYouMap({ places, selectedPlaceId, onSelect, userPosi
         <div className={styles.mapStatus} role="alert">
           <p className={styles.mapStatusTitle}>The Ola map could not load.</p>
           <p className="mk-caption">Check your connection and map credentials, then try again.</p>
-          <button type="button" className="mk-btn mk-btn--secondary mk-btn--sm" onClick={() => setAttempt((value) => value + 1)}>Retry map</button>
+          <button type="button" className="mk-btn mk-btn--secondary mk-btn--sm" onClick={retry}>Retry map</button>
         </div>
       )}
     </div>

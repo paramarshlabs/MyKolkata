@@ -4,6 +4,9 @@ import test from 'node:test'
 
 const pageSource = await readFile(new URL('../app/(main)/near-you/NearYouClient.tsx', import.meta.url), 'utf8')
 const mapSource = await readFile(new URL('../components/explore/NearYouMap.tsx', import.meta.url), 'utf8')
+/* the boot sequence lives in the hook /near-you shares with /pujo */
+const hookSource = await readFile(new URL('../components/maps/useOlaMap.ts', import.meta.url), 'utf8')
+const bootSource = `${mapSource}\n${hookSource}`
 const stylesSource = await readFile(new URL('../styles/NearYou.module.css', import.meta.url), 'utf8')
 const packageSource = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'))
 
@@ -25,8 +28,8 @@ test('selected places offer a safe Google Maps coordinate link', () => {
 
 test('Ola map places use real photos or category markers, each shown on its own', () => {
   assert.equal(packageSource.dependencies['olamaps-web-sdk'], '1.3.0')
-  assert.match(mapSource, /import\('olamaps-web-sdk'\)/)
-  assert.match(mapSource, /new OlaMaps\(\{ apiKey \}\)/)
+  assert.match(bootSource, /import\('olamaps-web-sdk'\)/)
+  assert.match(bootSource, /new OlaMaps\(\{ apiKey \}\)/)
   assert.doesNotMatch(mapSource, /cluster: true|clusterMaxZoom|clusterRadius|getClusterExpansionZoom/)
   assert.match(mapSource, /image\.src = source/)
   assert.match(mapSource, /CATEGORY_MARKERS/)
@@ -47,34 +50,41 @@ test('selected map photos use a restrained highlight ring — the one crimson on
 })
 
 test('Ola map configuration fails visibly and safely when the browser key is missing', () => {
-  assert.match(mapSource, /process\.env\.NEXT_PUBLIC_OLA_MAPS_API_KEY \|\| 'proxied'/)
+  assert.match(bootSource, /process\.env\.NEXT_PUBLIC_OLA_MAPS_API_KEY \|\| 'proxied'/)
   assert.match(mapSource, /'missing-key'/)
+  assert.match(hookSource, /'missing-key'/)
   assert.match(mapSource, /Ola Maps is ready to connect\./)
-  assert.match(mapSource, /clientOlaStyleUrl|proxiedOlaMapsUrl/)
-  assert.match(mapSource, /olaMapsProxy/)
+  assert.match(bootSource, /clientOlaStyleUrl|proxiedOlaMapsUrl/)
+  assert.match(hookSource, /olaMapsProxy/)
+})
+
+test('Near You boots its map through the shared Ola hook', () => {
+  assert.match(mapSource, /useOlaMap\(elementRef, \{/)
+  assert.match(mapSource, /from '@\/components\/maps\/useOlaMap'/)
+  assert.doesNotMatch(mapSource, /import\('olamaps-web-sdk'\)/)
 })
 
 test('Ola resource diagnostics are redacted without treating optional style warnings as fatal', () => {
-  assert.match(mapSource, /map\.on\('error'/)
-  assert.match(mapSource, /safeErrorMessage\(event\?\.error\)/)
-  assert.match(mapSource, /api_key=/)
-  assert.doesNotMatch(mapSource, /map\.on\('error',[\s\S]{0,300}setStatus/)
+  assert.match(hookSource, /created\.on\('error'/)
+  assert.match(hookSource, /safeErrorMessage\(event\?\.error\)/)
+  assert.match(hookSource, /api_key=/)
+  assert.doesNotMatch(hookSource, /\.on\('error',[\s\S]{0,300}setStatus/)
   assert.match(mapSource, /Check your connection and map credentials/)
 })
 
 test('the map is always the dark style — there is no theme to switch', () => {
-  assert.match(mapSource, /clientOlaStyleUrl\(\)/)
-  assert.match(mapSource, /style: styleUrl,/)
-  assert.doesNotMatch(mapSource, /styleResponse\.json\(\)/)
-  assert.doesNotMatch(mapSource, /default-light-standard/)
-  assert.doesNotMatch(mapSource, /useTheme|darkMode|setStyle|styledata/)
-  assert.match(mapSource, /\}, \[attempt\]\)/)
+  assert.match(hookSource, /clientOlaStyleUrl\(\)/)
+  assert.match(hookSource, /style: styleUrl,/)
+  assert.doesNotMatch(bootSource, /styleResponse\.json\(\)/)
+  assert.doesNotMatch(bootSource, /default-light-standard/)
+  assert.doesNotMatch(bootSource, /useTheme|darkMode|setStyle|styledata/)
+  assert.match(hookSource, /\}, \[attempt, near, elementRef\]\)/)
   assert.match(mapSource, /map\.moveLayer\(layerId\)/)
 })
 
 test('map tiles go through the same-origin Ola proxy so phone LAN origins are allowed', () => {
-  assert.match(mapSource, /proxiedOlaMapsUrl/)
-  assert.match(mapSource, /transformRequest: \(url\) => \(\{ url: proxiedOlaMapsUrl\(url\) \}\)/)
+  assert.match(hookSource, /proxiedOlaMapsUrl/)
+  assert.match(hookSource, /transformRequest: \(url: string\) => \(\{ url: proxiedOlaMapsUrl\(url\) \}\)/)
 })
 
 test('map markers use brand surfaces and letters, not a rainbow', () => {
@@ -93,12 +103,12 @@ test('map mode fills the viewport and floats its controls under the notch bar', 
 })
 
 test('the Ola map resizes when the mobile viewport settles or rotates', () => {
-  assert.match(mapSource, /function waitForSizedContainer/)
-  assert.match(mapSource, /function bindMapResize/)
-  assert.match(mapSource, /new ResizeObserver/)
-  assert.match(mapSource, /visualViewport/)
-  assert.match(mapSource, /orientationchange/)
-  assert.match(mapSource, /map\.resize\(\)/)
+  assert.match(hookSource, /function waitForSizedContainer/)
+  assert.match(hookSource, /function bindMapResize/)
+  assert.match(hookSource, /new ResizeObserver/)
+  assert.match(hookSource, /visualViewport/)
+  assert.match(hookSource, /orientationchange/)
+  assert.match(hookSource, /map\.resize\(\)/)
 })
 
 test('Near You exposes compact filters and all three result views', () => {
@@ -178,7 +188,7 @@ test('the map lists what it shows in a rail that selects the place', () => {
 
 test('the map moves once per camera key and leaves a viewport the visitor chose alone', () => {
   assert.match(mapSource, /camera\.key === appliedCameraKeyRef\.current/)
-  assert.match(mapSource, /map\.once\('load', finishSetup\)/)
+  assert.match(hookSource, /\.once\('load', finishSetup\)/)
   assert.match(pageSource, /if \(origin\.source === 'map'\) return null/)
 })
 

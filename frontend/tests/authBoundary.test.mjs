@@ -24,7 +24,8 @@ test('every signed-in page checks the session on the server itself', async () =>
   for (const page of pages) {
     const source = await read(page)
     assert.doesNotMatch(source, /^['"]use client['"]/m, `${page} must be a Server Component — move UI into a *Client.tsx`)
-    assert.match(source, /await requireUser\(\)/, `${page} must call requireUser()`)
+    /* with the path to come back to after signing in (lib/returnTo.ts) */
+    assert.match(source, /await requireUser\(['`]\/[^)]*\)/, `${page} must call requireUser('/its/path')`)
   }
 })
 
@@ -58,12 +59,26 @@ test('the session helpers stay server-only and verify the JWT', async () => {
 
   assert.match(helpers, /^import 'server-only'/)
   assert.match(helpers, /auth\.getClaims\(\)/)
-  assert.match(helpers, /redirect\('\/login'\)/)
+  assert.match(helpers, /redirect\(loginPath\(returnTo\)\)/)
+  assert.match(helpers, /from '@\/lib\/returnTo'/)
 })
 
 test('the OAuth callback exchanges the PKCE code and only redirects same-origin', async () => {
   const callback = await read('app/auth/callback/route.ts')
 
   assert.match(callback, /exchangeCodeForSession\(code\)/)
-  assert.match(callback, /!requested\.startsWith\('\/\/'\)/)
+  assert.match(callback, /safeNext\(searchParams\.get\('next'\)/)
+  const returnTo = await read('lib/returnTo.ts')
+  assert.match(returnTo, /next\.startsWith\('\/\/'\)/)
+})
+
+test('sign-in carries the path to come back to, through /login, Google and the callback', async () => {
+  const [login, button, auth] = await Promise.all([
+    read('app/(auth)/login/page.tsx'), read('components/auth/GoogleSignIn.tsx'), read('lib/auth.ts'),
+  ])
+  assert.match(login, /safeNext\(searchParams\.get\('next'\)\)/)
+  assert.match(login, /router\.replace\(next\)/)
+  assert.match(login, /next=\{next\}/)
+  assert.match(button, /signInWithGoogle\(safeNext\(next\)\)/)
+  assert.match(auth, /redirect\(loginPath\(returnTo\)\)/)
 })

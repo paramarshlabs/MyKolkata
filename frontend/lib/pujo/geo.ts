@@ -63,4 +63,14 @@ export function medianPoint(points: LatLng[]): LatLng | null {
   return { lat: middle(points.map((p) => p.lat)), lng: middle(points.map((p) => p.lng)) }
 }
 
+/* the points near the middle of a set, so a stray pin 30 km out doesn't stretch a map's frame */
+export function corePoints<T extends LatLng>(points: T[], { minKm = 6, factor = 2.5 } = {}): T[] {
+  const middle = medianPoint(points)
+  if (!middle || points.length < 4) return points
+  const distances = points.map((p) => straightKm(p, middle)).sort((a, b) => a - b)
+  const typical = distances[Math.floor(distances.length / 2)]
+  const reach = Math.max(minKm, typical * factor)
+  return points.filter((p) => straightKm(p, middle) <= reach)
+}
+
 export const KOLKATA_CENTRE: LatLng = { lat: 22.5726, lng: 88.3639 }

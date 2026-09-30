@@ -17,9 +17,20 @@ export const PUJO_INDEX_KEY = 'pujo:index'
 /* the POIs the app uses: Metro, landmarks, and where to find help */
 const POI_CATEGORIES = ['metro-station', 'popular-landmark', 'police-station', 'hospital', 'help-desk']
 
+/* PujoPandalDetail.famous promotes or demotes a pujo by hand. The table is
+   app-owned; until it exists (npm run db:push) there are no overrides. */
+async function famousOverrides(): Promise<Record<string, boolean>> {
+  try {
+    const rows = await prisma.pujoPandalDetail.findMany({ where: { famous: { not: null } }, select: { slug: true, famous: true } })
+    return Object.fromEntries(rows.map((row) => [row.slug, row.famous as boolean]))
+  } catch {
+    return {}
+  }
+}
+
 export function loadPujoIndex(): Promise<PujoIndex> {
   return cached(PUJO_INDEX_KEY, TTL_MS, async () => {
-    const [pandals, pois] = await Promise.all([
+    const [pandals, pois, famous] = await Promise.all([
       prisma.kolkata_puja_pandals.findMany({
         select: {
           slug: true,
@@ -40,7 +51,8 @@ export function loadPujoIndex(): Promise<PujoIndex> {
         where: { category: { in: POI_CATEGORIES } },
         select: { id: true, name: true, category: true, address: true, lat: true, lng: true },
       }),
+      famousOverrides(),
     ])
-    return buildIndex({ pandals, pois })
+    return buildIndex({ pandals, pois, famous })
   })
 }

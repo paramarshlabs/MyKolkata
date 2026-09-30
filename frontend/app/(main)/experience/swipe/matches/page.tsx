@@ -10,6 +10,6 @@ export const metadata: Metadata = pageMetadata({
 })
 
 export default async function MatchesPage() {
-  await requireUser()
+  await requireUser('/experience/swipe/matches')
   return <MatchesClient />
 }
