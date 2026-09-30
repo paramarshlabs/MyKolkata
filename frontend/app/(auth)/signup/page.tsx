@@ -1,21 +1,13 @@
-'use client'
-
 import Link from 'next/link'
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { useAuth } from '@/components/providers/AuthProvider'
-import { AuthLoading, AuthStage } from '@/components/auth/AuthStage'
+import { redirect } from 'next/navigation'
+import { AuthStage } from '@/components/auth/AuthStage'
 import { GoogleSignIn } from '@/components/auth/GoogleSignIn'
+import { currentUserId } from '@/lib/auth'
+import { DEFAULT_AFTER_SIGN_IN } from '@/lib/returnTo'
 
-export default function SignUpPage() {
-  const { isAuthenticated, isLoaded } = useAuth()
-  const router = useRouter()
-
-  useEffect(() => {
-    if (isLoaded && isAuthenticated) router.replace('/home')
-  }, [isLoaded, isAuthenticated, router])
-
-  if (!isLoaded || isAuthenticated) return <AuthLoading label="Opening the door" />
+export default async function SignUpPage() {
+  /* checked on the server, so the form is in the first paint (see login/page.tsx) */
+  if (await currentUserId()) redirect(DEFAULT_AFTER_SIGN_IN)
 
   return (
     <AuthStage lede="Make an account with Google. It takes a minute.">

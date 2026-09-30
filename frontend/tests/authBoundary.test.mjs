@@ -76,8 +76,8 @@ test('sign-in carries the path to come back to, through /login, Google and the c
   const [login, button, auth] = await Promise.all([
     read('app/(auth)/login/page.tsx'), read('components/auth/GoogleSignIn.tsx'), read('lib/auth.ts'),
   ])
-  assert.match(login, /safeNext\(searchParams\.get\('next'\)\)/)
-  assert.match(login, /router\.replace\(next\)/)
+  assert.match(login, /safeNext\(params\.next\)/)
+  assert.match(login, /redirect\(next\)/)
   assert.match(login, /next=\{next\}/)
   assert.match(button, /signInWithGoogle\(safeNext\(next\)\)/)
   assert.match(auth, /redirect\(loginPath\(returnTo\)\)/)
