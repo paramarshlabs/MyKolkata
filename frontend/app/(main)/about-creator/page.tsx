@@ -32,7 +32,7 @@ async function getContributors(): Promise<Contributor[]> {
 }
 
 export default async function AboutCreator() {
-  await requireUser()
+  await requireUser('/about-creator')
   const contributors = await getContributors()
 
   return (

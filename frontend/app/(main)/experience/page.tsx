@@ -87,7 +87,7 @@ const FEATURES: Feature[] = [
 ]
 
 export default async function ExperiencePage() {
-  await requireUser()
+  await requireUser('/experience')
 
   return (
     <main className="mk-page mk-page-top">

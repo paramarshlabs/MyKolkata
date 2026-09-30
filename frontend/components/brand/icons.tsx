@@ -136,6 +136,18 @@ const UI = {
   plus: <path d="M12 5v14M5 12h14" />,
   volume: <><path d="M5 10v4h3l4 3V7l-4 3Z" /><path d="M15 9q3 3 0 6M18 6q6 6 0 12" /></>,
   volumeOff: <><path d="M5 10v4h3l4 3V7l-4 3Z" /><path d="M16 9l5 6M21 9l-5 6" /></>,
+  /* the Pujo trip planner's controls */
+  share: <><path d="M12 15V4" /><path d="M8 8l4-4 4 4" /><path d="M6 12v6.5q0 1.5 1.5 1.5h9q1.5 0 1.5-1.5V12" /></>,
+  directions: <><path d="M12 3 21 12 12 21 3 12Z" /><path d="M9.5 14v-2.5q0-1 1-1h4" /><path d="M13 8.5l2 2-2 2" /></>,
+  pin: <><path d="M12 21s-6.5-6.2-6.5-11a6.5 6.5 0 0 1 13 0c0 4.8-6.5 11-6.5 11Z" /><circle cx="12" cy="10" r="2.3" /></>,
+  arrowUp: <path d="M12 19V5M6 11l6-6 6 6" />,
+  arrowDown: <path d="M12 5v14M6 13l6 6 6-6" />,
+  grip: <><circle cx="9" cy="7" r=".6" /><circle cx="15" cy="7" r=".6" /><circle cx="9" cy="12" r=".6" /><circle cx="15" cy="12" r=".6" /><circle cx="9" cy="17" r=".6" /><circle cx="15" cy="17" r=".6" /></>,
+  phone: <path d="M6.5 3.5h3l1.5 4-2 1.5q1.5 3.5 5 5l1.5-2 4 1.5v3q0 2-2 2Q10 18 5.5 7.5q0-4 1-4Z" />,
+  people: <><circle cx="9" cy="8.5" r="3" /><path d="M3.5 19q.5-5 5.5-5t5.5 5" /><circle cx="17" cy="9.5" r="2.3" /><path d="M16 14.2q4 .3 4.5 4.8" /></>,
+  clock: <><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></>,
+  trash: <><path d="M4.5 7h15M9.5 7V4.5h5V7" /><path d="M6.5 7l1 12.5h9l1-12.5" /></>,
+  link: <><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1.2 1.2" /><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1.2-1.2" /></>,
 } satisfies Record<string, ReactNode>
 
 export type UiIconName = keyof typeof UI

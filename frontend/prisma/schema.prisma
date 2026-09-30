@@ -719,3 +719,38 @@ model LiveFeed {
 
   @@map("live_feeds")
 }
+
+// /pujo (docs/PUJO_PLAN.md). App-owned, next to the scraper's kolkata_puja_*
+// tables and never inside them: a re-scrape can't overwrite what's here. Pujos
+// are referred to by slug with no foreign key, because the scraper can drop
+// rows; a missing pujo reads as "No longer listed" instead of breaking anything.
+
+// Verified content for a pujo's page, filled in by hand: a section appears
+// only once it has something. `famous` promotes (true) or demotes (false) a
+// pujo; null leaves it to the data (is_featured, carnival rank).
+model PujoPandalDetail {
+  slug        String   @id
+  description String?
+  theme       String?
+  artist      String?
+  // [{ url, alt, credit }]
+  photos      Json?
+  famous      Boolean?
+  updatedAt   DateTime @updatedAt
+
+  @@map("pujo_pandal_details")
+}
+
+// "Pin in the wrong place?": one line from a signed-in visitor, kept for
+// someone to check against the map.
+model PujoPinReport {
+  id         String   @id @default(cuid())
+  pandalSlug String
+  userId     String
+  note       String
+  createdAt  DateTime @default(now())
+
+  @@index([pandalSlug, createdAt])
+  @@index([userId, createdAt])
+  @@map("pujo_pin_reports")
+}

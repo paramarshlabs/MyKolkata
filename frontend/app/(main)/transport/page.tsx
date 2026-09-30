@@ -17,7 +17,7 @@ const MODES = [
 ] as const
 
 async function Transport() {
-  await requireUser()
+  await requireUser('/transport')
 
   return (
     <main className="mk-page mk-page-top">

@@ -14,7 +14,7 @@ export const metadata: Metadata = pageMetadata({
 })
 
 export default async function HomePage() {
-  await requireUser()
+  await requireUser('/home')
   return (
     <>
       <HomeEntry />

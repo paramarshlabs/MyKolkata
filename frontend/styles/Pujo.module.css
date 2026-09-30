@@ -1,4 +1,5 @@
-/* Pujo — the countdown, the five days, and where to go. */
+/* Pujo — the countdown, the five days, and the ready-made routes. The explore
+   bands (search, famous, the map, para pujos) live in PujoExplore.module.css. */
 
 .scene { padding-top: 0; }
 .scene :global(.mk-count-scene) {
@@ -7,25 +8,7 @@
 }
 .days { padding: clamp(40px, 6vw, 72px) 0 var(--mk-7); }
 
-.state { margin-top: var(--mk-6); max-width: 640px; }
-.regions {
-  margin-top: var(--mk-6);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--mk-5) var(--mk-6);
-}
-@media (max-width: 640px) {
-  .regions { grid-template-columns: 1fr; }
-}
-
-.nearGrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(32px, 5vw, 64px); align-items: start; }
-/* the second of two bands in a row sits close under the first */
-.followOn { padding-top: 0; }
-.nearList { list-style: none; margin: var(--mk-6) 0 0; padding: 0; display: grid; gap: 0; }
-.nearItem {
-  display: flex; align-items: center; justify-content: space-between; gap: var(--mk-4);
-  padding: var(--mk-4) 0; border-top: 1px solid rgba(242, 241, 237, 0.08);
-}
+.state { max-width: 640px; }
 
 .soundtrack {
   position: absolute;
@@ -94,23 +77,7 @@
   .soundTrigger { transition: none; }
   .soundTrigger:hover { transform: none; }
 }
-.nearItem:last-child { border-bottom: 1px solid rgba(242, 241, 237, 0.08); }
-.nearName { font-family: var(--mk-display); font-size: 22px; line-height: 1.2; letter-spacing: -0.01em; color: var(--mk-white); }
-.nearDistance { display: inline-flex; align-items: center; gap: var(--mk-2); font-size: 14px; letter-spacing: 0.02em; color: var(--mk-ash); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.nearDistance svg { color: var(--mk-taxi); }
-
-.mapFrame {
-  position: relative; overflow: hidden; aspect-ratio: 4 / 3; min-height: 280px;
-  border: 1px solid rgba(242, 241, 237, 0.08); border-radius: var(--mk-r-lg); background: var(--mk-ink); box-shadow: var(--mk-shadow-card);
-}
-/* Google's embed has no dark style; a graded invert keeps it on the ground */
-.mapFrame iframe { position: absolute; inset: 0; filter: invert(0.9) hue-rotate(180deg) saturate(0.55) contrast(0.92); }
-
-@media (max-width: 900px) {
-  .nearGrid { grid-template-columns: 1fr; }
-}
-
-/* Where to go: search the routes by pandal, para, day or hour */
+/* Ready-made routes: search them by pandal, para, day or hour */
 .routeSearch { margin-top: var(--mk-6); max-width: 720px; display: grid; gap: var(--mk-2); }
 .routeLine { max-width: 640px; }
 .routeHint { margin: 0; }

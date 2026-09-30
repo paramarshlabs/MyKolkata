@@ -11,7 +11,7 @@ export const metadata: Metadata = pageMetadata({
 })
 
 export default async function NearYouPage() {
-  await requireUser()
+  await requireUser('/near-you')
 
   return (
     <Suspense fallback={<div className="mk-page mk-page-top mk-wrap"><AlponaLoader label="Opening the map" /></div>}>
