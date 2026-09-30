@@ -13,10 +13,10 @@ import { LanguageToggle } from '@/components/layout/LanguageToggle'
 
 const SECTIONS = [
   { label: 'Home', href: '/home' },
+  { label: 'Pujo', href: '/pujo' },
   { label: 'Explore', href: '/places', also: ['/near-you'] },
   { label: 'Experiences', href: '/experience' },
-  { label: 'Pujo', href: '/pujo' },
-  { label: 'Transport', href: '/transport' },
+  //{ label: 'Transport', href: '/transport' },
   { label: 'Community', href: '/community' },
 ]
 
