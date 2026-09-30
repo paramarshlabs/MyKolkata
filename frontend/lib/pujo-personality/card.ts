@@ -1,4 +1,3 @@
-import { getDimension } from './config'
 import { CONTENT, HEX, PALETTES, STATUS_LABELS, TAGLINE_LINES, streakLine, type Palette } from './content'
 import { PATHS as BENGALI_PATHS, UNITS_PER_EM } from './bengali-paths'
 import { SIGILS, type SigilColours } from './sigils'
@@ -25,6 +24,8 @@ export type CardInput = {
   card: ShareCard
   because: DimensionId[]
   name?: string | null
+  /* the person's photo, already loaded; drawn round, beside the sigil */
+  photo?: ImageBitmap | null
   host: string
 }
 
@@ -177,39 +178,57 @@ function laalPaar(ctx: Ctx, w: number, y: number, h: number) {
   }
 }
 
-function pill(ctx: Ctx, label: string, x: number, y: number, size: number, palette: Palette): number {
-  setFont(ctx, TEXT, size, 0.01)
-  const padX = size * 0.75
-  const height = size * 2
-  const width = ctx.measureText(label).width + padX * 2
-  ctx.strokeStyle = palette.tone === 'dark' ? 'rgba(242, 241, 237, 0.3)' : 'rgba(13, 16, 18, 0.3)'
-  ctx.lineWidth = 2
+/* a photo cut to a circle (cover-cropped), in a ring of the palette's tick colour */
+function portrait(ctx: Ctx, photo: ImageBitmap, x: number, y: number, size: number, palette: Palette) {
+  const r = size / 2
+  const side = Math.min(photo.width, photo.height)
+  ctx.save()
   ctx.beginPath()
-  ctx.roundRect(x + 1, y + 1, width - 2, height - 2, 12)
+  ctx.arc(x + r, y + r, r, 0, Math.PI * 2)
+  ctx.clip()
+  ctx.drawImage(photo, (photo.width - side) / 2, (photo.height - side) / 2, side, side, x, y, size, size)
+  ctx.restore()
+  ctx.strokeStyle = palette.tick
+  ctx.lineWidth = Math.max(4, size * 0.03)
+  ctx.beginPath()
+  ctx.arc(x + r, y + r, r - ctx.lineWidth / 2, 0, Math.PI * 2)
   ctx.stroke()
-  text(ctx, label, x + padX, y + height / 2 + size * 0.36, palette.body)
-  return width
 }
 
 /* ------------------------------------------------------- the card -- */
 
 type Layout = {
-  margin: number; lockupY: number; sigilY: number; sigil: number; namesY: number
-  bn: number; latin: number; cap1: number; cap2: number; meta: number; pill: number
-  footerY: number; footer: number; gap: number
+  margin: number; lockupY: number; bottom: number; sigil: number; photo: number; person: number
+  bn: number; latin: number; cap1: number; cap2: number; meta: number; footer: number; gap: number
 }
 
 const LAYOUT: Record<CardFormat, Layout> = {
-  /* Story: the top 220px and bottom 380px stay clear of anything that must be read */
+  /* Story: the top 220px and bottom ~240px stay clear of the app's own buttons */
   story: {
-    margin: 104, lockupY: 176, sigilY: 284, sigil: 264, namesY: 628, bn: 160, latin: 110,
-    cap1: 42, cap2: 60, meta: 37, pill: 30, footerY: 1480, footer: 56, gap: 1,
+    margin: 104, lockupY: 176, bottom: 240, sigil: 300, photo: 420, person: 80,
+    bn: 140, latin: 104, cap1: 42, cap2: 60, meta: 38, footer: 56, gap: 1,
   },
   feed: {
-    margin: 88, lockupY: 112, sigilY: 168, sigil: 180, namesY: 410, bn: 118, latin: 84,
-    cap1: 34, cap2: 48, meta: 31, pill: 26, footerY: 1250, footer: 42, gap: 0.8,
+    margin: 88, lockupY: 112, bottom: 96, sigil: 200, photo: 290, person: 62,
+    bn: 112, latin: 80, cap1: 34, cap2: 48, meta: 31, footer: 42, gap: 0.8,
   },
 }
+
+/* the sigil as a medallion on the photo's lower right, cut out of the ground */
+function medallion(ctx: Ctx, id: ArchetypeId, palette: Palette, cx: number, cy: number, r: number) {
+  ctx.fillStyle = palette.ground
+  ctx.beginPath()
+  ctx.arc(cx, cy, r, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.strokeStyle = palette.tick
+  ctx.lineWidth = Math.max(3, r * 0.05)
+  ctx.stroke()
+  const size = r * 1.5
+  drawSigil(ctx, id, palette.sigil, cx - size / 2, cy - size / 2, size)
+}
+
+/* One stretch of the card: how tall it is, and how to draw it from a top edge. */
+type Block = { height: number; draw: (top: number) => void }
 
 export function drawCard(canvas: HTMLCanvasElement, format: CardFormat, input: CardInput) {
   const [w, h] = CARD_SIZE[format]
@@ -217,7 +236,7 @@ export function drawCard(canvas: HTMLCanvasElement, format: CardFormat, input: C
   canvas.height = h
   const ctx = canvas.getContext('2d')
   if (!ctx) return
-  const { card, because, name, host } = input
+  const { card, name, photo, host } = input
   const id = card.primary
   const content = CONTENT[id]
   const palette = PALETTES[id]
@@ -235,71 +254,99 @@ export function drawCard(canvas: HTMLCanvasElement, format: CardFormat, input: C
   text(ctx, 'MY KOLKATA', x, L.lockupY, palette.body)
   drawBengali(ctx, 'আমার কলকাতা', x, L.lockupY + 40 * L.gap, 22 * L.gap + 2, palette.muted)
 
-  drawSigil(ctx, id, palette.sigil, x - L.sigil * 0.04, L.sigilY, L.sigil)
+  const blocks: Block[] = []
 
-  let y = L.namesY
-  if (name) {
-    setFont(ctx, TEXT, L.meta, 0.01)
-    text(ctx, `${name}’s Pujo`, x, y, palette.muted)
-    y += L.meta * 0.6
-  }
+  /* the person: their photo with the sigil pinned to it (or the sigil alone), and their name under it */
+  const hero = photo ? L.photo : L.sigil
+  blocks.push({
+    height: hero + (name ? L.person * 1.35 : 0),
+    draw(top) {
+      if (photo) {
+        portrait(ctx, photo, x, top, hero, palette)
+        medallion(ctx, id, palette, x + hero * 0.86, top + hero * 0.86, hero * 0.2)
+      } else {
+        drawSigil(ctx, id, palette.sigil, x - hero * 0.04, top, hero)
+      }
+      if (!name) return
+      const baseline = top + hero + L.person * 1.2
+      const size = fitFont(ctx, `${name}’s Pujo`, DISPLAY, L.person, width, -0.03)
+      const nameW = text(ctx, `${name}’s`, x, baseline, palette.text)
+      setFont(ctx, DISPLAY, size, -0.03)
+      text(ctx, ' Pujo', x + nameW, baseline, palette.accent)
+    },
+  })
 
   /* the Bengali name leads; the Latin name follows (DESIGN.md §4.3) */
   const bnSize = Math.min(L.bn, width / Math.max(1, bengaliWidth(content.bn, 1)))
-  y += bnSize * 0.95
-  drawBengali(ctx, content.bn, x, y, bnSize, palette.text)
-  y += L.latin * 1.12
-  fitFont(ctx, content.name, DISPLAY, L.latin, width, -0.035)
-  text(ctx, content.name, x, y, palette.text)
-  y += L.cap1 * 1.9
+  blocks.push({
+    height: bnSize * 0.95 + L.latin * 1.2 + L.latin * 0.2,
+    draw(top) {
+      const bnBase = top + bnSize * 0.95
+      drawBengali(ctx, content.bn, x, bnBase, bnSize, palette.text)
+      fitFont(ctx, content.name, DISPLAY, L.latin, width, -0.035)
+      text(ctx, content.name, x, bnBase + L.latin * 1.2, palette.text)
+    },
+  })
 
   /* the caption device: a tick, a quiet first line, an indented display line */
   const [line1, line2] = TAGLINE_LINES[id]
-  const tickW = 6 * L.gap + 1
-  const textX = x + tickW + 26 * L.gap
-  const top = y
-  setFont(ctx, TEXT, L.cap1, 0.01)
-  y += L.cap1
-  text(ctx, line1, textX, y, palette.body)
-  const indent = 60 * L.gap
-  fitFont(ctx, line2, DISPLAY, L.cap2, w - L.margin - textX - indent, -0.015)
-  y += L.cap2 * 1.28
-  text(ctx, line2, textX + indent, y, palette.second)
-  ctx.fillStyle = palette.tick
-  ctx.fillRect(x, top + L.cap1 * 0.12, tickW, y - top + L.cap2 * 0.12)
-  y += L.meta * 2.3
+  blocks.push({
+    height: L.cap1 + L.cap2 * 1.28 + L.cap2 * 0.25,
+    draw(top) {
+      const tickW = 6 * L.gap + 1
+      const textX = x + tickW + 26 * L.gap
+      const indent = 60 * L.gap
+      setFont(ctx, TEXT, L.cap1, 0.01)
+      text(ctx, line1, textX, top + L.cap1, palette.body)
+      fitFont(ctx, line2, DISPLAY, L.cap2, w - L.margin - textX - indent, -0.015)
+      const last = top + L.cap1 + L.cap2 * 1.28
+      text(ctx, line2, textX + indent, last, palette.second)
+      ctx.fillStyle = palette.tick
+      ctx.fillRect(x, top + L.cap1 * 0.12, tickW, last - top + L.cap2 * 0.12)
+    },
+  })
 
-  /* the streak, the hour, the status */
-  setFont(ctx, TEXT, L.meta, 0.01)
-  if (card.secondary) {
-    text(ctx, streakLine(card.secondary), x, y, palette.muted)
-    y += L.meta * 1.5
-  }
-  const hourW = text(ctx, content.hour, x, y, palette.accent)
-  text(ctx, ' is my hour', x + hourW, y, palette.body)
-  y += L.meta * 1.5
-  if (card.status) {
-    text(ctx, STATUS_LABELS[card.status], x, y, palette.muted)
-    y += L.meta * 1.5
-  }
+  /* the hour, then the streak and the status, quieter */
+  const lines = 1 + (card.secondary ? 1 : 0) + (card.status ? 1 : 0)
+  blocks.push({
+    height: L.meta + (lines - 1) * L.meta * 1.5 + L.meta * 0.25,
+    draw(top) {
+      let y = top + L.meta
+      setFont(ctx, TEXT, L.meta, 0.01)
+      const hourW = text(ctx, content.hour, x, y, palette.accent)
+      text(ctx, ' is my hour', x + hourW, y, palette.body)
+      if (card.secondary) {
+        y += L.meta * 1.5
+        text(ctx, streakLine(card.secondary), x, y, palette.muted)
+      }
+      if (card.status) {
+        y += L.meta * 1.5
+        text(ctx, STATUS_LABELS[card.status], x, y, palette.muted)
+      }
+    },
+  })
 
-  /* three traits, as words, a line below the last one */
-  const pillTop = y - L.meta * 0.7
-  let px = x
-  for (const dim of because.slice(0, 3)) {
-    const label = getDimension(dim).name
-    setFont(ctx, TEXT, L.pill, 0.01)
-    const pw = ctx.measureText(label).width + L.pill * 1.5
-    if (px + pw > w - L.margin) break
-    px += pill(ctx, label, px, pillTop, L.pill, palette) + 14 * L.gap
-  }
+  /* the question back, and where to answer it */
+  blocks.push({
+    height: L.footer + L.meta * 1.6 + L.meta * 0.25,
+    draw(top) {
+      setFont(ctx, DISPLAY, L.footer, -0.02)
+      text(ctx, 'Which Pujo are you?', x, top + L.footer, palette.text)
+      setFont(ctx, TEXT, L.meta, 0.02)
+      text(ctx, `${host}/pujo`, x, top + L.footer + L.meta * 1.6, palette.muted)
+    },
+  })
 
-  /* the question back, and where to answer it: never closer than a line to the traits */
-  const footerY = Math.max(L.footerY, pillTop + L.pill * 2 + L.footer * 1.7)
-  setFont(ctx, DISPLAY, L.footer, -0.02)
-  text(ctx, 'Which Pujo are you?', x, footerY, palette.text)
-  setFont(ctx, TEXT, L.meta, 0.02)
-  text(ctx, `${host}/pujo`, x, footerY + L.meta * 1.6, palette.muted)
+  /* from under the lockup to the clear strip at the bottom, the space left over is shared evenly */
+  const start = L.lockupY + 40 * L.gap
+  const end = h - L.bottom
+  const used = blocks.reduce((n, b) => n + b.height, 0)
+  const space = Math.max(16, (end - start - used) / blocks.length)
+  let top = start + space
+  for (const block of blocks) {
+    block.draw(top)
+    top += block.height + space
+  }
 }
 
 export function cardFileName(card: ShareCard, format: CardFormat) {

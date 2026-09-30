@@ -2,6 +2,9 @@
 
 import { useEffect, useId, useRef, useState } from 'react'
 import { UiIcon } from '@/components/brand/icons'
+import { useAuth } from '@/components/providers/AuthProvider'
+import { firstName } from '@/lib/profile/photo'
+import { loadPhotoBitmap } from '@/lib/profile/photoClient'
 import { trackPujo } from '@/lib/pujo-personality/analytics'
 import type { CardFormat } from '@/lib/pujo-personality/card'
 import { PREFERENCE_FLOW } from '@/lib/pujo-personality/config'
@@ -34,12 +37,20 @@ export function ShareSheet({ mode, card, because, age, onAge, onClose }: ShareSh
   const closeRef = useRef<HTMLButtonElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const lib = useRef<CardModule | null>(null)
+  const { user } = useAuth()
   const [format, setFormat] = useState<CardFormat>('story')
-  const [name, setName] = useState('')
+  /* signed in, the card starts with your first name and your photo; both can be changed or left off */
+  const [typedName, setName] = useState<string | null>(null)
+  const name = typedName ?? sanitizeName(firstName(user?.fullName)) ?? ''
   const [note, setNote] = useState<string | null>(null)
   /* only ever mounted in the browser, after a tap */
   const [origin] = useState(() => window.location.origin)
   const minor = age === 'under_18'
+  const photoSrc = user?.imageUrl ?? null
+  const [photoChoice, setPhotoChoice] = useState<boolean | null>(null)
+  /* on by default, except under 18: then it's theirs to switch on */
+  const withPhoto = Boolean(photoSrc) && (photoChoice ?? !minor)
+  const [photo, setPhoto] = useState<{ src: string; bitmap: ImageBitmap } | null>(null)
   const token = encodeCard(card)
   const cleanName = name.trim() ? sanitizeName(name) : null
   const nameRejected = name.trim() !== '' && !cleanName
@@ -62,8 +73,19 @@ export function ShareSheet({ mode, card, because, age, onAge, onClose }: ShareSh
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  /* the card is drawn on this phone, and redrawn as the name or format changes */
-  const drawKey = `${token}|${because.join()}|${format}|${cleanName ?? ''}|${age ?? ''}`
+  /* the photo is fetched once, from our own route, and only if it's going on the card */
+  useEffect(() => {
+    if (mode !== 'card' || !withPhoto || !photoSrc || photo?.src === photoSrc) return
+    let cancelled = false
+    loadPhotoBitmap(photoSrc).then((bitmap) => {
+      if (!cancelled && bitmap) setPhoto({ src: photoSrc, bitmap })
+    })
+    return () => { cancelled = true }
+  }, [mode, withPhoto, photoSrc, photo?.src])
+  const cardPhoto = withPhoto && photo?.src === photoSrc ? photo.bitmap : null
+
+  /* the card is drawn on this phone, and redrawn as the name, photo or format changes */
+  const drawKey = `${token}|${because.join()}|${format}|${cleanName ?? ''}|${cardPhoto ? photoSrc : ''}|${age ?? ''}`
   useEffect(() => {
     if (mode !== 'card' || !age) return
     let cancelled = false
@@ -71,7 +93,7 @@ export function ShareSheet({ mode, card, because, age, onAge, onClose }: ShareSh
       lib.current ??= await import('@/lib/pujo-personality/card')
       await lib.current.loadCardFonts(cleanName)
       if (cancelled || !canvasRef.current) return
-      lib.current.drawCard(canvasRef.current, format, { card, because, name: cleanName, host: window.location.host })
+      lib.current.drawCard(canvasRef.current, format, { card, because, name: cleanName, photo: cardPhoto, host: window.location.host })
     })()
     return () => { cancelled = true }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -190,6 +212,17 @@ export function ShareSheet({ mode, card, because, age, onAge, onClose }: ShareSh
             <p className="mk-meta" style={{ marginTop: 8 }}>
               {nameRejected ? 'That name can’t go on a card. Letters only, up to 20.' : 'It goes on the picture only, never into a link.'}
             </p>
+            {photoSrc && (
+              <label className="mk-body" style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 8 }}>
+                <input type="checkbox" checked={withPhoto} onChange={(e) => setPhotoChoice(e.target.checked)} />
+                Your photo on the card
+              </label>
+            )}
+            {photoSrc && (
+              <p className="mk-meta">
+                {user?.hasOwnPhoto ? 'The photo on your profile.' : 'Your Google photo.'} Change it on <a href="/profile">your profile</a>. Like your name, it goes on the picture only.
+              </p>
+            )}
 
             {!minor && (
               <>

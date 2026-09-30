@@ -1,5 +1,6 @@
 import 'server-only'
-import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import type { SupabaseClient } from '@supabase/supabase-js'
+import { admin, adminReady } from '@/lib/supabase/admin'
 import { LIMITS } from './config'
 import type { PhotoStore } from './handlers'
 
@@ -14,17 +15,6 @@ import type { PhotoStore } from './handlers'
  */
 
 export const BUCKET = 'ashtami-date'
-
-const secretKey = () => process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-
-let client: SupabaseClient | null = null
-function admin(): SupabaseClient {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const key = secretKey()
-  if (!url || !key) throw new Error('Supabase Storage is not configured (SUPABASE_SECRET_KEY)')
-  client ??= createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } })
-  return client
-}
 
 /* Made once per server: private, JPEG only, with the size cap. A public bucket of this name is refused. */
 let bucket: Promise<void> | null = null
@@ -50,7 +40,7 @@ function ensureBucket(storage: SupabaseClient['storage']) {
 
 export const supabasePhotoStore: PhotoStore = {
   get ready() {
-    return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && secretKey())
+    return adminReady()
   },
 
   async put(key, bytes, contentType) {

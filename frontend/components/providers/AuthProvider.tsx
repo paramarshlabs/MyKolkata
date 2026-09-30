@@ -3,15 +3,18 @@
 import React, { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import type { User } from '@supabase/supabase-js'
+import { isPhotoKey, photoSrc } from '@/lib/profile/photo'
 import { createClient } from '@/lib/supabase/client'
 
-/* The account as the UI reads it — Google fills these through user_metadata. */
+/* The account as the UI reads it — Google fills these through user_metadata;
+   a photo of their own (app_metadata.photo) takes the place of Google's. */
 export type AuthUser = {
   id: string
   fullName: string | null
   email: string | null
   emailVerified: boolean
   imageUrl: string | null
+  hasOwnPhoto: boolean
   createdAt: string
 }
 
@@ -20,6 +23,8 @@ type AuthContextValue = {
   isAuthenticated: boolean | undefined
   user: AuthUser | null
   signInWithGoogle: (next?: string) => Promise<void>
+  /* re-reads the account after the server changed it (a new photo) */
+  refresh: () => Promise<void>
   logout: () => Promise<void>
 }
 
@@ -28,12 +33,14 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 function toAuthUser(user: User | null): AuthUser | null {
   if (!user) return null
   const meta = user.user_metadata ?? {}
+  const own = isPhotoKey(user.app_metadata?.photo) ? user.app_metadata.photo : null
   return {
     id: user.id,
     fullName: meta.full_name || meta.name || null,
     email: user.email ?? null,
     emailVerified: Boolean(user.email_confirmed_at),
-    imageUrl: meta.avatar_url || meta.picture || null,
+    imageUrl: photoSrc(own, meta.avatar_url || meta.picture || null),
+    hasOwnPhoto: Boolean(own),
     createdAt: user.created_at,
   }
 }
@@ -72,6 +79,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw error
   }
 
+  /* app_metadata travels in the session token, so a fresh token carries the change */
+  const refresh = async () => {
+    const { data } = await supabase.auth.refreshSession()
+    if (data.user) setUser(toAuthUser(data.user))
+  }
+
   const logout = async () => {
     await supabase.auth.signOut()
     router.push('/')
@@ -85,6 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated: isLoaded ? Boolean(user) : undefined,
         user,
         signInWithGoogle,
+        refresh,
         logout,
       }}
     >

@@ -93,8 +93,11 @@ export function boundsRadiusKm(bounds) {
   return Math.min(Math.max(corner, 0.3), 15)
 }
 
-export function createPlaceSearchService({ repository, provider, minimumLocalResults = 8 }) {
+export function createPlaceSearchService({ repository, provider, imageResolver = null, minimumLocalResults = 8 }) {
   if (!repository) throw new Error('A place repository is required')
+
+  /* search results carry no photo; fill them before the list goes out */
+  const withImages = (places) => (imageResolver ? imageResolver.withImages(places) : places)
 
   async function localResults(method, params, emptyValue = []) {
     try {
@@ -175,12 +178,12 @@ export function createPlaceSearchService({ repository, provider, minimumLocalRes
       const categorySlug = category ? findCategory(category)?.slug : null
       const candidates = withDistances(mergeUniquePlaces(localPlaces, external.places, categoryNearby.places), origin)
       const area = cursor === 0 ? findAreaAnchor(query, candidates) : null
-      const places = candidates
+      const places = await withImages(candidates
         .filter((place) => !isArea(place))
         .filter((place) => place.matchedBy !== 'text' || matchesEveryWord(place, query))
         .filter((place) => !categorySlug || place.categorySlug === categorySlug)
         .sort((a, b) => searchScore(b, query) - searchScore(a, query))
-        .slice(0, limit)
+        .slice(0, limit))
 
       const providerStatus = [external.providerStatus, categoryNearby.providerStatus].includes('ok')
         ? 'ok'
@@ -208,10 +211,10 @@ export function createPlaceSearchService({ repository, provider, minimumLocalRes
         external = await providerFallback('nearby', { lat, lng, radiusKm, category, limit })
       }
 
-      const places = withDistances(mergeUniquePlaces(localPlaces, external.places), { lat, lng })
+      const places = await withImages(withDistances(mergeUniquePlaces(localPlaces, external.places), { lat, lng })
         .filter((place) => Number.isFinite(place.distanceKm) && place.distanceKm <= radiusKm)
         .sort((a, b) => a.distanceKm - b.distanceKm || (b.rating ?? 0) - (a.rating ?? 0))
-        .slice(0, limit)
+        .slice(0, limit))
 
       return {
         places,
