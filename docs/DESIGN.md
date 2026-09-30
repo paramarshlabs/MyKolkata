@@ -859,6 +859,13 @@ small labels such as its hour. Sigil accents follow §7C.
 following in Display, the tagline in the caption device (§9.6). The one Crimson moment is the
 primary button, *Share my Pujo →*.
 
+**Personal result exception.** After the quiz, the identity hero uses one licensed photograph
+specific to the archetype in place of the large sigil. It is a restrained portrait beside the
+name on desktop and a short landscape crop above it on mobile. Its three subsequent story
+frames are different photos, not repeats of the cover. The result tagline aligns both lines
+beside its tick. Public archetype pages use the same photographic cover and aligned tagline;
+share cards retain the original sigil treatment.
+
 **The Pujo DNA chart.** Fourteen filled teardrops around a Crimson disc, one per dimension,
 grouped by family, with the medallion's gaps at ±90°. Petal length is relative to how most
 people answer; a dashed ring marks typical. Petals are labelled on tap, never on the chart, and a

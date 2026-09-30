@@ -12,12 +12,13 @@ export type Stop = { name: string; area: string; note: string }
 export type Route = { id: string; title: string; when: string; zone: string; why: string; stops: Stop[] }
 export type Diet = 'veg' | 'egg' | 'nonveg'
 export type Pick = { name: string; area: string; note: string }
-export type Plate = Pick & { diet: Diet }
+export type Plate = Pick & { diet: Diet; moment: string }
+export type AlsoIdea = { text: string; practical?: boolean }
 export type Recommendations = {
   routes: Route[]
   pandals: Pick[]
   plates: Plate[]
-  alsoTry: string[]
+  alsoTry: AlsoIdea[]
   playlist: { name: string; anchors: string[] }
 }
 
@@ -80,14 +81,13 @@ export const RECOMMENDATIONS: Record<ArchetypeId, Recommendations> = {
       { name: 'Maddox Square', area: 'Ballygunge', note: 'After one, when the adda thins.' },
     ],
     plates: [
-      { name: 'An egg-chicken roll', area: 'Near the big pandals', note: '2 am, eaten walking.', diet: 'nonveg' },
-      { name: 'Cha in a bhaar', area: 'Outside the Metro', note: 'At 3 am, from the kettle that never goes cold.', diet: 'veg' },
-      { name: 'Kochuri at dawn', area: 'North Kolkata sweet shops', note: 'As the shutters go up.', diet: 'veg' },
+      { name: 'An egg-chicken roll', area: 'Near the big pandals', note: 'Eaten walking.', diet: 'nonveg', moment: '2 am' },
+      { name: 'Cha in a bhaar', area: 'Outside the Metro', note: 'From the kettle that never goes cold.', diet: 'veg', moment: '3 am' },
+      { name: 'Kochuri at dawn', area: 'North Kolkata sweet shops', note: 'As the shutters go up.', diet: 'veg', moment: 'First light' },
     ],
     alsoTry: [
-      'End every night at a ghat, for first light.',
-      'Jagaddhatri Puja in Chandannagar, 16 to 19 November: the lights, at their source.',
-      'Walk it together, and share your plan with someone at home.',
+      { text: 'End every night at a ghat, for first light.' },
+      { text: 'Jagaddhatri Puja in Chandannagar, 16 to 19 November: the lights, at their source.' },
     ],
     playlist: { name: 'Nabami Nishi', anchors: ['Bela Bose, Anjan Dutt', 'Moheener Ghoraguli', 'Fossils', 'Cizzy'] },
   },
@@ -143,14 +143,14 @@ export const RECOMMENDATIONS: Record<ArchetypeId, Recommendations> = {
       { name: 'Kasba Bosepukur', area: 'Kasba', note: 'Famous for unusual materials.' },
     ],
     plates: [
-      { name: 'Jhalmuri in a paper cone', area: 'Between any two pandals', note: 'Eaten walking. Obviously.', diet: 'veg' },
-      { name: 'A cutlet, standing', area: 'The nearest cabin', note: 'Five minutes, then the next pandal.', diet: 'nonveg' },
-      { name: 'Water, a banana, biscuits', area: 'Your bag', note: 'The Hunter’s lunch.', diet: 'veg' },
+      { name: 'Jhalmuri in a paper cone', area: 'Between any two pandals', note: 'Eaten walking. Obviously.', diet: 'veg', moment: 'On the move' },
+      { name: 'A cutlet, standing', area: 'The nearest cabin', note: 'Five minutes, then the next pandal.', diet: 'nonveg', moment: 'A five-minute stop' },
+      { name: 'Water, a banana, biscuits', area: 'Your bag', note: 'The Hunter’s lunch.', diet: 'veg', moment: 'For the bag' },
     ],
     alsoTry: [
-      'The Kolkata Traffic Police Puja guide map, for the day’s diversions.',
-      'The Purple Line to Behala: the fastest way to the South’s theme cluster.',
-      'Blister plasters. You will need them by Saptami.',
+      { text: 'The Kolkata Traffic Police Puja guide map, for the day’s diversions.' },
+      { text: 'The Purple Line to Behala: the fastest way to the South’s theme cluster.' },
+      { text: 'Blister plasters. You will need them by Saptami.', practical: true },
     ],
     playlist: { name: 'Porer Ta', anchors: ['Holud Pakhi, Cactus', 'Fossils', 'Bollywood Pujo songs'] },
   },
@@ -200,14 +200,14 @@ export const RECOMMENDATIONS: Record<ArchetypeId, Recommendations> = {
       { name: 'Maddox Square', area: 'Ballygunge', note: 'Where the South’s paras meet.' },
     ],
     plates: [
-      { name: 'Khichuri bhog', area: 'Your para', note: 'Labra, beguni, a spoon of chutney. 1 pm.', diet: 'veg' },
-      { name: 'The para stall’s chowmein', area: 'Your para', note: 'Evening. Every year. Never changes.', diet: 'egg' },
-      { name: 'The Bijoya platter', area: 'Every relative', note: 'Nimki, narkel naru, ghugni.', diet: 'veg' },
+      { name: 'Khichuri bhog', area: 'Your para', note: 'Labra, beguni, a spoon of chutney.', diet: 'veg', moment: 'Lunch' },
+      { name: 'The para stall’s chowmein', area: 'Your para', note: 'Every year. Never changes.', diet: 'egg', moment: 'Evening' },
+      { name: 'The Bijoya platter', area: 'Every relative', note: 'Nimki, narkel naru, ghugni.', diet: 'veg', moment: 'Bijoya' },
     ],
     alsoTry: [
-      'Look for the blood donation camps many committees run.',
-      'Kojagari Lokkhi Pujo, five days after Dashami.',
-      'Bring a friend who has never done a para Pujo.',
+      { text: 'Look for the blood donation camps many committees run.' },
+      { text: 'Kojagari Lokkhi Pujo, five days after Dashami.' },
+      { text: 'Bring a friend who has never done a para Pujo.' },
     ],
     playlist: { name: 'Amader Para', anchors: ['Mahishasuramardini', 'Old Pujo songs', 'Dola Re Dola'] },
   },
@@ -258,14 +258,14 @@ export const RECOMMENDATIONS: Record<ArchetypeId, Recommendations> = {
       { name: 'Samaj Sebi Sangha', area: 'Lake View Road', note: 'Heritage, and quiet corners.' },
     ],
     plates: [
-      { name: 'One plate of phuchka, shared', area: 'Any stall with a queue of couples', note: 'Two people, no talking.', diet: 'veg' },
-      { name: 'Daab sherbet', area: 'Paramount, College Square', note: 'One glass, two straws.', diet: 'veg' },
-      { name: 'Mishti doi in a clay pot', area: 'A sweet shop on the way home', note: 'The last stop.', diet: 'veg' },
+      { name: 'One plate of phuchka, shared', area: 'Any stall with a queue of couples', note: 'Two people, no talking.', diet: 'veg', moment: 'To share' },
+      { name: 'Daab sherbet', area: 'Paramount, College Square', note: 'One glass, two straws.', diet: 'veg', moment: 'To linger' },
+      { name: 'Mishti doi in a clay pot', area: 'A sweet shop on the way home', note: 'The last stop.', diet: 'veg', moment: 'On the way home' },
     ],
     alsoTry: [
-      'The kaash fields along the Rajarhat roads, before Pujo.',
-      'The Kojagari full moon at the ghat, five days after Dashami.',
-      'Write someone a Bijoya letter.',
+      { text: 'The kaash fields along the Rajarhat roads, before Pujo.' },
+      { text: 'The Kojagari full moon at the ghat, five days after Dashami.' },
+      { text: 'Write someone a Bijoya letter.' },
     ],
     playlist: { name: 'Ei Path', anchors: ['Ei Path Jodi Na Shesh Hoy', 'Amake Amar Moto Thakte Dao, Anupam Roy', 'Bojhena Shey Bojhena, Arijit Singh', 'Mone Pore Ruby Roy'] },
   },
@@ -318,17 +318,17 @@ export const RECOMMENDATIONS: Record<ArchetypeId, Recommendations> = {
       { name: 'Ekdalia Evergreen', area: 'Gariahat', note: 'Gariahat’s stalls.' },
     ],
     plates: [
-      { name: 'Kolkata biryani, with the aloo', area: 'Royal Indian Hotel, Arsalan or Aminia', note: 'The potato is non-negotiable.', diet: 'nonveg' },
-      { name: 'Fish kabiraji', area: 'Mitra Café, Shobhabazar', note: 'Since 1920.', diet: 'nonveg' },
-      { name: 'Egg devil', area: 'Niranjan Agar, Girish Park', note: 'A whole egg in mince and crumbs.', diet: 'nonveg' },
-      { name: 'Khichuri bhog', area: 'A Pujo that serves visitors', note: 'The best free lunch in the city. Ask at the pandal.', diet: 'veg' },
+      { name: 'Kolkata biryani, with the aloo', area: 'Royal Indian Hotel, Arsalan or Aminia', note: 'The potato is non-negotiable.', diet: 'nonveg', moment: 'The main event' },
+      { name: 'Fish kabiraji', area: 'Mitra Café, Shobhabazar', note: 'Since 1920.', diet: 'nonveg', moment: 'An old cabin' },
+      { name: 'Egg devil', area: 'Niranjan Agar, Girish Park', note: 'A whole egg in mince and crumbs.', diet: 'nonveg', moment: 'One more bite' },
+      { name: 'Khichuri bhog', area: 'A Pujo that serves visitors', note: 'The best free lunch in the city. Ask at the pandal.', diet: 'veg', moment: 'The bhog line' },
     ],
     alsoTry: [
-      'Tiretta Bazaar’s Chinese breakfast, at dawn.',
-      'Zakaria Street’s evening food walks in Ramadan.',
-      'Nolen gur season, in winter.',
+      { text: 'Tiretta Bazaar’s Chinese breakfast, at dawn.' },
+      { text: 'Zakaria Street’s evening food walks in Ramadan.' },
+      { text: 'Nolen gur season, in winter.' },
     ],
-    playlist: { name: 'Pet Pujo', anchors: ['Whatever the stall is playing', 'Coffee House, Manna Dey'] },
+    playlist: { name: 'Pet Pujo', anchors: ['Coffee House, Manna Dey', 'Bela Bose, Anjan Dutt', 'Chandrabindoo'] },
   },
 
   art_kid: {
@@ -375,14 +375,14 @@ export const RECOMMENDATIONS: Record<ArchetypeId, Recommendations> = {
       { name: 'Kumartuli Park', area: 'Kumartuli', note: 'Themes where the goddess is made.' },
     ],
     plates: [
-      { name: 'Lunch at a design-led café', area: 'Hindustan Park', note: 'Between the South’s themes.', diet: 'veg' },
-      { name: 'Cha in a bhaar', area: 'Kumartuli', note: 'Watching the artisans work.', diet: 'veg' },
-      { name: 'A phuchka', area: 'Any stall', note: 'As cultural research.', diet: 'veg' },
+      { name: 'Lunch at a design-led café', area: 'Hindustan Park', note: 'Between the South’s themes.', diet: 'veg', moment: 'Between themes' },
+      { name: 'Cha in a bhaar', area: 'Kumartuli', note: 'Watching the artisans work.', diet: 'veg', moment: 'A pause' },
+      { name: 'A phuchka', area: 'Any stall', note: 'As cultural research.', diet: 'veg', moment: 'On the walk' },
     ],
     alsoTry: [
-      'Kumartuli before Mahalaya, while the idols are being made.',
-      'Experimenter and Emami Art, after Pujo.',
-      'The Chandannagar lights at Jagaddhatri Puja, 16 to 19 November.',
+      { text: 'Kumartuli before Mahalaya, while the idols are being made.' },
+      { text: 'Experimenter and Emami Art, after Pujo.' },
+      { text: 'The Chandannagar lights at Jagaddhatri Puja, 16 to 19 November.' },
     ],
     playlist: { name: 'Placard', anchors: ['Aswekeepsearching', 'Parekh & Singh', 'Satyajit Ray’s film scores'] },
   },
@@ -432,14 +432,14 @@ export const RECOMMENDATIONS: Record<ArchetypeId, Recommendations> = {
       { name: 'Sreebhumi Sporting Club', area: 'Lake Town', note: 'The crowd is the point.' },
     ],
     plates: [
-      { name: 'Biryani for the table', area: 'Arsalan or Aminia', note: 'Push three tables together.', diet: 'nonveg' },
-      { name: 'Cha in a bhaar, twelve of them', area: 'Outside any pandal', note: 'Someone else pays.', diet: 'veg' },
-      { name: 'A phuchka round', area: 'Any stall', note: 'For the whole circle.', diet: 'veg' },
+      { name: 'Biryani for the table', area: 'Arsalan or Aminia', note: 'Push three tables together.', diet: 'nonveg', moment: 'For the table' },
+      { name: 'Cha in a bhaar, twelve of them', area: 'Outside any pandal', note: 'Someone else pays.', diet: 'veg', moment: 'For the adda' },
+      { name: 'A phuchka round', area: 'Any stall', note: 'For the whole circle.', diet: 'veg', moment: 'For the circle' },
     ],
     alsoTry: [
-      'A Bijoya Sammilani, a few weeks after Pujo.',
-      'Christmas week on Park Street.',
-      'Share a ride home after one.',
+      { text: 'A Bijoya Sammilani, a few weeks after Pujo.' },
+      { text: 'Christmas week on Park Street.' },
+      { text: 'Share a ride home after one.', practical: true },
     ],
     playlist: { name: 'Maddox O’Clock', anchors: ['Coffee House, Manna Dey', 'Bela Bose, Anjan Dutt', 'Fossils', 'Chandrabindoo'] },
   },
@@ -487,14 +487,14 @@ export const RECOMMENDATIONS: Record<ArchetypeId, Recommendations> = {
       { name: 'Ekdalia Evergreen', area: 'Gariahat', note: 'Classic, and photogenic.' },
     ],
     plates: [
-      { name: 'Phuchka between looks', area: 'Any stall', note: 'Quick. Mind the saree.', diet: 'veg' },
-      { name: 'Ice cream', area: 'The pandal stalls', note: 'After the arati.', diet: 'veg' },
-      { name: 'Bijoya sweets', area: 'After the bhasan', note: 'Earned.', diet: 'veg' },
+      { name: 'Phuchka between looks', area: 'Any stall', note: 'Quick. Mind the saree.', diet: 'veg', moment: 'Between looks' },
+      { name: 'Ice cream', area: 'The pandal stalls', note: 'After the arati.', diet: 'veg', moment: 'After arati' },
+      { name: 'Bijoya sweets', area: 'After the bhasan', note: 'Earned.', diet: 'veg', moment: 'After bhasan' },
     ],
     alsoTry: [
-      'A saree-draping session before Pujo.',
-      'Saraswati Pujo’s yellow sarees, in February.',
-      'The weavers of Shantipur and Phulia, on a day trip.',
+      { text: 'A saree-draping session before Pujo.' },
+      { text: 'Saraswati Pujo’s yellow sarees, in February.' },
+      { text: 'The weavers of Shantipur and Phulia, on a day trip.' },
     ],
     playlist: { name: 'Dhunuchi', anchors: ['Dola Re Dola', 'Ami Je Tomar', 'Ami Shotti Bolchi, Usha Uthup', 'Dhaak remixes'] },
   },
@@ -543,14 +543,14 @@ export const RECOMMENDATIONS: Record<ArchetypeId, Recommendations> = {
       { name: 'Ballygunge Cultural Association', area: 'Ballygunge', note: 'Traditional, and calm in the morning.' },
     ],
     plates: [
-      { name: 'Kochuri and jalebi', area: 'A North Kolkata sweet shop', note: 'At opening.', diet: 'veg' },
-      { name: 'Chinese breakfast', area: 'Tiretta Bazaar', note: 'At first light.', diet: 'nonveg' },
-      { name: 'Sandesh', area: 'The old sweet houses of North Kolkata', note: 'For the way home.', diet: 'veg' },
+      { name: 'Kochuri and jalebi', area: 'A North Kolkata sweet shop', note: 'At opening.', diet: 'veg', moment: 'At opening' },
+      { name: 'Chinese breakfast', area: 'Tiretta Bazaar', note: 'At first light.', diet: 'nonveg', moment: 'First light' },
+      { name: 'Sandesh', area: 'The old sweet houses of North Kolkata', note: 'For the way home.', diet: 'veg', moment: 'The way home' },
     ],
     alsoTry: [
-      'This year’s Pujabarshiki.',
-      'The Dover Lane Music Conference, in January.',
-      'The Book Fair, in winter.',
+      { text: 'This year’s Pujabarshiki.' },
+      { text: 'The Dover Lane Music Conference, in January.' },
+      { text: 'The Book Fair, in winter.' },
     ],
     playlist: { name: 'Bhor', anchors: ['Bajlo Tomar Alor Benu', 'Agamani songs', 'Aji Sharata Tapane', 'A morning raga'] },
   },
