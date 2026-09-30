@@ -145,6 +145,8 @@ test('every archetype has three routes, eight pandals and three plates for any d
     assert.equal(r.pandals.length, 8, id)
     assert.ok(r.plates.length >= 3, id)
     assert.ok(r.plates.some((p) => p.diet === 'veg'), `${id} has nothing veg`)
+    assert.ok(r.plates.every((p) => p.moment?.trim()), `${id} has a food pick without a moment`)
+    assert.ok(r.alsoTry.every((item) => item.text?.trim()), `${id} has an empty closing idea`)
     assert.ok(r.playlist.name && r.playlist.anchors.length, id)
     for (const route of r.routes) {
       assert.ok(!routeIds.has(route.id), `route id ${route.id} repeats`)

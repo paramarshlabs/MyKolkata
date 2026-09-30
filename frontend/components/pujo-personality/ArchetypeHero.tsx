@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react'
+import Image from 'next/image'
 import { CONTENT, PALETTES, TAGLINE_LINES, BADGE_LABELS, STATUS_LABELS, streakLine, type Palette } from '@/lib/pujo-personality/content'
 import type { ShareCard } from '@/lib/pujo-personality/token'
 import type { ArchetypeId } from '@/lib/pujo-personality/types'
@@ -43,12 +44,13 @@ type HeroProps = {
   voice?: 'you' | 'they' | 'none'
   /* a quiet line above the sigil: "Someone sent you their Pujo." */
   note?: string
+  photo?: { image: string; alt: string; caption: string; position?: string }
   children?: ReactNode
 }
 
 /* The profile card as a band (08-visual-bible.md §5): the archetype's ground,
    the sigil, the Bengali name leading, the Latin name following, the tagline. */
-export function ArchetypeHero({ id, level = 1, reveal = false, lead, card, voice = 'none', note, children }: HeroProps) {
+export function ArchetypeHero({ id, level = 1, reveal = false, lead, card, voice = 'none', note, photo, children }: HeroProps) {
   const content = CONTENT[id]
   const palette = PALETTES[id]
   const Heading = level === 1 ? 'h1' : 'h2'
@@ -62,9 +64,16 @@ export function ArchetypeHero({ id, level = 1, reveal = false, lead, card, voice
     >
       {reveal && <span className={styles.letterboxTop} aria-hidden="true" />}
       {reveal && <span className={styles.letterboxBottom} aria-hidden="true" />}
-      <div className={`mk-wrap ${styles.heroInner}`}>
+      <div className={`mk-wrap ${styles.heroInner} ${photo ? styles.heroWithPhoto : ''}`}>
+        {photo && (
+          <figure className={styles.heroPhoto}>
+            <Image src={photo.image} alt={photo.alt} fill sizes="(max-width: 760px) calc(100vw - 36px), (max-width: 1200px) 40vw, 480px"
+              style={{ objectPosition: photo.position }} loading="eager" fetchPriority="high" />
+            <figcaption className={styles.heroPhotoCaption}>{photo.caption}</figcaption>
+          </figure>
+        )}
         {note && <p className={styles.heroNote}>{note}</p>}
-        <Sigil id={id} size={120} colours={palette.sigil} bloom={reveal} className={styles.heroSigil} />
+        {!photo && <Sigil id={id} size={120} colours={palette.sigil} bloom={reveal} className={styles.heroSigil} />}
         <p className={styles.heroBn} lang="bn">{content.bn}</p>
         <Heading id={`hero-${id}`} className={styles.heroName}>
           {lead && <span className="sr-only">{lead} </span>}

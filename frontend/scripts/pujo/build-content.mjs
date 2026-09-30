@@ -44,8 +44,9 @@ function listAfter(md, label) {
   if (start < 0) return []
   const items = []
   for (const line of lines.slice(start + 1)) {
-    if (!line.trim()) { if (items.length) break; continue }
-    const m = line.match(/^(?:\d+\.|-)\s+(.*)$/)
+    const trimmed = line.trim()
+    if (!trimmed) { if (items.length) break; continue }
+    const m = trimmed.match(/^(?:\d+\.|-)\s+(.*)$/)
     if (!m) break
     items.push(plain(m[1]).replace(/^"|"$/g, ''))
   }

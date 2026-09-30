@@ -6,9 +6,9 @@ import { useAuth } from '@/components/providers/AuthProvider'
 import { SectionHead } from '@/components/brand/SectionHead'
 import { createClient } from '@/lib/supabase/client'
 import { trackPujo } from '@/lib/pujo-personality/analytics'
-import { ARCHETYPE_IDS, PREFERENCE_FLOW, getDimension } from '@/lib/pujo-personality/config'
-import { CONTENT, aName, becauseLine, pairCopy, peopleFor, sentence } from '@/lib/pujo-personality/content'
-import { quoteFor, shareCardFrom, type Feedback, type FeedbackValue, type Saved } from '@/lib/pujo-personality/session'
+import { ARCHETYPE_IDS, PREFERENCE_FLOW } from '@/lib/pujo-personality/config'
+import { CONTENT, aName, pairCopy, peopleFor, sentence } from '@/lib/pujo-personality/content'
+import { shareCardFrom, type Feedback, type FeedbackValue, type Saved } from '@/lib/pujo-personality/session'
 import type { ShareCard } from '@/lib/pujo-personality/token'
 import type { ArchetypeId, PujoResult } from '@/lib/pujo-personality/types'
 import { ArchetypeHero } from './ArchetypeHero'
@@ -17,6 +17,8 @@ import { DnaChart } from './DnaChart'
 import { Recommendations } from './Recommendations'
 import { ShareSheet, type ShareMode } from './ShareSheet'
 import { Sigil } from './Sigil'
+import { ResultGlimpse } from './ResultGlimpse'
+import { heroSceneFor } from './resultScenes'
 import styles from '@/styles/PujoPersonality.module.css'
 
 /* the only preferences the launch uses: the card's status, the plates' diet, and age */
@@ -44,12 +46,13 @@ export function ResultView({ saved, result, fresh, friend, onPrefs, onFeedback, 
   const age = saved.prefs.pref_age ?? null
   const minor = age === 'under_18'
   const [sheet, setSheet] = useState<ShareMode | null>(null)
+  const [storyOpen, setStoryOpen] = useState(false)
   const loreRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     /* the lore is read, not just revealed: count it once it is half on screen */
     const node = loreRef.current
-    if (!node || typeof IntersectionObserver === 'undefined') return
+    if (!node || !storyOpen || typeof IntersectionObserver === 'undefined') return
     const observer = new IntersectionObserver((entries) => {
       if (entries.some((e) => e.isIntersecting)) {
         trackPujo('pujo_lore_viewed', { archetype: id })
@@ -58,12 +61,13 @@ export function ResultView({ saved, result, fresh, friend, onPrefs, onFeedback, 
     }, { threshold: 0.5 })
     observer.observe(node)
     return () => observer.disconnect()
-  }, [id])
+  }, [id, storyOpen])
 
   return (
     <main className={`mk-page ${styles.result}`}>
       <ArchetypeHero
         id={id}
+        photo={heroSceneFor(id)}
         reveal={fresh}
         lead="Your Pujo:"
         voice="you"
@@ -72,8 +76,10 @@ export function ResultView({ saved, result, fresh, friend, onPrefs, onFeedback, 
         <button type="button" className="mk-btn mk-btn--primary" onClick={() => setSheet('card')}>
           Share my Pujo <span className="mk-btn-arrow" aria-hidden="true">→</span>
         </button>
-        <a href="#story" className={`mk-btn mk-btn--text ${styles.onGround}`}>Read your story</a>
+        <a href="#story" className={`mk-btn mk-btn--text ${styles.onGround}`} onClick={() => setStoryOpen(true)}>Read your story</a>
       </ArchetypeHero>
+
+      <ResultGlimpse result={result} saved={saved} />
 
       {friend && !minor && (
         <section className="mk-band" aria-labelledby="compare-title">
@@ -84,50 +90,27 @@ export function ResultView({ saved, result, fresh, friend, onPrefs, onFeedback, 
         </section>
       )}
 
-      <section id="story" ref={loreRef} className={`${styles.paper} mk-band`} aria-labelledby="story-title">
+      <section id="story" ref={loreRef} className={`${styles.paper} ${styles.resultStory} mk-band`} aria-labelledby="story-title">
         <div className="mk-wrap">
           <div className="mk-measure">
             <h2 id="story-title" className={styles.paperTitle}>Your story</h2>
             <p className={styles.paperLede}>{content.philosophy}</p>
-            {content.lore.map((para) => <p key={para.slice(0, 32)} className={styles.paperBody}>{para}</p>)}
-            <div className={styles.lightShadow}>
-              <p><span className={styles.paperLabel}>At your best</span>{sentence(content.light)}</p>
-              <p><span className={styles.paperLabel}>At your worst</span>{sentence(content.shadow)}</p>
+            <button type="button" className={styles.storyToggle} aria-expanded={storyOpen} aria-controls="full-story" onClick={() => setStoryOpen((open) => !open)}>{storyOpen ? 'Close the story' : 'Read the full story'}</button>
+            <div id="full-story" hidden={!storyOpen}>
+              {content.lore.map((para) => <p key={para.slice(0, 32)} className={styles.paperBody}>{para}</p>)}
+              <div className={styles.lightShadow}>
+                <p><span className={styles.paperLabel}>At your best</span>{sentence(content.light)}</p>
+                <p><span className={styles.paperLabel}>At your worst</span>{sentence(content.shadow)}</p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="mk-band" aria-labelledby="why-title">
-        <div className="mk-wrap">
-          <SectionHead id="why-title" title="Why you got this" />
-          <ul className={styles.why}>
-            {result.because.map((b) => {
-              const quote = quoteFor(b.dim, b.value, saved.answers)
-              return (
-                <li key={b.dim} className={styles.whyItem}>
-                  <span className={styles.whyDim}>{getDimension(b.dim).name}</span>
-                  <p className="mk-body-lg">{becauseLine(b.dim, b.value)}</p>
-                  {quote && <p className={styles.whyQuote}>You said: &ldquo;{quote}&rdquo;</p>}
-                </li>
-              )
-            })}
-          </ul>
-          {result.secondary && !result.pure && (
-            <p className="mk-note" style={{ marginTop: 40 }}>
-              {result.band === 'close'
-                ? `It was close between the ${content.name} and the ${CONTENT[result.secondary].name}. Your answers leaned this way; you are a good part of both.`
-                : `Your streak: ${CONTENT[result.secondary].oneLine}`}
-            </p>
-          )}
-          <p className="mk-caption" style={{ marginTop: 24 }}>A playful Pujo identity built from your answers. Not a psychological test.</p>
-        </div>
-      </section>
-
-      <section className="mk-band" aria-labelledby="dna-title" style={{ paddingTop: 0 }}>
+      <section className={`mk-band ${styles.resultDna}`} aria-labelledby="dna-title">
         <div className="mk-wrap">
           <SectionHead id="dna-title" title="Your Pujo DNA" lede="Fourteen petals, one for each part of your Pujo, drawn against how most people answer." />
-          <div style={{ marginTop: 40 }}>
+          <div className={styles.resultDnaChart}>
             <DnaChart vector={result.vector} onOpen={(dim) => trackPujo('pujo_dna_opened', { petal: dim })} />
           </div>
         </div>
@@ -195,27 +178,30 @@ export function ResultView({ saved, result, fresh, friend, onPrefs, onFeedback, 
       <section className="mk-band mk-band--closing" aria-labelledby="yours-title">
         <div className="mk-wrap">
           <SectionHead id="yours-title" title="Your Pujo" lede={`Three routes, eight pandals and the plates to go with them, picked for ${aName(id)}.`} />
-          <Recommendations id={id} diet={saved.prefs.pref_diet} />
+          <Recommendations id={id} diet={saved.prefs.pref_diet} showPlaylist={false} />
         </div>
       </section>
 
-      <section className="mk-band" aria-labelledby="invite-title">
+      <section className={`mk-band ${styles.inviteSection}`} aria-labelledby="invite-title">
         <div className="mk-wrap">
           <SectionHead id="invite-title" title="Bring someone" />
           <div className={styles.invites}>
             <button type="button" className={styles.invite} onClick={() => setSheet('card')}>
               <span className={styles.inviteTitle}>Share your card</span>
               <span className={styles.inviteLine}>For your Story, or the family group.</span>
+              <span className={styles.inviteArrow} aria-hidden="true">→</span>
             </button>
             {!minor && (
               <>
                 <button type="button" className={styles.invite} onClick={() => setSheet('compare')}>
                   <span className={styles.inviteTitle}>Compare with a friend</span>
                   <span className={styles.inviteLine}>See how your Pujos fit.</span>
+                  <span className={styles.inviteArrow} aria-hidden="true">→</span>
                 </button>
                 <button type="button" className={styles.invite} onClick={() => setSheet('guess')}>
                   <span className={styles.inviteTitle}>Guess my Pujo</span>
                   <span className={styles.inviteLine}>Make a friend guess. They&apos;ll be wrong.</span>
+                  <span className={styles.inviteArrow} aria-hidden="true">→</span>
                 </button>
               </>
             )}
@@ -223,14 +209,16 @@ export function ResultView({ saved, result, fresh, friend, onPrefs, onFeedback, 
         </div>
       </section>
 
-      <section className="mk-band" aria-labelledby="keep-title" style={{ paddingTop: 0 }}>
-        <div className="mk-wrap">
-          <SectionHead id="keep-title" title="Your answers, your phone" />
-          <div className={styles.keep}>
-            <p className="mk-body mk-measure">
+      <section className={styles.keepSection} aria-labelledby="keep-title">
+        <div className={`mk-wrap ${styles.keepInner}`}>
+          <div className={styles.keepCopy}>
+            <h2 id="keep-title" className={styles.keepTitle}>Your answers, your phone</h2>
+            <p className={styles.keepDescription}>
               Your answers are kept on this phone. Nothing about your Pujo is stored on our side unless you keep it on your account.
               {minor ? ' Under 18, it is kept only until you close this tab.' : ''}
             </p>
+          </div>
+          <div className={styles.keep}>
             <KeepIt saved={saved} minor={minor} />
             <div className={styles.keepActions}>
               <button type="button" className="mk-btn mk-btn--secondary" onClick={() => { trackPujo('pujo_retake_started'); onRetake() }}>Take it again</button>
