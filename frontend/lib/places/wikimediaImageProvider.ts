@@ -137,7 +137,7 @@ export class WikimediaImageProvider {
     const cacheKey = `commons:image:${normalizeText(name)}:${lat.toFixed(4)}:${lng.toFixed(4)}`
     return cached(cacheKey, CACHE_MS, async () => (
       await this.nearbyImage({ name, lat, lng }) || await this.namedImage({ name, lat, lng })
-    ))
+    ), { shared: true })
   }
 
   /* files geotagged beside the place whose titles name it */

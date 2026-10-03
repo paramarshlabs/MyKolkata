@@ -100,6 +100,8 @@ type Options = {
   defer?: (task: () => Promise<unknown>) => void
   newKey?: () => string
   rule?: FirstMoveRule
+  /* tells an open chat that a message arrived (lib/realtime/chat.ts) */
+  notify?: (matchId: string) => Promise<unknown>
 }
 
 const MINUTE = 60_000
@@ -142,6 +144,7 @@ export function createAshtamiDateHandlers({
   defer = (task) => { void task().catch((err) => console.error('[ashtami-date] deferred', err)) },
   newKey = () => `${crypto.randomUUID()}.jpg`,
   rule = FIRST_MOVE,
+  notify,
 }: Options) {
   const limit = {
     profile: createRateLimiter({ limit: 60, windowMs: HOUR }),
@@ -570,6 +573,7 @@ export function createAshtamiDateHandlers({
           return result.error === 'their-move' ? say(WRITE_BLOCKED['their-move'], 409, { blocked: 'their-move' }) : gone()
         }
         purgeSoon()
+        if (notify) defer(() => notify(found.match.id))
         const [view] = await matchViews(found.me, [result.match], now)
         const m = result.message
         return json({

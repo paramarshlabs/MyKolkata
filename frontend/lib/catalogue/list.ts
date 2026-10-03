@@ -22,7 +22,7 @@ export async function listCatalogue(delegate: FindManyDelegate, cacheKey: string
   return cached(`${cacheKey}:${take}`, MEMORY_TTL_MS, async () => {
     const rows = await delegate.findMany({ orderBy: { createdAt: 'desc' }, take })
     return toClient(rows)
-  })
+  }, { shared: true })
 }
 
 export async function catalogueJsonResponse(

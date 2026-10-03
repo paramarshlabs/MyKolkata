@@ -1,3 +1,4 @@
+import { invalidate } from '@/lib/cache'
 import { prisma } from '@/lib/db/prisma'
 import { AnakinImageProvider } from '@/lib/places/anakinImageProvider'
 import { FEEDS } from './feeds'
@@ -7,6 +8,8 @@ import { createScraper, createWire } from './wire'
 /* The Prisma side of the live feeds, and a refresh run against it. Kept out
    of server.ts (which is server-only and uses next/server) so that
    scripts/live-refresh.ts can run it from a terminal. */
+export const LIVE_ROWS_KEY = 'live:rows'
+
 export const liveRepository: LiveRepository = {
   all: () => prisma.liveFeed.findMany() as Promise<LiveRow[]>,
   async claim(key, now, leaseMs) {
@@ -31,6 +34,9 @@ function anakinSearch(): SearchFn | null {
   return (prompt, options) => provider.search(prompt, options)
 }
 
-export function runLiveRefresh(options: Partial<Omit<RefreshOptions, 'repository' | 'wire' | 'search' | 'scrape'>> = {}) {
-  return refreshLive({ repository: liveRepository, feeds: FEEDS, wire: createWire(), search: anakinSearch(), scrape: createScraper(), ...options })
+export async function runLiveRefresh(options: Partial<Omit<RefreshOptions, 'repository' | 'wire' | 'search' | 'scrape'>> = {}) {
+  const outcomes = await refreshLive({ repository: liveRepository, feeds: FEEDS, wire: createWire(), search: anakinSearch(), scrape: createScraper(), ...options })
+  /* /home reads the rows through a one-minute cache (server.ts); show the new ones now */
+  if (outcomes.length) invalidate(LIVE_ROWS_KEY)
+  return outcomes
 }

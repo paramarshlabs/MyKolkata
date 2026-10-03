@@ -494,7 +494,7 @@ test('request parsers reject unsafe inputs and clamp result sizes', () => {
   assert.throws(() => parseBoundsQuery({ west: '88.4', south: '22.5', east: '88.3', north: '22.6' }), RequestValidationError)
 })
 
-test('API handler returns a stable envelope and private cache policy', async () => {
+test('API handler returns a stable envelope and a shared CDN cache policy', async () => {
   const GET = createPlacesRouteHandler({
     parse: parseSearchQuery,
     service: async () => ({ places: [place()], meta: { providerStatus: 'not-needed' } }),
@@ -503,7 +503,7 @@ test('API handler returns a stable envelope and private cache policy', async () 
   assert.equal(res.status, 200)
   const body = await res.json()
   assert.equal(body.meta.count, 1)
-  assert.match(res.headers.get('cache-control') || '', /^private/)
+  assert.match(res.headers.get('cache-control') || '', /^public, .*s-maxage=\d+/)
 })
 
 test('API handler exposes validation errors but hides service failures', async () => {

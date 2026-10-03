@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { pageMetadata } from '@/lib/site/site'
 import { SectionHead } from '@/components/brand/SectionHead'
-import { requireUser } from '@/lib/auth'
 
 export const metadata: Metadata = pageMetadata({
   title: 'About the creator',
@@ -32,7 +31,6 @@ async function getContributors(): Promise<Contributor[]> {
 }
 
 export default async function AboutCreator() {
-  await requireUser('/about-creator')
   const contributors = await getContributors()
 
   return (

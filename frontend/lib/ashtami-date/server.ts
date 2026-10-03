@@ -1,6 +1,7 @@
 import 'server-only'
 import { after } from 'next/server'
 import { prisma } from '@/lib/db/prisma'
+import { nudgeChat } from '@/lib/realtime/chat'
 import { createAshtamiDateHandlers } from './handlers'
 import { supabasePhotoStore } from './photos'
 import { prismaRepository } from './repository'
@@ -12,6 +13,7 @@ export const ashtamiDate = createAshtamiDateHandlers({
   repo: prismaRepository,
   photos: supabasePhotoStore,
   defer: (task) => after(task),
+  notify: nudgeChat,
 })
 
 const REPORT_KEEP_DAYS = 180

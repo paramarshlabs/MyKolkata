@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { pageMetadata } from '@/lib/site/site'
-import { requireUser } from '@/lib/auth'
 import { PersonalityEntry } from '@/components/pujo-personality/PersonalityEntry'
 import { toClientIndex } from '@/lib/pujo/client'
 import { loadPujoIndex } from '@/lib/pujo/pandals'
@@ -11,8 +10,11 @@ export const metadata: Metadata = pageMetadata({
   description: 'Durga Pujo in Kolkata: the countdown to Mahalaya, every pujo on a map, the famous ones and the para ones, and a plan for the night.',
 })
 
+/* the same page for everyone signed in (the wall is in proxy.ts): rendered at
+   most every five minutes and served from the CDN in between */
+export const revalidate = 300
+
 export default async function PujoPage() {
-  await requireUser('/pujo')
   /* the pujos come from the scraper's tables; if they can't be read, the rest of the page still stands */
   const index = await loadPujoIndex()
     .then(toClientIndex)

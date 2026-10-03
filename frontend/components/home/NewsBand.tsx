@@ -1,5 +1,6 @@
 import type { HomeNewsCard } from '@/lib/news/home'
 import { CityIcon } from '@/components/brand/icons'
+import { CardImage } from '@/components/brand/CardImage'
 import styles from '@/styles/Home.module.css'
 
 const KIND: Record<HomeNewsCard['type'], string> = {
@@ -32,12 +33,11 @@ function Meta({ item, now }: { item: HomeNewsCard; now: Date }) {
   )
 }
 
-function Media({ item, className }: { item: HomeNewsCard; className: string }) {
+function Media({ item, className, sizes }: { item: HomeNewsCard; className: string; sizes: string }) {
   return (
     <div className={className}>
       {item.image ? (
-        /* eslint-disable-next-line @next/next/no-img-element */
-        <img src={item.image} alt="" loading="lazy" decoding="async" />
+        <CardImage src={item.image} sizes={sizes} />
       ) : (
         <span className={styles.newsFallback}><CityIcon name="book" size={36} /></span>
       )}
@@ -48,7 +48,7 @@ function Media({ item, className }: { item: HomeNewsCard; className: string }) {
 function Story({ item, lead, now }: { item: HomeNewsCard; lead?: boolean; now: Date }) {
   const body = (
     <>
-      <Media item={item} className={lead ? styles.newsLeadMedia : styles.newsItemMedia} />
+      <Media item={item} className={lead ? styles.newsLeadMedia : styles.newsItemMedia} sizes={lead ? '(max-width: 900px) 100vw, 60vw' : '(max-width: 900px) 45vw, 22vw'} />
       <div className={styles.newsText}>
         <Meta item={item} now={now} />
         <h3 className={lead ? styles.newsLeadTitle : styles.newsItemTitle}>{item.title}</h3>

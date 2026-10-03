@@ -1,11 +1,12 @@
 import { rankVideos, viewsLabel, type YouTube } from '@/lib/live/youtube'
 import { isBengali } from '@/lib/live/shape'
 import { daysAgo } from '@/lib/home/when'
+import { CardImage } from '@/components/brand/CardImage'
 import { LiveHead, fullRows } from './LiveHead'
 import styles from '@/styles/Home.module.css'
 
 /*  What people put up about the city this week, most watched first. The
-    thumbnails come straight from YouTube's image host; every card opens the
+    thumbnails come from YouTube's image host through our optimizer; every card opens the
     video on YouTube. Whole rows of three on a wide screen, a row to swipe on
     a phone. Renders nothing without the feed.                              */
 export function OnYouTube({ feed, now }: { feed: YouTube | null; now: Date }) {
@@ -26,8 +27,7 @@ export function OnYouTube({ feed, now }: { feed: YouTube | null; now: Date }) {
             <li key={video.id} data-extra={i >= shown || undefined}>
               <a className={styles.video} href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer">
                 <span className={styles.videoThumb}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={`https://i.ytimg.com/vi/${video.id}/mqdefault.jpg`} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" />
+                  <CardImage src={`https://i.ytimg.com/vi/${encodeURIComponent(video.id)}/mqdefault.jpg`} sizes="(max-width: 640px) 70vw, 320px" referrerPolicy="no-referrer" />
                   {video.duration && <span className={styles.videoLength}>{video.duration}</span>}
                 </span>
                 <span className={styles.videoTitle} lang={isBengali(video.title) ? 'bn' : undefined}>{video.title}</span>

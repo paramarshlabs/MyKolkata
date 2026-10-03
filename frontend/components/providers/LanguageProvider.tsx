@@ -1,7 +1,6 @@
 'use client'
 
 import { createContext, useContext, useEffect, useSyncExternalStore, type ReactNode } from 'react'
-import { BN } from '@/lib/i18n/bn'
 
 /*  Bengali as a switch, not a rewrite. The components keep rendering English;
     when the switch is on, this swaps the words in the DOM as they appear and
@@ -17,9 +16,21 @@ const SKIP = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'TEXTAREA', 'CODE', 'PRE'])
 const norm = (s: string) => s.replace(/\s+/g, ' ').replace(/[‘’]/g, "'").trim()
 const EXACT = new Map<string, string>()
 const LOWER = new Map<string, string>()
-for (const [en, bn] of Object.entries(BN)) {
-  EXACT.set(norm(en), bn)
-  if (!LOWER.has(norm(en).toLowerCase())) LOWER.set(norm(en).toLowerCase(), bn)
+
+/* The dictionary is ~110 KB, so it is fetched the first time Bengali is on,
+   never for someone who only reads English. */
+let dictionary: Promise<void> | null = null
+function loadDictionary() {
+  dictionary ??= import('@/lib/i18n/bn').then(({ BN }) => {
+    for (const [en, bn] of Object.entries(BN)) {
+      EXACT.set(norm(en), bn)
+      if (!LOWER.has(norm(en).toLowerCase())) LOWER.set(norm(en).toLowerCase(), bn)
+    }
+  }).catch((err) => {
+    dictionary = null
+    throw err
+  })
+  return dictionary
 }
 
 function lookup(value: string): string | null {
@@ -123,8 +134,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     if (lang !== 'bn') return
     html.setAttribute('data-lang', 'bn')
     html.lang = 'bn'
-    translateTree(document.body)
-    remeasure()
 
     const observer = new MutationObserver((records) => {
       for (const r of records) {
@@ -133,12 +142,19 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         else r.addedNodes.forEach(translateTree)
       }
     })
-    observer.observe(document.body, {
-      subtree: true, childList: true, characterData: true,
-      attributes: true, attributeFilter: [...ATTRS],
-    })
+    let active = true
+    loadDictionary().then(() => {
+      if (!active) return
+      translateTree(document.body)
+      remeasure()
+      observer.observe(document.body, {
+        subtree: true, childList: true, characterData: true,
+        attributes: true, attributeFilter: [...ATTRS],
+      })
+    }, (err) => console.error('[lang] the Bengali dictionary did not load', err))
 
     return () => {
+      active = false
       observer.disconnect()
       restoreTree(document.body)
       html.removeAttribute('data-lang')

@@ -52,21 +52,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
 
   useEffect(() => {
-    let active = true
-    /* getUser() asks Supabase, rather than trusting whatever is in the cookie */
-    supabase.auth.getUser().then(({ data }) => {
-      if (!active) return
-      setUser(toAuthUser(data.user))
-      setIsLoaded(true)
-    })
+    /* INITIAL_SESSION comes from the cookie, with no trip to Supabase unless the
+       token needs refreshing — on a slow line, a getUser() here held the header
+       back on every page. The cookie only drives what the UI shows; the server
+       verifies the JWT itself before anything is read or written (lib/auth.ts). */
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(toAuthUser(session?.user ?? null))
       setIsLoaded(true)
     })
-    return () => {
-      active = false
-      subscription.unsubscribe()
-    }
+    return () => subscription.unsubscribe()
   }, [supabase])
 
   const signInWithGoogle = async (next = '/home') => {

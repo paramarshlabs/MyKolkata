@@ -56,6 +56,8 @@ export async function HomeView({ now = new Date(), live }: { now?: Date; live?: 
   /* today's stories: the newest few titles for the adda; the wall itself is /community */
   const storiesPromise = storyRepository.listActive(now, 4)
     .catch((err) => { console.error('[home] stories did not load', err); return [] })
+  /* started with the others so the reads overlap; loadLive never throws */
+  const livePromise = live ? Promise.resolve(live) : loadLive(now)
   let marketplace: MarketItem[] = []
   let failed = false
 
@@ -66,7 +68,7 @@ export async function HomeView({ now = new Date(), live }: { now?: Date; live?: 
     failed = true
   }
   const news = homeNewsCards(await newsPromise)
-  const feeds = live ?? await loadLive(now)
+  const feeds = await livePromise
   const storyRows = await storiesPromise
   const stories: TodayStory[] = storyRows.slice(0, 4)
     .map((row) => ({ id: row.id, title: row.title, createdAt: new Date(row.createdAt).toISOString() }))

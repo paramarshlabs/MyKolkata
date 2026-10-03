@@ -1,9 +1,10 @@
 import 'server-only'
 import { after } from 'next/server'
+import { cached } from '@/lib/cache'
 import { prisma } from '@/lib/db/prisma'
 import { FEEDS } from './feeds'
 import { dueFeeds, snapshotOf, type LiveRow, type LiveSnapshot } from './refresh'
-import { liveRepository, runLiveRefresh } from './store'
+import { LIVE_ROWS_KEY, liveRepository, runLiveRefresh } from './store'
 
 /* The two ways the live feeds refresh: after a /home view when something is
    stale, and from /api/cron/live. The Prisma side is in store.ts. */
@@ -12,20 +13,28 @@ export { runLiveRefresh }
 let refreshing = false
 let warned = false
 
+/* /home reads the feeds on every view; a minute's staleness is invisible and,
+   shared across instances, spares the database a query per visitor. A refresh
+   clears it (store.ts). */
+const LIVE_TTL_MS = 60_000
+
 /* What /home shows. Never throws: no table yet, or a database outage, is
    simply no live data, and every section that uses it has its own fallback.
    When something is stale, one small refresh runs after the response. */
 export async function loadLive(now: Date = new Date()): Promise<LiveSnapshot> {
   let rows: LiveRow[] = []
   try {
-    rows = await liveRepository.all()
+    rows = await cached(LIVE_ROWS_KEY, LIVE_TTL_MS, () => liveRepository.all(), { shared: true })
   } catch (err) {
     /* most often: the live_feeds migration hasn't been applied yet. Once is enough. */
     if (!warned) console.warn('[live] could not read live feeds; showing fallbacks', err instanceof Error ? err.message.split('\n').pop() : err)
     warned = true
     return {}
   }
-  if (process.env.ANAKIN_API_KEY && !refreshing && dueFeeds(FEEDS, rows, now).length) {
+  /* /home is prerendered, and after() in a prerender runs at build time: a
+     build should not spend its time fetching feeds, so only a re-render does */
+  const building = process.env.NEXT_PHASE === 'phase-production-build'
+  if (process.env.ANAKIN_API_KEY && !building && !refreshing && dueFeeds(FEEDS, rows, now).length) {
     after(async () => {
       if (refreshing) return
       refreshing = true

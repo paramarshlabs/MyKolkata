@@ -121,7 +121,7 @@ export class OlaPlacesProvider {
       } finally {
         clearTimeout(timeout)
       }
-    })
+    }, { shared: true })
   }
 
   async details(placeId) {

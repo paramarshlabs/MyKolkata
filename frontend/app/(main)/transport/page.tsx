@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { pageMetadata } from '@/lib/site/site'
 import { SectionHead } from '@/components/brand/SectionHead'
 import { CityIcon } from '@/components/brand/icons'
-import { requireUser } from '@/lib/auth'
 
 export const metadata: Metadata = pageMetadata({
   title: 'Transport',
@@ -17,7 +16,6 @@ const MODES = [
 ] as const
 
 async function Transport() {
-  await requireUser('/transport')
 
   return (
     <main className="mk-page mk-page-top">

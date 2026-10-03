@@ -107,7 +107,7 @@ export const HOME_NEWS_CACHE_KEY = 'news:home'
 export async function getHomeNews(repository: NewsRepository, { now, useCache = true }: { now?: Date; useCache?: boolean } = {}) {
   try {
     return useCache
-      ? await cached(HOME_NEWS_CACHE_KEY, HOME_NEWS_TTL_MS, () => selectHomeNews(repository, now))
+      ? await cached(HOME_NEWS_CACHE_KEY, HOME_NEWS_TTL_MS, () => selectHomeNews(repository, now), { shared: true })
       : await selectHomeNews(repository, now)
   } catch (err) {
     console.error('[news] Home selection failed; serving fallback', err)

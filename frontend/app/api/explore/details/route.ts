@@ -46,7 +46,7 @@ export async function GET(request: Request) {
           provider: place ? 'ola' : commonsImage?.imageProvider || null,
         },
       },
-      { headers: { 'Cache-Control': 'private, max-age=300, stale-while-revalidate=3600' } },
+      { headers: { 'Cache-Control': 'public, max-age=300, s-maxage=86400, stale-while-revalidate=604800' } },
     )
   } catch (error) {
     console.error(`[places:details] ${(error as Error)?.message || 'unavailable'}`)

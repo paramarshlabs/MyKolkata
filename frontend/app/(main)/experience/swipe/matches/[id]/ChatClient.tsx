@@ -9,10 +9,19 @@ import { firstMoveLine } from '@/components/ashtami-date/shared'
 import { LIMITS, NIGHT_DAYS } from '@/lib/ashtami-date/config'
 import type { MatchView } from '@/lib/ashtami-date/profile'
 import { socialUrl } from '@/lib/ashtami-date/text'
+import { CHAT_EVENT, chatTopic } from '@/lib/realtime/chat'
+import { createClient } from '@/lib/supabase/client'
 import styles from '@/styles/AshtamiDate.module.css'
 
-/* Supabase Realtime isn't wired into this app, so the chat asks every few seconds while it's on screen. */
+/* A new message arrives as a Realtime nudge (lib/realtime/chat.ts), and the
+   chat then fetches it. While the nudges are flowing the chat only checks in
+   once a minute, in case one was missed. Without them (Realtime down or
+   blocked) it asks while on screen: every few seconds while messages are
+   arriving, backing off to half a minute when the conversation goes quiet.
+   Sending or coming back resets it. */
 const POLL_MS = 4000
+const POLL_MAX_MS = 30_000
+const POLL_LIVE_MS = 60_000
 
 const clock = (iso: string) => new Date(iso).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', timeZone: 'Asia/Kolkata' }).toLowerCase()
 
@@ -30,11 +39,19 @@ export default function ChatClient({ matchId }: { matchId: string }) {
   const [now, setNow] = useState(() => Date.now())
   const list = useRef<HTMLOListElement>(null)
   const sending = useRef(false)
+  const delay = useRef(POLL_MS)
+  const lastSeen = useRef<string | null>(null)
+  const live = useRef(false)
 
   const load = useCallback(async () => {
     const res = await api.chat(matchId)
     setNow(Date.now())
     if (res.ok) {
+      const newest = res.data.messages.at(-1)?.id ?? null
+      delay.current = live.current
+        ? POLL_LIVE_MS
+        : newest !== lastSeen.current ? POLL_MS : Math.min(delay.current * 1.5, POLL_MAX_MS)
+      lastSeen.current = newest
       setMatch(res.data.match)
       setMessages((current) => [...res.data.messages, ...current.filter((m) => 'pending' in m)])
       setState('ready')
@@ -46,19 +63,38 @@ export default function ChatClient({ matchId }: { matchId: string }) {
 
   useEffect(() => {
     let timer = 0
-    const tick = () => {
+    let active = true
+    const tick = async () => {
       window.clearTimeout(timer)
-      if (document.visibilityState === 'visible') void load()
-      timer = window.setTimeout(tick, POLL_MS)
+      if (document.visibilityState === 'visible') await load().catch(() => {})
+      /* a tick from coming back may overlap this one: keep a single timer */
+      window.clearTimeout(timer)
+      if (active) timer = window.setTimeout(tick, delay.current)
     }
-    tick()
-    const onVisible = () => { if (document.visibilityState === 'visible') tick() }
+    void tick()
+    const onVisible = () => {
+      if (document.visibilityState !== 'visible') return
+      delay.current = POLL_MS
+      void tick()
+    }
+
+    const supabase = createClient()
+    const channel = supabase
+      .channel(chatTopic(matchId))
+      .on('broadcast', { event: CHAT_EVENT }, () => { void load().catch(() => {}) })
+      .subscribe((status) => {
+        live.current = status === 'SUBSCRIBED'
+        if (!live.current) delay.current = POLL_MS
+      })
     document.addEventListener('visibilitychange', onVisible)
     return () => {
+      active = false
+      live.current = false
       window.clearTimeout(timer)
       document.removeEventListener('visibilitychange', onVisible)
+      void supabase.removeChannel(channel)
     }
-  }, [load])
+  }, [load, matchId])
 
   /* new messages scroll into view */
   useEffect(() => {
@@ -84,6 +120,8 @@ export default function ChatClient({ matchId }: { matchId: string }) {
     }
     setMessages((m) => [...m.filter((x) => x.id !== res.data.message.id), res.data.message])
     if (res.data.match) setMatch(res.data.match)
+    /* a reply is likeliest now */
+    if (!live.current) delay.current = POLL_MS
   }
 
   function onKey(e: KeyboardEvent<HTMLTextAreaElement>) {

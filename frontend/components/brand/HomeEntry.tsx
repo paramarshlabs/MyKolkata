@@ -20,6 +20,15 @@ function markSeen() {
   } catch {}
 }
 
+/* The film is ~900 KB. On Data Saver or a 2G/3G line it would hold /home
+   behind a download, so those visitors go straight in. (Chromium only; elsewhere
+   the film plays as before.) */
+function onSlowLine() {
+  const connection = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection
+  if (!connection) return false
+  return Boolean(connection.saveData) || ['slow-2g', '2g', '3g'].includes(connection.effectiveType ?? '')
+}
+
 export function HomeEntry() {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [show, setShow] = useState(false)
@@ -54,7 +63,7 @@ export function HomeEntry() {
 
   useEffect(() => {
     if (hasSeen()) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || onSlowLine()) {
       markSeen()
       return
     }
@@ -89,7 +98,7 @@ export function HomeEntry() {
           className="mk-entry-video"
           src="/entry1.mp4"
           playsInline
-          preload="auto"
+          preload="metadata"
           onEnded={dismiss}
         />
         {needsTap ? <span className="mk-entry-play">Play</span> : null}

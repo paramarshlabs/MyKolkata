@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { pageMetadata } from '@/lib/site/site'
-import { requireUser } from '@/lib/auth'
 import CommunityClient from './CommunityClient'
 
 export const metadata: Metadata = pageMetadata({
@@ -9,6 +8,5 @@ export const metadata: Metadata = pageMetadata({
 })
 
 export default async function ContributePage() {
-  await requireUser('/community')
   return <CommunityClient />
 }

@@ -3,10 +3,11 @@ import { NextResponse, type NextRequest } from 'next/server'
 
 /*
  * Refreshes the Supabase session cookie on the way in and hands the new one to
- * both the request (for this render) and the response (for the browser).
- * It decides nothing about access — see lib/auth.ts.
+ * both the request (for this render) and the response (for the browser), and
+ * says who is signed in (the verified JWT's subject) so proxy.ts can hold the
+ * sign-in wall. Anything personal still checks for itself — see lib/auth.ts.
  */
-export async function updateSession(request: NextRequest) {
+export async function updateSession(request: NextRequest): Promise<{ response: NextResponse; userId: string | null }> {
   let response = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -29,7 +30,7 @@ export async function updateSession(request: NextRequest) {
   )
 
   /* Nothing may run between creating the client and this call, or sessions drop at random. */
-  await supabase.auth.getClaims()
+  const { data, error } = await supabase.auth.getClaims()
 
-  return response
+  return { response, userId: error ? null : data?.claims.sub ?? null }
 }

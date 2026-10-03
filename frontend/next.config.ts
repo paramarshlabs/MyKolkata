@@ -1,5 +1,6 @@
 import { networkInterfaces } from 'node:os'
 import type { NextConfig } from 'next'
+import { OPTIMIZED_HOSTS } from './lib/images/remote'
 
 /*
  * The dev server only serves HMR and dev assets to localhost. Also allow this
@@ -34,11 +35,11 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: devOrigins(),
   images: {
     formats: ['image/avif', 'image/webp'],
-    /* next/image serves the local hero photos only, so the optimizer fetches
-       from no remote host — a wildcard here would let anyone use /_next/image
-       as an open image proxy. localPatterns keeps it to files in /public with
-       no query string. */
-    remotePatterns: [],
+    /* next/image serves the local photos, plus the home page's posters and
+       YouTube thumbnails from a few named hosts (lib/images/remote.ts) — a
+       wildcard here would let anyone use /_next/image as an open image proxy.
+       localPatterns keeps local files to /public with no query string. */
+    remotePatterns: OPTIMIZED_HOSTS.map((hostname) => ({ protocol: 'https' as const, hostname, pathname: '/**' })),
     localPatterns: [{ pathname: '/**', search: '' }],
   },
   async redirects() {

@@ -121,7 +121,9 @@ export function createPlacesRouteHandler({
       const result = await service(params)
       return NextResponse.json(
         { data: result.places, meta: { ...result.meta, count: result.places.length } },
-        { headers: { 'Cache-Control': 'private, max-age=0, must-revalidate' } },
+        /* the same query gives everyone the same places: let the CDN answer repeats
+           rather than every visitor reaching the database and Ola */
+        { headers: { 'Cache-Control': 'public, max-age=60, s-maxage=600, stale-while-revalidate=3600' } },
       )
     } catch (error) {
       if (error instanceof RequestValidationError) {

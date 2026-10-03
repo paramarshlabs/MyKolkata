@@ -5,7 +5,7 @@ import { buildIndex, type PujoIndex } from './build'
 
 /* ==========================================================================
    The pandal loader: the scraper's tables, read, curated (build.ts) and kept
-   in memory for half an hour. The scraper owns kolkata_puja_*; nothing here
+   for half an hour (shared across instances). The scraper owns kolkata_puja_*; nothing here
    writes to them. Only the columns that hold real data are selected, so the
    synthetic ones (rating, view_count, crowd_level and the rest) never leave
    the database.
@@ -54,5 +54,5 @@ export function loadPujoIndex(): Promise<PujoIndex> {
       famousOverrides(),
     ])
     return buildIndex({ pandals, pois, famous })
-  })
+  }, { shared: true })
 }

@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { pageMetadata } from '@/lib/site/site'
-import { requireUser } from '@/lib/auth'
 import { Sprig } from '@/components/brand/kolka'
 import styles from '@/styles/Experiences.module.css'
 
@@ -33,7 +32,7 @@ const FEATURES: Feature[] = [
     kicker: 'Thirteen questions',
     description: 'Discover your Pujo personality, see your personalized map, and share it with friends.',
     href: '/experience/personality',
-    image: '/pers_map.png',
+    image: '/pers_map.webp',
     imagePosition: '50% 94%',
     alt: 'A hand-drawn map of Kolkata with pins at Kumartuli, College Street and Princep Ghat, surrounded by photographs of the city',
     facts: [['How', 'Quiz'], ['Then', 'Your map']],
@@ -44,7 +43,7 @@ const FEATURES: Feature[] = [
     kicker: 'Swipe, match, pick a pandal',
     description: 'Someone to go pandal-hopping with on Ashtami. Swipe, match, and the plan comes with it: one pandal, one time.',
     href: '/experience/swipe',
-    image: '/ashtami.png',
+    image: '/ashtami.webp',
     /* the top of the poster: its calendar lower down shows 2025's dates */
     imagePosition: '50% 0%',
     alt: 'Find Your Ashtami Date, written over a lit pandal at night with Durga and the crowd below',
@@ -55,7 +54,7 @@ const FEATURES: Feature[] = [
     title: 'Tune Into Pujo',
     kicker: 'Your music, your night',
     description: 'Find the Pujo night that matches your sound.',
-    image: '/spotify.png',
+    image: '/spotify.webp',
     imagePosition: '50% 74%',
     alt: 'A phone playing Agomoni by Chandrabindoo in front of a lit pandal, with tags for an energetic vibe, Saptami night and North Kolkata',
     facts: [['With', 'Spotify'], ['Finds', 'Your Pujo night']],
@@ -87,7 +86,6 @@ const FEATURES: Feature[] = [
 ]
 
 export default async function ExperiencePage() {
-  await requireUser('/experience')
 
   return (
     <main className="mk-page mk-page-top">

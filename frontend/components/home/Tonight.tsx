@@ -1,6 +1,7 @@
 import { upcoming, type Show, type Tonight as TonightFeed } from '@/lib/live/tonight'
 import { showWhen } from '@/lib/home/when'
 import { CityIcon } from '@/components/brand/icons'
+import { CardImage } from '@/components/brand/CardImage'
 import { LiveHead, fullRows } from './LiveHead'
 import styles from '@/styles/Home.module.css'
 
@@ -9,8 +10,7 @@ function Stub({ show, now }: { show: Show; now: Date }) {
     <>
       <span className={styles.stubPoster}>
         {show.image ? (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img src={show.image} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" />
+          <CardImage src={show.image} sizes="112px" referrerPolicy="no-referrer" />
         ) : (
           <CityIcon name="lamp" size={40} />
         )}

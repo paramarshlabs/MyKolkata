@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { UiIcon, CityIcon } from '@/components/brand/icons'
+import { CardImage } from '@/components/brand/CardImage'
 import styles from '@/styles/Home.module.css'
 
 export type Stall = {
@@ -59,8 +60,7 @@ export function MarketShelf({ stalls, head }: { stalls: Stall[]; head: ReactNode
             <>
               <span className={styles.stallMedia}>
                 {stall.image ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img src={stall.image} alt="" loading="lazy" decoding="async" />
+                  <CardImage src={stall.image} sizes="(max-width: 640px) 75vw, 320px" />
                 ) : (
                   <CityIcon name="signboard" size={36} />
                 )}

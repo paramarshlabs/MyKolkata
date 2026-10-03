@@ -60,3 +60,20 @@ test('a failed load does not wedge the key', async () => {
   await assert.rejects(() => cached('recover', 5000, loader))
   assert.equal(await cached('recover', 5000, loader), 'recovered', 'inflight entry must be cleared on failure')
 })
+
+test('the shared cache brings Dates back as Dates, and leaves other objects alone', async () => {
+  const { packDates, unpackDates } = await import('../lib/cache.ts')
+  const at = new Date('2026-10-03T10:00:00.000Z')
+  const value = { key: 'sky', fetchedAt: at, attemptedAt: null, payload: { list: [at, 'x', 1] } }
+  const stored = JSON.parse(JSON.stringify(packDates([value])))
+  const back = unpackDates(stored)
+  assert.ok(back[0].fetchedAt instanceof Date)
+  assert.equal(back[0].fetchedAt.getTime(), at.getTime())
+  assert.ok(back[0].payload.list[0] instanceof Date)
+  assert.deepEqual(back[0].payload.list.slice(1), ['x', 1])
+  assert.equal(back[0].attemptedAt, null)
+
+  class Decimalish { constructor(v) { this.v = v } }
+  const d = new Decimalish(1)
+  assert.equal(unpackDates({ lat: d }).lat, d)
+})
