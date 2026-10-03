@@ -2,9 +2,10 @@
 
 import { useState, type ReactNode } from 'react'
 import { SectionHead } from '@/components/brand/SectionHead'
-import { CountdownScene, PujoDays } from '@/components/brand/Countdown'
+import { CountdownScene } from '@/components/brand/Countdown'
 import { AlponaRule } from '@/components/brand/Alpona'
 import { UiIcon } from '@/components/brand/icons'
+import { PujoCalendar } from '@/components/pujo/PujoCalendar'
 import { PujoExplore } from '@/components/pujo/PujoExplore'
 import { PujoProvider } from '@/components/pujo/PujoProvider'
 import type { ClientIndex } from '@/lib/pujo/client'
@@ -61,7 +62,7 @@ function Pujo({ index, children }: { index: ClientIndex | null; children?: React
           <MahalayaPlayer />
         </CountdownScene>
         <div className="mk-wrap">
-          <PujoDays className={styles.days} />
+          <PujoCalendar className={styles.days} />
         </div>
       </section>
 

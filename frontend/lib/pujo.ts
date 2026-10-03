@@ -23,6 +23,13 @@ export const PUJO_DAYS: readonly PujoDay[] = [
   { bn: 'দশমী', en: 'Dashami', iso: '2026-10-21T00:00:00+05:30' },
 ]
 
+/* Panchami, the eve: pandals open and the city starts walking. Kept out of
+   PUJO_DAYS, which the countdowns and the news read as the five days proper */
+export const PANCHAMI: PujoDay = { bn: 'পঞ্চমী', en: 'Panchami', iso: '2026-10-15T00:00:00+05:30' }
+
+/* the days the /pujo calendar offers: the eve, then the five */
+export const CALENDAR_DAYS: readonly PujoDay[] = [PANCHAMI, ...PUJO_DAYS]
+
 export function formatPujoDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' })
 }
@@ -37,4 +44,66 @@ export function formatPujoDay(day: PujoDay) {
 /* "10 October": for sentences, where the short month reads as a table */
 export function formatPujoDateLong(iso: string) {
   return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone: 'Asia/Kolkata' })
+}
+
+/* --------------------------------------------------------------------------
+   What happens on each day, in panjika order. The same yearly caveat as the
+   dates above. A day with no sittings yet shows a quiet "coming" line.
+   -------------------------------------------------------------------------- */
+export type PujoMoment = {
+  name: string
+  /* "6:00 AM", a window like "7:25–8:13 AM", or none for a moment with no clock time */
+  time?: string
+  /* the day's one unmissable moment, set apart in the list */
+  key?: boolean
+  /* a second reading of the same moment, e.g. another panjika's timing */
+  note?: string
+}
+
+/* one date's rituals; a day over two dates (Saptami in 2026) has two sittings */
+export type PujoSitting = { iso: string; moments: readonly PujoMoment[] }
+
+export const PUJO_SCHEDULE: Readonly<Record<string, readonly PujoSitting[]>> = {
+  Panchami: [],
+  Shashthi: [
+    { iso: '2026-10-16T00:00:00+05:30', moments: [
+      { name: 'Bodhan', time: '6:00 PM', key: true },
+      { name: 'Amantran', time: '6:30 PM' },
+      { name: 'Adhibas', time: '7:00 PM' },
+    ] },
+  ],
+  Saptami: [
+    { iso: '2026-10-17T00:00:00+05:30', moments: [
+      { name: 'Nabapatrika Snan', time: '6:00 AM', key: true },
+      { name: 'Saptami Puja', time: '8:00 AM' },
+    ] },
+    { iso: '2026-10-18T00:00:00+05:30', moments: [
+      { name: 'Saptami Puja', time: '6:00 AM' },
+    ] },
+  ],
+  Ashtami: [
+    { iso: '2026-10-19T00:00:00+05:30', moments: [
+      { name: 'Ashtami Puja', time: '6:00 AM' },
+      { name: 'Ashtami Anjali', time: '7:00 AM' },
+      { name: 'Kumari Puja', time: '8:00 AM' },
+      { name: 'Sandhi Puja', time: '7:25–8:13 AM', key: true, note: 'Alternative Vishuddha Siddhanta timing: 10:28–11:16 AM' },
+    ] },
+  ],
+  Navami: [
+    { iso: '2026-10-20T00:00:00+05:30', moments: [
+      { name: 'Navami Puja', time: '6:00 AM' },
+      { name: 'Navami Anjali', time: '7:00 AM' },
+      { name: 'Homa', time: '9:00 AM' },
+      { name: 'Dhunuchi Naach', time: '7:00 PM', key: true },
+    ] },
+  ],
+  Dashami: [
+    { iso: '2026-10-21T00:00:00+05:30', moments: [
+      { name: 'Dashami Puja', time: '6:00 AM' },
+      { name: 'Boron', time: '8:00 AM' },
+      { name: 'Sindoor Khela', time: '9:00 AM', key: true },
+      { name: 'Bisarjan', time: '10:00 AM onwards' },
+      { name: 'Subho Bijoya' },
+    ] },
+  ],
 }

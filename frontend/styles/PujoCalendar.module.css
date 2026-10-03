@@ -1,0 +1,101 @@
+/* Panchami and the five Pujo days as tabs, and the chosen day's rituals underneath.
+   Lives in the homecoming band, so no crimson: the taxi yellow marks the choice. */
+
+.calendar { max-width: 880px; }
+
+/* on a phone the days scroll sideways, edge to edge; on a desktop all six sit in a row */
+.rail {
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin-inline: calc(var(--mk-edge) * -1);
+  padding-inline: var(--mk-edge);
+  scroll-padding-inline: var(--mk-edge);
+  -webkit-overflow-scrolling: touch;
+}
+.rail::-webkit-scrollbar { display: none; }
+
+.tabs {
+  position: relative;
+  display: flex;
+  gap: clamp(16px, 4vw, 52px);
+  width: max-content;
+  padding-bottom: var(--mk-3);
+  border-bottom: 1px solid rgba(242, 241, 237, 0.12);
+}
+
+.tab {
+  display: flex; flex-direction: column; gap: 2px;
+  flex: none;
+  padding: 0; border: 0; background: none;
+  font: inherit; text-align: left; cursor: pointer;
+  opacity: 0.55;
+  transition: opacity var(--mk-t-hover) var(--mk-ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+.tab:hover { opacity: 0.85; }
+.tab[aria-selected='true'] { opacity: 1; }
+.tab:focus-visible { outline: 2px solid var(--mk-taxi); outline-offset: 6px; border-radius: 4px; }
+
+/* the underline, slid from day to day */
+.bar {
+  position: absolute; left: 0; bottom: -1px;
+  height: 2px; border-radius: 2px;
+  background: var(--mk-taxi);
+  transition:
+    transform var(--mk-t-reveal) var(--mk-ease-out),
+    width var(--mk-t-reveal) var(--mk-ease-out);
+}
+
+.panel {
+  padding-top: var(--mk-5);
+  animation: dayIn var(--mk-t-reveal) var(--mk-ease-out);
+}
+@keyframes dayIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+.eyebrow {
+  margin: 0 0 var(--mk-4);
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--mk-taxi);
+}
+
+.sitting + .sitting { margin-top: var(--mk-5); }
+.date { margin: 0 0 var(--mk-3); font-size: 13px; letter-spacing: 0.04em; color: var(--mk-pearl); }
+
+/* a timeline: a hairline down the left, a dot at each moment */
+.moments {
+  list-style: none; margin: 0; padding: 0 0 0 var(--mk-5);
+  border-left: 1px solid rgba(242, 241, 237, 0.14);
+  display: grid; gap: var(--mk-4);
+}
+.moment {
+  position: relative;
+  display: grid; grid-template-columns: 1fr auto; column-gap: var(--mk-4); row-gap: 2px;
+  align-items: baseline;
+}
+.moment::before {
+  content: '';
+  position: absolute; left: calc(var(--mk-5) * -1 - 3.5px); top: 0.55em;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--mk-ash);
+}
+.name { font-size: 15px; line-height: 1.5; color: var(--mk-pearl); }
+.time {
+  font-size: 14px; color: var(--mk-ash);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.note { grid-column: 1 / -1; font-size: 13px; line-height: 1.5; color: var(--mk-ash); }
+
+/* the day's one unmissable moment */
+.key::before { background: var(--mk-taxi); box-shadow: 0 0 0 4px rgba(242, 179, 61, 0.18); }
+.key .name { font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mk-white); }
+.key .time { color: var(--mk-taxi); }
+
+.coming { margin: 0; font-size: 14px; line-height: 1.6; color: var(--mk-ash); }
+
+@media (prefers-reduced-motion: reduce) {
+  .panel { animation: none; }
+  .bar, .tab { transition: none; }
+}
