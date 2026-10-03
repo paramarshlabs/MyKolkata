@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react'
 import type { AreaSummary } from '@/lib/pujo/build'
 import type { ClientIndex, ClientPujo } from '@/lib/pujo/client'
 import type { LatLng } from '@/lib/pujo/geo'
@@ -53,8 +53,17 @@ function useNearMe(): NearMe {
   return useMemo(() => ({ ...state, request, stop }), [state, request, stop])
 }
 
+/* the pujo a link asked for (lib/pujo/links.ts, or an Instagram post through
+   /share): read from the address in the browser only, so the page itself stays
+   the same cached page for everyone */
+const noSubscribe = () => () => {}
+const linkedSlug = () => new URLSearchParams(window.location.search).get('pandal')
+const noLinkedSlug = () => null
+
 export function PujoProvider({ index, food = [], children }: { index: ClientIndex; food?: SearchableFood[]; children: ReactNode }) {
-  const [selected, setSelected] = useState<string | null>(null)
+  /* undefined until someone opens or closes a sheet: until then, the link's */
+  const [picked, setSelected] = useState<string | null | undefined>(undefined)
+  const linked = useSyncExternalStore(noSubscribe, linkedSlug, noLinkedSlug)
   /* where focus goes back to when a sheet closes */
   const opener = useRef<HTMLElement | null>(null)
   const nearMe = useNearMe()
@@ -82,8 +91,16 @@ export function PujoProvider({ index, food = [], children }: { index: ClientInde
     setSelected(slug)
   }, [])
 
+  const selected = picked === undefined ? (lookups.pujo(linked) ? linked : null) : picked
+
   const close = useCallback(() => {
     setSelected(null)
+    /* closed: a reload or a share from here shouldn't open it again */
+    const url = new URL(window.location.href)
+    if (url.searchParams.has('pandal')) {
+      url.searchParams.delete('pandal')
+      window.history.replaceState(window.history.state, '', url)
+    }
     const back = opener.current
     opener.current = null
     if (back?.isConnected) requestAnimationFrame(() => back.focus())
