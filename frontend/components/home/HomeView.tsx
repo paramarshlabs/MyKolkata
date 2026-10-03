@@ -17,7 +17,7 @@ import { INSTAGRAM_FEED } from '@/lib/home/instagram_feed'
 import { storyRepository } from '@/lib/stories/repository'
 import { skyReport, type HeroMood } from '@/lib/home/sky'
 import { SectionHead } from '@/components/brand/SectionHead'
-import { Medallion, Sprig } from '@/components/brand/kolka'
+import { Medallion } from '@/components/brand/kolka'
 import { LaalPaar } from '@/components/brand/Alpona'
 import { NewsBand } from './NewsBand'
 import { MarketShelf } from './MarketShelf'
@@ -93,8 +93,7 @@ export async function HomeView({ now = new Date(), live }: { now?: Date; live?: 
         <div className="mk-banner-scrim" aria-hidden="true" />
         <div className="mk-banner-content">
           <div className="mk-banner-copy">
-            <Sprig size={38} />
-            <h1 id="home-title" className="mk-display" style={{ marginTop: 8 }}>The city, this week.</h1>
+            <h1 id="home-title" className="mk-display">The city, this week.</h1>
             <p className="mk-banner-bn" lang="bn">চলো, একটু ঘুরে আসি।</p>
             <p className="mk-banner-lede">
               What the paras are talking about, what is for sale down the lane, and every place
