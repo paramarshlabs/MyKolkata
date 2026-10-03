@@ -172,6 +172,12 @@ export default function Navbar() {
         <NotchWing side="right" />
         <div className="nn-island-row">
           <Lockup />
+          {/* a phone: the mark floats over the hero in place of the lockup */}
+          <Link className="nn-float-brand" href="/home" aria-label="My Kolkata, home">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/micon.png" alt="" width={36} height={36} />
+            <span aria-hidden="true">My<em>Kolkata</em></span>
+          </Link>
           <button
             type="button"
             className={`nn-trigger ${menuOpen ? 'is-open' : ''}`}
