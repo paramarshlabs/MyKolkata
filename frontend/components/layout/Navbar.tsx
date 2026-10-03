@@ -4,20 +4,23 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
 import { NotchWing } from '@/components/brand/kolka'
+import { UiIcon, type UiIconName } from '@/components/brand/icons'
 import UserMenu from '@/components/layout/UserMenu'
 import { LanguageToggle } from '@/components/layout/LanguageToggle'
 
 /*  The notch bar — see /brand-kit and styles/notchbar.css. Three notches cut
     from a Pearl bezel: the lockup, the sections, and search with the account.
-    Below 1280px they fold into one island with a drawer.                      */
+    Below 1280px they fold into one island with a drawer. On a phone (below
+    768px) the island spans the top and the sections move to a tab bar at the
+    bottom, within reach of a thumb.                                          */
 
-const SECTIONS = [
-  { label: 'Home', href: '/home' },
-  { label: 'Pujo', href: '/pujo' },
-  { label: 'Explore', href: '/places', also: ['/near-you'] },
-  { label: 'Experiences', href: '/experience' },
+const SECTIONS: { label: string; href: string; icon: UiIconName; also?: string[] }[] = [
+  { label: 'Home', href: '/home', icon: 'home' },
+  { label: 'Pujo', href: '/pujo', icon: 'diya' },
+  { label: 'Explore', href: '/places', icon: 'compass', also: ['/near-you'] },
+  { label: 'Experiences', href: '/experience', icon: 'sparkle' },
   //{ label: 'Transport', href: '/transport' },
-  { label: 'Community', href: '/community' },
+  { label: 'Community', href: '/community', icon: 'people' },
 ]
 
 function isCurrent(pathname: string, section: (typeof SECTIONS)[number]) {
@@ -96,10 +99,13 @@ export default function Navbar() {
 
   const searchField = (index: number, island = false) => (
     <form role="search" onSubmit={search} className={`nn-search ${island ? 'nn-search--island' : ''}`}>
-      <label className="sr-only" htmlFor={`${menuId}-q${index}`}>Search a para, a place, a street</label>
-      <svg viewBox="0 0 24 24" className="nn-search-icon" aria-hidden="true">
-        <circle cx="11" cy="11" r="6.5" /><path d="M16 16l4.5 4.5" />
-      </svg>
+      <label className="nn-search-label" htmlFor={`${menuId}-q${index}`}>
+        <span className="sr-only">Search a para, a place, a street</span>
+        {/* on a phone the field folds away and this icon is what you tap */}
+        <svg viewBox="0 0 24 24" className="nn-search-icon" aria-hidden="true">
+          <circle cx="11" cy="11" r="6.5" /><path d="M16 16l4.5 4.5" />
+        </svg>
+      </label>
       <input
         ref={(el) => { searchRefs.current[index] = el }}
         id={`${menuId}-q${index}`}
@@ -166,6 +172,12 @@ export default function Navbar() {
         <NotchWing side="right" />
         <div className="nn-island-row">
           <Lockup />
+          {/* a phone: the mark floats over the hero in place of the lockup */}
+          <Link className="nn-float-brand" href="/home" aria-label="My Kolkata, home">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/micon.png" alt="" width={36} height={36} />
+            <span aria-hidden="true">My<em>Kolkata</em></span>
+          </Link>
           <button
             type="button"
             className={`nn-trigger ${menuOpen ? 'is-open' : ''}`}
@@ -177,9 +189,11 @@ export default function Navbar() {
             <span>{current?.label ?? 'Menu'}</span>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
           </button>
-          {showSearch && searchField(1, true)}
-          <LanguageToggle />
-          <UserMenu />
+          <div className="nn-island-end">
+            {showSearch && searchField(1, true)}
+            <LanguageToggle />
+            <UserMenu />
+          </div>
         </div>
         <div className={`nn-drawer ${menuOpen ? 'is-open' : ''}`} id={menuId}>
           <div className="nn-drawer-clip">
@@ -204,6 +218,24 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+
+      {/* below 768px — the sections as a tab bar along the bottom */}
+      <nav className="nn-tabbar" aria-label="Sections">
+        {SECTIONS.map((section) => {
+          const active = current?.href === section.href
+          return (
+            <Link
+              key={section.href}
+              className={`nn-tabbar-item ${active ? 'is-active' : ''}`}
+              href={section.href}
+              aria-current={active ? 'page' : undefined}
+            >
+              <UiIcon name={section.icon} size={22} />
+              <span>{section.label}</span>
+            </Link>
+          )
+        })}
+      </nav>
     </div>
   )
 }

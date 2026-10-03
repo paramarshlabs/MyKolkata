@@ -521,8 +521,9 @@
 .theirs { align-self: flex-start; border-radius: 18px 18px 18px 6px; background: var(--mk-slate); color: var(--mk-pearl); }
 .pending { opacity: 0.6; }
 
+/* above the phone tab bar, where there is one (styles/notchbar.css) */
 .composer {
-  position: sticky; bottom: 0; z-index: 2; display: flex; align-items: flex-end; gap: var(--mk-2);
+  position: sticky; bottom: var(--mk-tabbar, 0px); z-index: 2; display: flex; align-items: flex-end; gap: var(--mk-2);
   margin: 0 calc(-1 * var(--mk-4)); padding: var(--mk-3) var(--mk-4) calc(var(--mk-3) + env(safe-area-inset-bottom));
   background: linear-gradient(0deg, var(--mk-obsidian) 72%, transparent);
 }
@@ -535,7 +536,7 @@
 .draft:focus { outline: none; border-color: var(--mk-crimson); }
 .composer :global(.mk-btn) { min-height: 48px; border-radius: 22px; }
 .composerNote {
-  position: sticky; bottom: 0; margin: 0 calc(-1 * var(--mk-4)); padding: var(--mk-4) var(--mk-4) calc(var(--mk-4) + env(safe-area-inset-bottom));
+  position: sticky; bottom: var(--mk-tabbar, 0px); margin: 0 calc(-1 * var(--mk-4)); padding: var(--mk-4) var(--mk-4) calc(var(--mk-4) + env(safe-area-inset-bottom));
   background: linear-gradient(0deg, var(--mk-obsidian) 72%, transparent); font-size: 15px; color: var(--mk-ash);
 }
 
