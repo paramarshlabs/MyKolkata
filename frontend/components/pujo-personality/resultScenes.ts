@@ -1,4 +1,5 @@
 import type { ArchetypeId } from '@/lib/pujo-personality/types'
+import storyPhotos from './storyPhotos.json'
 
 export const PHOTOS = {
   lane: { image: '/personality-story/night-lane.jpg', alt: 'A quiet Kolkata lane lit for Durga Puja after dark', position: 'center 42%' },
@@ -45,6 +46,10 @@ export const SCENES: Record<ArchetypeId, Scene> = {
 }
 
 export function heroSceneFor(id: ArchetypeId) {
+  if (id === 'pujo_romantic') {
+    const couple = storyPhotos.pujo_romantic[2]
+    return { image: couple.image, alt: couple.alt, position: 'center 60%', caption: 'A moment for two' }
+  }
   const scene = SCENES[id]
   return { ...PHOTOS[scene.photos[0]], caption: scene.beats[0] }
 }

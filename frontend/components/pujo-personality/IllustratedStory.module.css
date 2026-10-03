@@ -1,0 +1,94 @@
+/* A steady text column, with illustrations in the alternating book margins. */
+.story {
+  background: var(--mk-pearl);
+  color: var(--mk-obsidian);
+  padding: clamp(56px, 7vw, 96px) var(--mk-gutter, 24px);
+  scroll-margin-top: calc(var(--mk-nav) + 20px);
+}
+.spread { max-width: 1160px; margin-inline: auto; }
+.heading { max-width: 640px; margin-inline: auto; text-align: center; }
+.heading h2 {
+  margin: 0; font: 400 clamp(34px, 4.5vw, 52px)/1.1 var(--mk-display);
+  letter-spacing: -0.03em;
+}
+.philosophy {
+  margin: 24px 0 0; font: 400 clamp(21px, 2.5vw, 28px)/1.5 var(--mk-display);
+  color: var(--mk-ruby); text-wrap: balance;
+}
+.ornament { display: flex; justify-content: center; margin-block: 28px; opacity: 0.65; }
+.passages { display: grid; gap: clamp(28px, 4vw, 52px); }
+.passage {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 560px) minmax(0, 1fr);
+  gap: clamp(20px, 3vw, 40px); align-items: center;
+}
+.prose {
+  grid-column: 2; grid-row: 1; margin: 0; min-width: 0;
+  font: 400 clamp(17px, 1.5vw, 19px)/1.85 var(--mk-text);
+  overflow-wrap: break-word;
+}
+.passage:first-child .prose::first-letter { font-size: 2.1em; line-height: 1; color: var(--mk-ruby); }
+.figure { grid-row: 1; margin: 0; min-width: 0; }
+.left .figure { grid-column: 1; }
+.right .figure { grid-column: 3; }
+.frame {
+  position: relative; aspect-ratio: 4 / 5; padding: 8px;
+  border: 1px solid color-mix(in srgb, var(--mk-ruby) 35%, transparent);
+  border-radius: 48% 48% 3px 3px / 22% 22% 3px 3px;
+  background: color-mix(in srgb, var(--mk-obsidian) 7%, var(--mk-pearl));
+}
+.frame::after {
+  content: ''; position: absolute; inset: 6px; pointer-events: none;
+  border: 1px solid color-mix(in srgb, var(--mk-pearl) 70%, transparent);
+  border-radius: inherit;
+}
+.frame img { object-fit: cover; border-radius: inherit; }
+.figure figcaption {
+  max-width: 24ch; margin: 12px auto 0; text-align: center;
+  font: 400 12px/1.6 var(--mk-text); color: rgba(13, 16, 18, 0.68);
+}
+.landscape .frame { aspect-ratio: var(--story-aspect); border-radius: 24px 24px 3px 3px; }
+.wide .frame { aspect-ratio: var(--story-aspect); border-radius: 24px 24px 3px 3px; }
+@media (min-width: 1001px) {
+  .wide.right { grid-template-columns: minmax(0, 1fr) minmax(0, 560px) minmax(0, 340px); }
+}
+.diagram { background: #fff; }
+.compact .figure { width: 100%; max-width: 156px; justify-self: center; }
+.compact .prose { font-size: clamp(20px, 2vw, 24px); line-height: 1.65; }
+.coda { max-width: 560px; margin: 36px auto 0; }
+.reflections { display: grid; gap: 24px; padding-top: 28px; border-top: 1px solid rgba(13, 16, 18, 0.18); }
+.reflections p { margin: 0; font: 400 16px/1.75 var(--mk-text); }
+.reflections span { display: block; margin-bottom: 6px; font-size: 13px; color: rgba(13, 16, 18, 0.68); }
+.credits { margin-top: 28px; font: 400 12px/1.7 var(--mk-text); color: rgba(13, 16, 18, 0.72); }
+.credits summary { cursor: pointer; min-height: 44px; display: list-item; align-content: center; width: fit-content; }
+.credits p { margin: 8px 0 12px; }
+.credits ol { margin: 0; padding-left: 20px; }
+.credits li { margin-bottom: 12px; }
+.credits a { color: inherit; text-underline-offset: 3px; overflow-wrap: anywhere; }
+.credits a:hover { color: var(--mk-ruby); }
+.credits a:focus-visible, .credits summary:focus-visible { outline: 2px solid var(--mk-crimson); outline-offset: 3px; }
+@media (max-width: 1000px) and (min-width: 701px) {
+  .passage { grid-template-columns: minmax(0, 150px) minmax(0, 1fr); gap: 28px; }
+  .right { grid-template-columns: minmax(0, 1fr) minmax(0, 150px); }
+  .right .prose { grid-column: 1; }
+  .right .figure { grid-column: 2; }
+  .wide.right { grid-template-columns: minmax(0, 1fr) minmax(0, 240px); }
+}
+@media (max-width: 700px) {
+  .story { padding-inline: 24px; }
+  .heading { text-align: left; }
+  .philosophy { text-wrap: pretty; }
+  .passages { gap: 36px; }
+  .passage, .right { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .prose, .right .prose { grid-column: 1; grid-row: 1; }
+  .left .figure, .right .figure { grid-column: 1; grid-row: 2; width: 100%; max-width: 340px; justify-self: center; }
+  .frame { aspect-ratio: 3 / 2; border-radius: 40% 40% 3px 3px / 22% 22% 3px 3px; }
+  .landscape .frame { aspect-ratio: var(--story-aspect); }
+  .compact .figure { max-width: 190px; }
+  .compact .frame { aspect-ratio: 4 / 3; }
+  .compact .landscape .frame { aspect-ratio: var(--story-aspect); }
+  .compact .prose { font-size: 21px; }
+}
+@media print {
+  .story { padding: 24px; }
+  .passage { break-inside: avoid; }
+}

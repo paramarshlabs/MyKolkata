@@ -7,7 +7,7 @@ import { SectionHead } from '@/components/brand/SectionHead'
 import { createClient } from '@/lib/supabase/client'
 import { trackPujo } from '@/lib/pujo-personality/analytics'
 import { ARCHETYPE_IDS, PREFERENCE_FLOW } from '@/lib/pujo-personality/config'
-import { CONTENT, aName, pairCopy, peopleFor, sentence } from '@/lib/pujo-personality/content'
+import { CONTENT, aName, pairCopy, peopleFor } from '@/lib/pujo-personality/content'
 import { shareCardFrom, type Feedback, type FeedbackValue, type Saved } from '@/lib/pujo-personality/session'
 import type { ShareCard } from '@/lib/pujo-personality/token'
 import type { ArchetypeId, PujoResult } from '@/lib/pujo-personality/types'
@@ -18,6 +18,7 @@ import { Recommendations } from './Recommendations'
 import { ShareSheet, type ShareMode } from './ShareSheet'
 import { Sigil } from './Sigil'
 import { ResultGlimpse } from './ResultGlimpse'
+import { IllustratedStory } from './IllustratedStory'
 import { heroSceneFor } from './resultScenes'
 import styles from '@/styles/PujoPersonality.module.css'
 
@@ -46,13 +47,12 @@ export function ResultView({ saved, result, fresh, friend, onPrefs, onFeedback, 
   const age = saved.prefs.pref_age ?? null
   const minor = age === 'under_18'
   const [sheet, setSheet] = useState<ShareMode | null>(null)
-  const [storyOpen, setStoryOpen] = useState(false)
   const loreRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     /* the lore is read, not just revealed: count it once it is half on screen */
     const node = loreRef.current
-    if (!node || !storyOpen || typeof IntersectionObserver === 'undefined') return
+    if (!node || typeof IntersectionObserver === 'undefined') return
     const observer = new IntersectionObserver((entries) => {
       if (entries.some((e) => e.isIntersecting)) {
         trackPujo('pujo_lore_viewed', { archetype: id })
@@ -61,7 +61,7 @@ export function ResultView({ saved, result, fresh, friend, onPrefs, onFeedback, 
     }, { threshold: 0.5 })
     observer.observe(node)
     return () => observer.disconnect()
-  }, [id, storyOpen])
+  }, [id])
 
   return (
     <main className={`mk-page ${styles.result}`}>
@@ -76,8 +76,10 @@ export function ResultView({ saved, result, fresh, friend, onPrefs, onFeedback, 
         <button type="button" className="mk-btn mk-btn--primary" onClick={() => setSheet('card')}>
           Share my Pujo <span className="mk-btn-arrow" aria-hidden="true">→</span>
         </button>
-        <a href="#story" className={`mk-btn mk-btn--text ${styles.onGround}`} onClick={() => setStoryOpen(true)}>Read your story</a>
+        <a href="#story" className={`mk-btn mk-btn--text ${styles.onGround}`}>Read your story</a>
       </ArchetypeHero>
+
+      <IllustratedStory id={id} personal headingRef={loreRef} />
 
       <ResultGlimpse result={result} saved={saved} />
 
@@ -89,23 +91,6 @@ export function ResultView({ saved, result, fresh, friend, onPrefs, onFeedback, 
           </div>
         </section>
       )}
-
-      <section id="story" ref={loreRef} className={`${styles.paper} ${styles.resultStory} mk-band`} aria-labelledby="story-title">
-        <div className="mk-wrap">
-          <div className="mk-measure">
-            <h2 id="story-title" className={styles.paperTitle}>Your story</h2>
-            <p className={styles.paperLede}>{content.philosophy}</p>
-            <button type="button" className={styles.storyToggle} aria-expanded={storyOpen} aria-controls="full-story" onClick={() => setStoryOpen((open) => !open)}>{storyOpen ? 'Close the story' : 'Read the full story'}</button>
-            <div id="full-story" hidden={!storyOpen}>
-              {content.lore.map((para) => <p key={para.slice(0, 32)} className={styles.paperBody}>{para}</p>)}
-              <div className={styles.lightShadow}>
-                <p><span className={styles.paperLabel}>At your best</span>{sentence(content.light)}</p>
-                <p><span className={styles.paperLabel}>At your worst</span>{sentence(content.shadow)}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       <section className={`mk-band ${styles.resultDna}`} aria-labelledby="dna-title">
         <div className="mk-wrap">

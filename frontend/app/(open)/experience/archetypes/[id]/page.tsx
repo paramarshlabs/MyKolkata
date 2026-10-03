@@ -5,12 +5,13 @@ import { notFound } from 'next/navigation'
 import { SectionHead } from '@/components/brand/SectionHead'
 import { ArchetypeGrid } from '@/components/pujo-personality/ArchetypeGrid'
 import { ArchetypeGlimpse } from '@/components/pujo-personality/ArchetypeGlimpse'
+import { IllustratedStory } from '@/components/pujo-personality/IllustratedStory'
 import { ArchetypeHero } from '@/components/pujo-personality/ArchetypeHero'
 import { Recommendations } from '@/components/pujo-personality/Recommendations'
 import { heroSceneFor } from '@/components/pujo-personality/resultScenes'
 import { Sigil } from '@/components/pujo-personality/Sigil'
 import { ARCHETYPE_IDS, isArchetypeId } from '@/lib/pujo-personality/config'
-import { CONTENT, aName, pairCopy, peopleFor, sentence } from '@/lib/pujo-personality/content'
+import { CONTENT, aName, pairCopy, peopleFor } from '@/lib/pujo-personality/content'
 import styles from '@/styles/PujoPersonality.module.css'
 
 type Params = { params: Promise<{ id: string }> }
@@ -52,27 +53,9 @@ export default async function ArchetypePage({ params }: Params) {
         <Link href="/experience/archetypes" className={`mk-btn mk-btn--text ${styles.onGround}`}>All nine</Link>
       </ArchetypeHero>
 
-      <ArchetypeGlimpse id={id} />
+      <IllustratedStory id={id} />
 
-      <section className={`${styles.paper} ${styles.resultStory} mk-band`} aria-labelledby="story-title">
-        <div className="mk-wrap">
-          <div className="mk-measure">
-            <h2 id="story-title" className={styles.paperTitle}>The story</h2>
-            <p className={styles.paperLede}>{content.philosophy}</p>
-            <details className={styles.publicStoryDisclosure}>
-              <summary className={styles.storyToggle}>
-                <span className={styles.storyShow}>Read the full story</span>
-                <span className={styles.storyHide}>Close the story</span>
-              </summary>
-              {content.lore.map((para) => <p key={para.slice(0, 32)} className={styles.paperBody}>{para}</p>)}
-              <div className={styles.lightShadow}>
-                <p><span className={styles.paperLabel}>At their best</span>{sentence(content.light)}</p>
-                <p><span className={styles.paperLabel}>At their worst</span>{sentence(content.shadow)}</p>
-              </div>
-            </details>
-          </div>
-        </div>
-      </section>
+      <ArchetypeGlimpse id={id} />
 
       <section className="mk-band mk-band--deep" aria-labelledby="people-title">
         <div className="mk-wrap">
