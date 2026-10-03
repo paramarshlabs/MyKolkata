@@ -6,7 +6,7 @@
    ========================================================================== */
 
 /* these and everything under them */
-export const SIGNED_IN_SECTIONS = ['/home', '/pujo', '/places', '/near-you', '/community', '/profile', '/about-creator', '/transport', '/experience/swipe']
+export const SIGNED_IN_SECTIONS = ['/home', '/pujo', '/places', '/near-you', '/community', '/profile', '/about-creator', '/transport', '/share', '/experience/swipe']
 
 /* only these exact paths: /experience/personality and the share pages under
    /experience are public (app/(open)) */
