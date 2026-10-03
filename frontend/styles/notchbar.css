@@ -2,8 +2,8 @@
  * The notch bar — the navigation component. Live reference: /brand-kit
  *
  * Three notches cut from a Pearl bezel: lockup, sections, search. Below 1280px
- * they fold into one island with a drawer; below 768px the bezel goes and the
- * island sits flush with the top edge. Pearl on the dark page with a tonal
+ * they fold into one island with a drawer; below 768px the bezel goes, the
+ * island spans the top edge and the sections become a tab bar at the bottom. Pearl on the dark page with a tonal
  * active pill — brand type stays Regular, so the pill and colour carry the
  * state rather than a synthesised bold. Never crimson on the notches (the
  * mark is the round city icon), and never a shadow under them.
@@ -194,3 +194,62 @@
 
 /* Bengali is never letter-spaced — it breaks the matra. [data-bn] marks swapped text. */
 :root[data-lang="bn"] [data-bn] { letter-spacing: 0; }
+
+/* the island's right-hand group: search, language, account; the lockup never squeezes */
+.mk-notchbar .nn-island-end { display: flex; align-items: center; gap: 20px; }
+.mk-notchbar .nn-island-row > .nn-brand { flex: none; white-space: nowrap; }
+.mk-notchbar .nn-search-label { display: flex; align-items: center; cursor: text; }
+.mk-notchbar .nn-lang-long { display: none; }
+
+/* the phone tab bar — hidden until 767px, below */
+.mk-notchbar .nn-tabbar { display: none; }
+
+/* A phone: the island spans the top edge — the mark on the left; search,
+   language and the account on the right — and the sections leave the drawer
+   for a tab bar along the bottom, where a thumb reaches. --mk-tabbar is its
+   height, for anything else pinned to the bottom of the screen. The public
+   island (nn-island--solo) keeps its own shape. */
+@media (max-width: 767px) {
+  :root:has(.mk-notchbar .nn-tabbar) { --mk-tabbar: calc(60px + env(safe-area-inset-bottom, 0px)); }
+  body:has(.mk-notchbar .nn-tabbar) { padding-bottom: var(--mk-tabbar); }
+
+  .mk-notchbar .nn-island:not(.nn-island--solo) {
+    left: 0; right: 0; transform: none; padding: 0 12px 0 14px; border-radius: 0 0 20px 20px;
+  }
+  .mk-notchbar .nn-island:not(.nn-island--solo) .nn-wing { display: none; }
+  .mk-notchbar .nn-island:not(.nn-island--solo) .nn-island-row { height: var(--mk-nav); }
+  .mk-notchbar .nn-island:not(.nn-island--solo) .nn-brand-box { width: 34px; height: 34px; }
+  .mk-notchbar .nn-trigger, .mk-notchbar .nn-drawer, .mk-notchbar .nn-scrim { display: none; }
+
+  .mk-notchbar .nn-island-end { margin-left: auto; gap: 12px; }
+  .mk-notchbar .nn-island-end .nn-search-icon { width: 20px; height: 20px; stroke: var(--nn-fg); }
+  .mk-notchbar .nn-island-end .nn-avatar { width: 34px; height: 34px; }
+  .mk-notchbar .nn-island-end .nn-lang { width: auto; height: 32px; padding: 0 14px; }
+  .mk-notchbar .nn-island-end .nn-lang-short { display: none; }
+  .mk-notchbar .nn-island-end .nn-lang-long { display: inline; font-size: 14px; }
+  .mk-notchbar .nn-island-end .nn-lang-long[lang="bn"] { font-family: var(--mk-bengali); font-size: 15px; }
+
+  .mk-notchbar .nn-tabbar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+    display: flex; align-items: stretch; justify-content: space-around;
+    padding: 4px max(4px, env(safe-area-inset-right)) env(safe-area-inset-bottom, 0px) max(4px, env(safe-area-inset-left));
+    background: var(--nn-bg); border-radius: 20px 20px 0 0; user-select: none;
+  }
+  .mk-notchbar .nn-tabbar-item {
+    flex: 1 1 0; min-width: 0; height: 56px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    font-family: var(--mk-text); font-size: 11.5px; letter-spacing: 0.01em; line-height: 1;
+    color: var(--nn-muted); text-decoration: none; white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+    transition: color var(--mk-t-fast) var(--mk-ease-in-out);
+  }
+  .mk-notchbar .nn-tabbar-item span { overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .mk-notchbar .nn-tabbar-item:active { color: var(--nn-fg); }
+  /* the current section is the one crimson thing in the bar */
+  .mk-notchbar .nn-tabbar-item.is-active { color: var(--mk-crimson); }
+  .mk-notchbar .nn-tabbar-item:focus-visible { outline: 2px solid rgba(13, 16, 18, 0.4); outline-offset: -4px; border-radius: 12px; }
+
+  /* pinned to the bottom elsewhere: sit above the tab bar, not under it */
+  :root:has(.mk-notchbar .nn-tabbar) .mk-consent,
+  :root:has(.mk-notchbar .nn-tabbar) .mk-ig { bottom: calc(var(--mk-tabbar) + 12px); }
+}

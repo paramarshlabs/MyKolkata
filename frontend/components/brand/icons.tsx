@@ -148,6 +148,11 @@ const UI = {
   clock: <><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></>,
   trash: <><path d="M4.5 7h15M9.5 7V4.5h5V7" /><path d="M6.5 7l1 12.5h9l1-12.5" /></>,
   link: <><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1.2 1.2" /><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1.2-1.2" /></>,
+  /* the phone tab bar (components/layout/Navbar.tsx) */
+  home: <><path d="M4 10.5 12 4l8 6.5" /><path d="M6 9v10.5h4.5V15h3v4.5H18V9" /></>,
+  diya: <><path d="M12 4.5q2.2 2.6 0 5-2.2-2.4 0-5Z" /><path d="M3.5 13h17q-1 5.5-8.5 5.5T3.5 13Z" /><path d="M9 21h6" /></>,
+  compass: <><circle cx="12" cy="12" r="8.5" /><path d="m15.5 8.5-2 5-5 2 2-5Z" /></>,
+  sparkle: <><path d="M10 4q.8 5.2 6 6-5.2.8-6 6-.8-5.2-6-6 5.2-.8 6-6Z" /><path d="M18 14.5q.4 2.6 2.5 3-2.1.4-2.5 3-.4-2.6-2.5-3 2.1-.4 2.5-3Z" /><path d="M17.5 3.5v3M16 5h3" /></>,
 } satisfies Record<string, ReactNode>
 
 export type UiIconName = keyof typeof UI

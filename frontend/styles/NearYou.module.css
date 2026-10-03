@@ -288,7 +288,8 @@
 }
 
 @media (max-width: 767px) {
-  .mapMode { min-height: 0; height: 100svh; height: 100dvh; }
+  /* the phone tab bar (styles/notchbar.css) takes the bottom of the screen */
+  .mapMode { min-height: 0; height: calc(100svh - var(--mk-tabbar, 0px)); height: calc(100dvh - var(--mk-tabbar, 0px)); }
   .mapOverlay { width: calc(100% - 24px); top: calc(var(--mk-nav) + env(safe-area-inset-top, 0px) + 4px); }
   .mapDeck { min-height: 44px; padding: 2px 4px 2px 2px; grid-template-columns: 38px minmax(0, 1fr) repeat(3, 38px); gap: 0; }
   .mapBack, .deckIcon { width: 38px; height: 38px; }
