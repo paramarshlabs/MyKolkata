@@ -7,7 +7,8 @@
 
 import type { LatLng } from './geo'
 
-export const pujoPath = (slug: string) => `/pujo/pandal/${encodeURIComponent(slug)}`
+/* /pujo with that pujo's sheet open (PujoProvider reads ?pandal=) */
+export const pujoPath = (slug: string) => `/pujo?pandal=${encodeURIComponent(slug)}`
 
 const at = (point: LatLng) => `${point.lat.toFixed(6)},${point.lng.toFixed(6)}`
 

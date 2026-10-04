@@ -92,7 +92,9 @@ export function exploreRequest({ query = '', category = 'All', origin = KOLKATA,
 }
 
 /* A link into the live map that reopens exactly this context */
-export function mapHref({ view = 'map', query, category, origin, label, select, locate } = {}) {
+export function mapHref({ view = 'map', query, category, origin, label, select, locate }: {
+  view?: string; query?: string; category?: string; origin?: { lat: number; lng: number } | null; label?: string; select?: string; locate?: boolean
+} = {}) {
   const params = new URLSearchParams({ view })
   if (query) params.set('q', query)
   if (category && category !== 'All') params.set('category', category)

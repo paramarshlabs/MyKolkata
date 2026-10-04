@@ -336,7 +336,6 @@ button.rowOpen:hover .rowMeta { color: var(--mk-taxi); }
 .sheetName:focus { outline: none; }
 .fullName { margin: var(--mk-1) 0 0; font-size: 14px; line-height: 1.45; color: var(--mk-ash); }
 .sheetActions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--mk-3); margin-top: var(--mk-6); }
-.fullPage { margin-left: auto; }
 .said { flex-basis: 100%; }
 @media (min-width: 900px) {
   /* a panel on the right, under the notch bar */

@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { UiIcon } from '@/components/brand/icons'
 import { ShareButton } from '@/components/pujo/bits'
@@ -14,7 +13,7 @@ import styles from '@/styles/PujoExplore.module.css'
 /* ==========================================================================
    A pujo's page in a sheet, so people can read about it without losing their
    place: a bottom sheet on a phone, a panel on the right on a desktop. The
-   same facts, the same Add button, and "Open full page".
+   same facts, the same Add button, and Share.
    ========================================================================== */
 
 type Props = {
@@ -157,9 +156,7 @@ export function InfoSheet({ action }: Props) {
           ) : (
             <p className="mk-meta">No map location yet.</p>
           )}
-          <ShareButton title={current.name} text={`${current.name}, ${areaName ?? 'Kolkata'}`} url={pujoPath(current.slug)} />
-          <Link className={`mk-btn mk-btn--text ${styles.fullPage}`} href={pujoPath(current.slug)}>Open full page</Link>
-        </div>
+          <ShareButton title={current.name} text={`${current.name}, ${areaName ?? 'Kolkata'}`} url={pujoPath(current.slug)} />        </div>
       </aside>
     </div>
   )

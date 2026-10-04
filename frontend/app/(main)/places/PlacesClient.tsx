@@ -3,9 +3,11 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { KOLKATA, exploreCategories, exploreRequest, fetchLivePlaces, mapHref } from '@/lib/livePlaces'
 import { haversineDistanceKm } from '@/lib/places/geo'
+import { findInstagramPost, sharePath } from '@/lib/share/instagram'
 import { Card } from '@/components/brand/Card'
 import { SectionHead } from '@/components/brand/SectionHead'
 import { Sprig } from '@/components/brand/kolka'
@@ -137,6 +139,7 @@ function NearbyRow({ category, origin }) {
 }
 
 function Explore() {
+  const router = useRouter()
   const [query, setQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState('All')
@@ -235,7 +238,13 @@ function Explore() {
     searchRef.current?.focus()
   }
 
-  const changeQuery = (nextQuery) => setQuery(nextQuery)
+  /* a pasted Instagram post: off to the place it's about (/share), the way
+     Android's share sheet sends it — iPhones have no share sheet for web apps */
+  const changeQuery = (nextQuery) => {
+    const post = findInstagramPost(nextQuery)
+    if (post) router.push(sharePath(post.url))
+    setQuery(nextQuery)
+  }
 
   const changeCategory = (nextCategory) => setActiveCategory(nextCategory)
 
@@ -280,7 +289,7 @@ function Explore() {
                     setIsComposing(false)
                     changeQuery(event.currentTarget.value)
                   }}
-                  placeholder="Search a café, a dish, a para"
+                  placeholder="Search a café, a para, or paste an Insta link"
                   autoComplete="off"
                   enterKeyHint="search"
                 />
