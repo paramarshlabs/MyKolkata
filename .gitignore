@@ -47,3 +47,5 @@ package-lock.json
 docs/datasource.md
 
 google_auth.json
+db/kolkata_puja_pandals.csv
+frontend/public/mykolkatacontent
