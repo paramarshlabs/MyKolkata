@@ -3,7 +3,32 @@
     lowercase key also catches the capitalised copy). Proper names — pandals,
     papers, streets — and the legal pages stay in English on purpose.        */
 
+import content from '@/lib/pujo-personality/content.json'
+import photos from '@/components/pujo-personality/storyPhotos.json'
+import stories from './pujo-stories.bn.json'
+
+// Keep the existing language switch as the single owner of story translations.
+const storyPhrases: Record<string, string> = {}
+for (const id of Object.keys(stories) as (keyof typeof stories)[]) {
+  const english = content.archetypes[id]
+  const bengali = stories[id]
+  storyPhrases[english.philosophy] = bengali.philosophy
+  for (const field of ['light', 'shadow'] as const) {
+    const phrase = english[field]
+    storyPhrases[phrase.charAt(0).toUpperCase() + phrase.slice(1)] = bengali[field]
+  }
+  english.lore.forEach((paragraph, index) => {
+    storyPhrases[paragraph] = bengali.lore[index]
+    storyPhrases[photos[id][index].caption] = bengali.captions[index]
+    storyPhrases[photos[id][index].alt] = bengali.alts[index]
+  })
+}
+
 export const BN: Record<string, string> = {
+  ...storyPhrases,
+  'Photo credits': 'ছবির কৃতিত্ব',
+  'Resized to WebP; displayed crops vary by device. Each image retains its source license.':
+    'ছবিগুলো ওয়েবপি ফরম্যাটে ছোট করা হয়েছে; ডিভাইস অনুযায়ী ছবির দৃশ্যমান অংশ বদলাতে পারে। প্রতিটি ছবির উৎসের ব্যবহারের শর্ত প্রযোজ্য।',
   // the notch bar, footer, account
   'Home': 'হোম',
   'Explore': 'ঘুরে দেখুন',

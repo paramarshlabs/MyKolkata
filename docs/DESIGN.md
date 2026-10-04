@@ -866,6 +866,8 @@ frames are different photos, not repeats of the cover. The result tagline aligns
 beside its tick. Public archetype pages use the same photographic cover and aligned tagline;
 share cards retain the original sigil treatment.
 
+**Personality story spreads.** The full lore is always visible on personal results and public archetype pages. `IllustratedStory` owns the shared pearl-paper reading surface, with a steady central text column and alternating picture margins on desktop. Each lore paragraph has an individually researched local image in `storyPhotos.json`, with descriptive alt text, a scene-specific caption, source, author and license. No source image repeats across the nine stories. Short passages use smaller photographs; wide group scenes and route diagrams retain their composition. Arched picture frames and restrained alpona separators carry the textbook reference. On phones, each picture follows its paragraph. A quiet photo-credit disclosure follows the reflections. Keep the original lore wording and bind image records to paragraph hashes so future copy edits prompt recuration.
+
 **The Pujo DNA chart.** Fourteen filled teardrops around a Crimson disc, one per dimension,
 grouped by family, with the medallion's gaps at ±90°. Petal length is relative to how most
 people answer; a dashed ring marks typical. Petals are labelled on tap, never on the chart, and a
@@ -1085,3 +1087,13 @@ MY KOLKATA
 
 Everything in this system is quiet so that one thing can be loud: the tick, the photograph, or
 the single Crimson button. If two things are shouting on a screen, remove one.
+
+The October 2026 aesthetic pass prioritizes intimate Bengali couple portraits and warm listening-room light for Pujo Romantic. Preserve already strong place-specific photography; do not replace it merely to make every scene glossy. Couple portraits are illustrative emotional imagery. Retain accurate source credits and source licenses; use content-versioned local image filenames so updated photos appear immediately through the image cache.
+
+The Pujo Romantic cover uses the warm Bengali couple portrait against the heritage red wall, captioned 'A moment for two', on both the public archetype page and personal result. The reflective river photograph remains in the shared scene library for quieter contexts.
+
+The Romantic College Square passage uses a wider side illustration (340px desktop, 240px tablet) with the photograph's full native aspect ratio, preserving both the lit structure and its water reflection. Caption: 'When the lights lie on the water'. Mobile keeps the photograph beneath its paragraph.
+
+The College Square illustration now previews the user-selected golden waterfront landscape, using its native aspect ratio and the existing reflection caption. Photographer: Kuntal Chakrabarty / IANS. Publication permission is pending and recorded in photo metadata and credits; the pending rights status remains visible in Photo credits.
+
+Personality page sequence: hero, complete illustrated story, glimpse of Pujo (including the personal soundtrack), then supporting sections and recommendations. The story asset folder contains exactly the 66 images referenced by its metadata; research contact sheets, obsolete alternatives and audit reports are not shipping assets.

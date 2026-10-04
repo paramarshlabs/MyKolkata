@@ -202,35 +202,10 @@
 
 /* ============================================================== paper == */
 /* long-form reads in light mode. DESIGN.md §3.3 */
-.paper { background: var(--mk-pearl); color: var(--mk-obsidian); }
-.resultStory { padding-block: clamp(52px, 6vw, 76px); scroll-margin-top: calc(var(--mk-nav) + 20px); }
 .resultDna { padding-block: clamp(64px, 7vw, 96px); }
 .resultDna :global(.mk-lede) { max-width: 56ch; }
 .resultDnaChart { margin-top: clamp(28px, 3vw, 40px); }
 .result :global(#yours-title) { scroll-margin-top: calc(var(--mk-nav) + 24px); }
-.paperTitle {
-  margin: 0; font-family: var(--mk-display); font-weight: 400; color: var(--mk-obsidian);
-  font-size: clamp(30px, 5vw, 52px); line-height: 1.05; letter-spacing: -0.03em;
-}
-.paperLede {
-  margin: var(--mk-5) 0 0; font-family: var(--mk-display); font-size: clamp(21px, 2.8vw, 28px);
-  line-height: 1.4; letter-spacing: -0.005em; color: var(--mk-ruby);
-}
-.paperBody { margin: var(--mk-5) 0 0; font-size: clamp(16px, 2vw, 19px); line-height: 1.72; color: var(--mk-obsidian); }
-.storyToggle { margin-top: 24px; padding: 10px 0; border: 0; border-bottom: 1px solid var(--mk-ruby); background: transparent; color: var(--mk-ruby); font: 400 16px var(--mk-text); cursor: pointer; }
-.storyToggle:hover { color: var(--mk-obsidian); border-color: var(--mk-obsidian); }
-.storyToggle:focus-visible { outline: 3px solid var(--mk-ruby); outline-offset: 4px; }
-.publicStoryDisclosure summary { display: inline-block; list-style: none; cursor: pointer; }
-.publicStoryDisclosure summary::-webkit-details-marker { display: none; }
-.publicStoryDisclosure .storyHide, .publicStoryDisclosure[open] .storyShow { display: none; }
-.publicStoryDisclosure[open] .storyHide { display: inline; }
-.lightShadow {
-  display: grid; gap: var(--mk-4); margin-top: var(--mk-7); padding-top: var(--mk-5);
-  border-top: 1px solid rgba(13, 16, 18, 0.14);
-}
-.lightShadow p { margin: 0; font-size: 16px; line-height: 1.6; color: var(--mk-obsidian); }
-.paperLabel { display: block; margin-bottom: 4px; font-size: 13px; letter-spacing: 0.02em; color: rgba(13, 16, 18, 0.66); }
-
 /* ======================================================= result bands == */
 .says { list-style: none; margin: var(--mk-6) 0 0; padding: 0; display: grid; gap: var(--mk-5); }
 .says li { padding-left: var(--mk-4); border-left: 2px solid rgba(242, 241, 237, 0.16); }

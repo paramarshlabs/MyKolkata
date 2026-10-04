@@ -15,3 +15,5 @@ Documentary context photographs sequenced into a cover, three story scenes, and 
 | `shiuli.avif` | Chananchida Nokjan | https://unsplash.com/photos/white-ceramic-round-plate-with-white-and-red-flowers-4XcLt0SbNEc |
 | `pujo-lights.jpg` | Akashpandey91, CC0 1.0 | https://commons.wikimedia.org/wiki/File:Kolkata_Nights_during_Durga_Pooja.jpg |
 | `morning-lane.avif` | Debasish Lenka | https://unsplash.com/photos/a-couple-of-people-that-are-standing-in-the-dark-8_v5cot3ZMU |
+
+Pujo Romantic cover: Fliqa India, [Bengali couple portrait](https://www.pexels.com/photo/bengali-couple-s-romantic-outdoor-portrait-33328755/), [Pexels License](https://www.pexels.com/license/). The local WebP also appears in the Romantic illustrated story, with its credit in Photo credits.
